@@ -12,5 +12,5 @@ public abstract class Celda<T> {
   public abstract boolean isNA();
 
   public abstract void fillNA(T objeto);
-
+  
 }

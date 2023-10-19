@@ -7,12 +7,10 @@ public abstract class Celda<T> {
 
   public abstract void setContenido(T objeto);
 
-  public abstract void addContenido(T objeto);
+  public abstract void removerContenido();
 
-  public abstract void removerContenido(T objecto);
+  public abstract boolean isNA();
 
-  public abstract boolean isNA(T objeto);
-
-  public abstract T fillNA(T objeto);
+  public abstract void fillNA(T objeto);
 
 }

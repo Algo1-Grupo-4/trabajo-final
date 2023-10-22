@@ -1,25 +1,28 @@
+package com;
+
+import java.util.List;
 
 public class Columna {
     private List<Celda> elementos;
 
-    public Columna(){
+    public Columna() {
         elementos = new List<Celda>();
     }
 
-    public Columna(int lenght){
+    public Columna(int lenght) {
         elementos = new List<Celda>(lenght);
     }
 
-    public Celda getCelda(int index){
-        if (index > 0 && index < elementos.size()){
-        return elementos.get(index);
+    public Celda getCelda(int index) {
+        if (index > 0 && index < elementos.size()) {
+            return elementos.get(index);
         } else {
-            return new Celda(); 
+            return new Celda();
         }
     }
-    
+
     // hay que castearlo en la aplicacion
-    public Object getContenidoCelda(int index){
+    public Object getContenidoCelda(int index) {
         return getCelda(index).getContenido();
     }
 

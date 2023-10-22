@@ -19,11 +19,11 @@ public class CeldaString extends Celda {
   @Override
   public void setContenido(Object objeto) {
     if (objeto instanceof String){
-      this.contenido = (String) contenido;
+      this.contenido = (String) objeto;
     } else if (objeto == null){
       this.contenido = null;
     } else {
-      this.contenido = (String) contenido; //fuerza lo que haya a String
+      this.contenido = objeto.toString() ; //fuerza lo que haya a String
     }
   }
 
@@ -40,7 +40,7 @@ public class CeldaString extends Celda {
   @Override
   public void fillNA(Object objeto) {
     if (this.isNA()) {
-      this.setContenido((String) objeto);
-  }
+      this.setContenido(objeto.toString());
+    }
   }
 }

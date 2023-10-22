@@ -1,0 +1,7 @@
+letras,numeros,booleano
+estoesunstring,15,true
+string con espacios,12.3,true
+Pablo Diego José Francisco de Paula Juan Nepomuceno María de los Remedios Cipriano de la Santísima Trinidad Ruiz y Picasso,5,false
+esto tiene un 4 metido en el medio,3.14,true
+acá hay acentos y una ñ, 999,false
+esta fila va a tener un na,,true

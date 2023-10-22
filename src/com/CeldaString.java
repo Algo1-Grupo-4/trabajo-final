@@ -1,7 +1,11 @@
 package com;
 
-public class CeldaString extends Celda<String> {
+public class CeldaString extends Celda {
   private String contenido;
+
+  public CeldaString() {
+    this.contenido = null;
+  }
 
   @Override
   public void setContenido(String objeto) {
@@ -20,28 +24,28 @@ public class CeldaString extends Celda<String> {
 
   @Override
   public boolean isNA() {
-    ////CON String Objeto
-    //if (objeto != null && objeto.isEmpty()) {
-      //return true;
-   // }
-    //return false;
+    //// CON String Objeto
+    // if (objeto != null && objeto.isEmpty()) {
+    // return true;
+    // }
+    // return false;
     // lo saqué de
     // https://stackoverflow.com/questions/8970008/can-we-rely-on-string-isempty-for-checking-null-condition-on-a-string-in-java
-  
-  if (this.contenido == null){
-    return true;
-  } else {
-    return false;
-  }
-  
+
+    if (this.contenido == null) {
+      return true;
+    } else {
+      return false;
+    }
+
   }
 
   @Override
   public void fillNA(String objeto) {
-    if (this.contenido == null){
+    if (this.contenido == null) {
       this.contenido = objeto;
-  } else {
+    } else {
       System.out.println("La celda ya tiene contenido");
-  }
+    }
   }
 }

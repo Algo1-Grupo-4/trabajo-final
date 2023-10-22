@@ -1,7 +1,11 @@
 package com;
 
-public class CeldaNumber extends Celda<Number> {
+public class CeldaNumber extends Celda {
     private Number contenido;
+
+    public CeldaNumber() {
+        this.contenido = null;
+    }
 
     @Override
     public Number getContenido() {
@@ -13,7 +17,6 @@ public class CeldaNumber extends Celda<Number> {
         this.contenido = objeto;
     }
 
-
     @Override
     public void removerContenido() {
         this.contenido = null;
@@ -21,20 +24,20 @@ public class CeldaNumber extends Celda<Number> {
 
     @Override
     public boolean isNA() {
-        if (this.contenido == null){
+        if (this.contenido == null) {
             return true;
-          } else {
+        } else {
             return false;
-          }
+        }
     }
 
     @Override
     public void fillNA(Number objeto) {
-        if (this.contenido == null){
+        if (this.contenido == null) {
             this.contenido = objeto;
         } else {
             System.out.println("La celda ya tiene contenido");
         }
     }
-    
+
 }

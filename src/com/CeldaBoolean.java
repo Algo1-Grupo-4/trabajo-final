@@ -1,18 +1,19 @@
 package com;
 
-public class CeldaBoolean extends Celda<Boolean> {
+public class CeldaBoolean extends Celda {
+    /*
+     * Para una Celda Booleana, usamos esta celda
+     */
     private Boolean contenido;
+
+    public CeldaBoolean() {
+        this.contenido = null;
+    }
 
     @Override
     public Boolean getContenido() {
         return this.contenido;
     }
-
-    @Override
-    public void setContenido(Boolean cont) {
-        this.contenido = cont;
-        }
-
 
     @Override
     public void removerContenido() {
@@ -21,19 +22,26 @@ public class CeldaBoolean extends Celda<Boolean> {
 
     @Override
     public boolean isNA() {
-        if (this.contenido == null){
+        if (this.contenido == null) {
             return true;
-          } else {
+        } else {
             return false;
-          }
+        }
     }
 
     @Override
-    public void fillNA(Boolean objeto) {
-        if (this.contenido == null){
-            this.contenido = objeto;
-        } else {
-            System.out.println("La celda ya tiene contenido");
+    public void setContenido(Object objeto) {
+        if (objeto instanceof Boolean) {
+            this.contenido = (Boolean) objeto;
+        } else if (objeto == null) {
+            throw new IllegalArgumentException("I need a value.");
+        } // no estoy seguro si es necesario esto (Object == null?)
+    }
+
+    @Override
+    public void fillNA(Object objeto) {
+        if (this.isNA()) {
+            this.setContenido(objeto);
         }
     }
 }

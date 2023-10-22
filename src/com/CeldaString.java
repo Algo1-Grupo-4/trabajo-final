@@ -1,19 +1,13 @@
 package com;
 
 public class CeldaString extends Celda {
+  /*
+   * Para una Celda String, usamos esta celda
+   */
+
   private String contenido;
 
   public CeldaString() {
-    this.contenido = null;
-  }
-
-  @Override
-  public void setContenido(String objeto) {
-    this.contenido = objeto;
-  }
-
-  @Override
-  public void removerContenido() {
     this.contenido = null;
   }
 
@@ -23,29 +17,30 @@ public class CeldaString extends Celda {
   }
 
   @Override
-  public boolean isNA() {
-    //// CON String Objeto
-    // if (objeto != null && objeto.isEmpty()) {
-    // return true;
-    // }
-    // return false;
-    // lo saqué de
-    // https://stackoverflow.com/questions/8970008/can-we-rely-on-string-isempty-for-checking-null-condition-on-a-string-in-java
-
-    if (this.contenido == null) {
-      return true;
+  public void setContenido(Object objeto) {
+    if (objeto instanceof String){
+      this.contenido = (String) contenido;
+    } else if (objeto == null){
+      this.contenido = null;
     } else {
-      return false;
+      this.contenido = (String) contenido; //fuerza lo que haya a String
     }
-
   }
 
   @Override
-  public void fillNA(String objeto) {
-    if (this.contenido == null) {
-      this.contenido = objeto;
-    } else {
-      System.out.println("La celda ya tiene contenido");
-    }
+  public void removerContenido() {
+    this.contenido = null;
+  }
+
+  @Override
+  public boolean isNA() {
+    return contenido == null;
+  }
+
+  @Override
+  public void fillNA(Object objeto) {
+    if (this.isNA()) {
+      this.setContenido((String) objeto);
+  }
   }
 }

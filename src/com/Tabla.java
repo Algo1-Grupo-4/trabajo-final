@@ -16,4 +16,16 @@ public class Tabla {
         }
    
     }
+
+    public Tabla(){
+        //
+    }
+
+    public void addFila(List<Celda> fila) {
+        //recorre columnas, agrega una celda en cada columna y lo rellena con la fila que se le pasa
+    }
+
+    public void addColumna(Columna columna) {
+        // agrega columna
+    }
 }

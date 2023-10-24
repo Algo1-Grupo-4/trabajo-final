@@ -29,4 +29,8 @@ public class Columna {
                 throw new IllegalArgumentException("Tipo no válido: " + tipo_columna);
         }
     } 
+
+    public void addCelda(){
+        
+    }
 }

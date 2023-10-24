@@ -1,29 +1,36 @@
 package com;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Columna {
     private List<Celda> elementos;
 
-    public Columna() {
-        elementos = new List<Celda>();
-    }
+    public Columna(String tipo_columna, int lenght) {
+        elementos = new ArrayList<>(lenght);
 
-    public Columna(int lenght) {
-        elementos = new List<Celda>(lenght);
-    }
-
-    public Celda getCelda(int index) {
-        if (index > 0 && index < elementos.size()) {
-            return elementos.get(index);
-        } else {
-            return new Celda();
+        switch (tipo_columna){
+            case "String":
+                for (int i = 0; i < lenght; i++) {
+                    elementos.set(i, new CeldaString())  ;
+                }
+                break;
+            case "Number": 
+                for (int i = 0; i < lenght; i++) {
+                    elementos.set(i, new CeldaNumber());
+                }
+                break;
+            case "Boolean":
+                for (int i = 0; i < lenght; i++) {
+                    elementos.set(i, new CeldaBoolean());
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Tipo no válido: " + tipo_columna);
         }
-    }
+    } 
 
-    // hay que castearlo en la aplicacion
-    public Object getContenidoCelda(int index) {
-        return getCelda(index).getContenido();
+    public void addCelda(){
+        
     }
-
 }

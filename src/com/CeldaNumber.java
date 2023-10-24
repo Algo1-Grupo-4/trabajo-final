@@ -13,8 +13,8 @@ public class CeldaNumber extends Celda {
     }
 
     @Override
-    public void setContenido(Number objeto) {
-        this.contenido = objeto;
+    public void setContenido(Object objeto) {
+        this.contenido = (Number) objeto;
     }
 
     @Override
@@ -30,14 +30,10 @@ public class CeldaNumber extends Celda {
             return false;
         }
     }
-
     @Override
-    public void fillNA(Number objeto) {
+    public void fillNA(Object objeto) {
         if (this.contenido == null) {
-            this.contenido = objeto;
-        } else {
-            System.out.println("La celda ya tiene contenido");
+            this.contenido = (Number) objeto;
         }
     }
-
 }

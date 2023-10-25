@@ -8,63 +8,29 @@ import java.util.List;
 
 public class Tabla {
     private List<Columna> tabla;
-    // protected HashMap(String) mapa1;
-    // protected HashMap(Number) mapa2;
 
     public Tabla(String[] tiposDato, String fileName) {
-        tabla = new ArrayList<>(tiposDato.length);
-
-        for (String tipoDato : tiposDato) {
-            Columna columna = new Columna(tipoDato, tiposDato.length);
-            tabla.add(columna);
-        }
-
-        // Llenamos tabla con los datos del archivo CSV
         List<String> lineas = null;
         try {
             lineas = leerCSV(fileName, ",", false);
             String[][] datos = parserCSV(lineas);
+    
+            if (datos.length > 0) {
+                tabla = new ArrayList<>(); 
+                for (String tipoDato : tiposDato) {
+                    Columna columna = new Columna(tipoDato, datos.length); 
+                    tabla.add(columna);
+                }
+            } else {
+                throw new IllegalArgumentException("No se encontraron datos en el archivo CSV.");
+            }
+    
             llenarTabla(datos, tiposDato);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    public void llenarTabla(String[][] datos, String[] tiposDato) {
-        /*if (tiposDato.length != datos.length) { //no es datos.length
-            throw new IllegalArgumentException("La cantidad de columnas no coincide con la tabla.");
-        }*/
-        for (int fila = 0; fila < datos[0].length; fila++) {
-            for (int columna = 0; columna < tabla.size(); columna++) {
-                String tipoDato = tiposDato[columna];
-                Celda celda = crearCelda(tipoDato, datos[columna][fila]);
-                tabla.get(columna).getCelda(fila).setContenido(celda);
-
-            }
-            
-        }
-        
-    }
     
-
-    public Celda crearCelda (String tipoDato, String valor) {
-
-        if (tipoDato.equals("Boolean")) {
-            CeldaBoolean celdaBoolean = new CeldaBoolean();
-            celdaBoolean.setContenido(Boolean.parseBoolean(valor));
-            return celdaBoolean;
-        } else if (tipoDato.equals("String")) {
-            CeldaString celdaString = new CeldaString();
-            celdaString.setContenido(valor);
-            return celdaString;
-        } else if (tipoDato.equals("Number")) {
-            CeldaNumber celdaNumber = new CeldaNumber();
-            celdaNumber.setContenido(Double.parseDouble(valor));
-            return celdaNumber;
-        } else {
-            throw new IllegalArgumentException("Tipo de dato no válido: " + tipoDato);
-        }
-    }
 
     public List<String> leerCSV (String fileName, String separador, boolean hasHeaders) throws IOException{
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -80,34 +46,64 @@ public class Tabla {
     }
 
     public String[][] parserCSV(List<String> lineas) {
-
         int filas = lineas.size();
-        String [][] celdas = null;
+        String [][] datos = null;
         for (int i = 0; i < lineas.size(); i++) {
             String linea = lineas.get(i);
             String[] campos = linea.split(",");
-            if (celdas == null) {
-                celdas = new String[filas][campos.length];
+            if (datos == null) {
+                datos = new String[filas][campos.length];
             }
-            if (celdas[0].length != campos.length) {
+            if (datos[0].length != campos.length) {
                 throw new IllegalArgumentException();
             }
             for (int j = 0; j < campos.length; j++) {
-                celdas[i][j] = campos[j]; 
+                datos[i][j] = campos[j]; 
             }
         }
-        return celdas;
+        return datos;
     }
 
-    public static void mostrarCeldas(String[][] celdas ) {
-        String separador = " | ";
-        for (String[] fila : celdas) {
-            for (String celda : fila) {
-                System.out.print(celda + separador);
+    public void llenarTabla(String[][] datos, String[] tiposDato) {
+        if (tabla.size() != tiposDato.length) {
+            throw new IllegalArgumentException("Los datos y los tipos de dato no coinciden.");
+        }
+        for (int index_columna = 0; index_columna < tiposDato.length; index_columna++) {
+            Columna columna = getColumna(index_columna);
+            for (int index_fila = 0; index_fila < datos.length; index_fila++) {
+                Celda celda = columna.getCelda(index_fila);
+                String valor = datos[index_fila][index_columna];
+    
+                if (tiposDato[index_columna].equals("Boolean")) {
+                    // Convierte el valor a boolean y lo asigna a la celda
+                    boolean booleanValue = Boolean.parseBoolean(valor);
+                    celda.setContenido(booleanValue);
+                } else if (tiposDato[index_columna].equals("Number")) {
+                    // Convierte el valor a número y lo asigna a la celda
+                    try {
+                        double numberValue = Double.parseDouble(valor);
+                        celda.setContenido(numberValue);
+                    } catch (NumberFormatException e) {
+                        // Maneja la excepción si el valor no es un número
+                        celda.setContenido(null);
+                    }
+                } else if (tiposDato[index_columna].equals("String")) {
+                    // Asigna el valor directamente a la celda
+                    celda.setContenido(valor);
+                }
             }
-            System.out.println("");
         }
     }
+
+    public void mostrarTabla() {
+        for (int fila = 0; fila < tabla.get(0).getCeldas().size(); fila++) {
+            for (int columna = 0; columna < tabla.size(); columna++) {
+                Celda celda = tabla.get(columna).getCelda(fila);
+                System.out.print(celda.getContenido() + "\t");
+            }
+            System.out.println();
+        }
+    }    
 
     public List<Celda> getFila(int index) {
         List<Celda> fila = new ArrayList<>();
@@ -118,34 +114,24 @@ public class Tabla {
         return fila; 
     }
 
-    /*public Columna getColumna(int index) {
-        Columna columna = new Columna();
-        try {
-            for (Columna columna : tabla) {
-                Celda celda = columna.getCelda(index);
-                fila.add(celda);
-            }
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();;
+    public Columna getColumna(int index) {
+        if (index >= 0 && index < tabla.size()) {
+            return tabla.get(index);
+        } else {
+            throw new IndexOutOfBoundsException("Columna: " + index);
         }
-        return columna; 
     }
 
-    public Celda getCelda(int index_i, int index_j) {
-        Celda celda = new Celda();
-        try {
-            for (Columna columna : tabla) {
-                celda = columna.getCelda([index_i][index_j]);
-            }
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();;
+    public Celda getCelda(int fila, int columna) {
+        if (fila >= 0 && fila < tabla.get(0).getCeldas().size() && columna >= 0 && columna < tabla.size()) {
+            Columna col = tabla.get(columna);
+            return col.getCelda(fila);
+        } else {
+            throw new IndexOutOfBoundsException("Fila: " + fila + ", Columna: " + columna);
+        }
     }
     
-    return celda; 
-    }*/
     
-
-
     /*public void setColumna() {
 
     }

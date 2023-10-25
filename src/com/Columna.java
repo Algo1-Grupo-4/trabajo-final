@@ -1,36 +1,34 @@
 package com;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Columna {
-    private List<Celda> elementos;
+    private List<Celda> columna;
 
-    public Columna(String tipo_columna, int lenght) {
-        elementos = new ArrayList<>(lenght);
+    public Columna(String tipoDato, int lenghtColumna) {
+        columna = new ArrayList<>();
 
-        switch (tipo_columna){
-            case "String":
-                for (int i = 0; i < lenght; i++) {
-                    elementos.set(i, new CeldaString())  ;
-                }
-                break;
-            case "Number": 
-                for (int i = 0; i < lenght; i++) {
-                    elementos.set(i, new CeldaNumber());
-                }
-                break;
-            case "Boolean":
-                for (int i = 0; i < lenght; i++) {
-                    elementos.set(i, new CeldaBoolean());
-                }
-                break;
-            default:
-                throw new IllegalArgumentException("Tipo no válido: " + tipo_columna);
+        // Agregar las celdas según el tipo de dato
+        if (tipoDato.equals("Boolean")) {
+            for (int i = 0; i < lenghtColumna; i++) {
+                columna.add(new CeldaBoolean());
+            }
+        } else if (tipoDato.equals("String")) {
+            for (int i = 0; i < lenghtColumna; i++) {
+                columna.add(new CeldaString());
+            }
+        } else if (tipoDato.equals("Number")) {
+            for (int i = 0; i < lenghtColumna; i++) {
+                columna.add(new CeldaNumber());
+            }
+        } 
+    }
+
+    public Celda getCelda(int index) {
+        if (index >= 0 && index < columna.size()) {
+            return columna.get(index);
+        } else {
+            throw new IndexOutOfBoundsException(index);
         }
-    } 
-
-    public void addCelda(){
-        
     }
 }

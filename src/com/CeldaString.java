@@ -1,9 +1,7 @@
 package com;
 
 public class CeldaString extends Celda {
-  /*
-   * Para una Celda String, usamos esta celda
-   */
+   //Para una Celda String, usamos esta celda
 
   private String contenido;
 
@@ -37,10 +35,10 @@ public class CeldaString extends Celda {
     return contenido == null;
   }
 
-  @Override
+  /*@Override
   public void fillNA(Object objeto) {
     if (this.isNA()) {
       this.setContenido(objeto.toString());
     }
-  }
+  }*/
 }

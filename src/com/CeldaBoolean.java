@@ -1,9 +1,8 @@
 package com;
 
 public class CeldaBoolean extends Celda {
-    /*
-     * Para una Celda Booleana, usamos esta celda
-     */
+    // Para una Celda Booleana, usamos esta celda
+
     private Boolean contenido;
 
     public CeldaBoolean() {
@@ -29,19 +28,17 @@ public class CeldaBoolean extends Celda {
         }
     }
 
-    @Override
+   @Override
     public void setContenido(Object objeto) {
         if (objeto instanceof Boolean) {
-            this.contenido = (Boolean) objeto;
-        } else if (objeto == null) {
-            throw new IllegalArgumentException("I need a value.");
-        } // no estoy seguro si es necesario esto (Object == null?)
-    }
-
-    @Override
-    public void fillNA(Object objeto) {
-        if (this.isNA()) {
-            this.setContenido(objeto);
+            this.contenido = (boolean) objeto;
         }
     }
+
+    /*@Override
+    public void fillNA(Object objeto) {
+        if (this.isNA()) {
+            this.setContenido(objeto.toString());
+        }
+    }*/
 }

@@ -1,6 +1,7 @@
 package com;
 
 public class CeldaNumber extends Celda {
+    // Para una Celda Number, usamos esta celda
     private Number contenido;
 
     public CeldaNumber() {
@@ -14,7 +15,9 @@ public class CeldaNumber extends Celda {
 
     @Override
     public void setContenido(Object objeto) {
-        this.contenido = (Number) objeto;
+        if (objeto instanceof Number) {
+            this.contenido = (Number) objeto;
+        }
     }
 
     @Override
@@ -30,10 +33,14 @@ public class CeldaNumber extends Celda {
             return false;
         }
     }
-    @Override
+
+    /*@Override
     public void fillNA(Object objeto) {
         if (this.contenido == null) {
-            this.contenido = (Number) objeto;
+            setContenido(objeto);
+        } else {
+            //lanzar excepcion;
         }
-    }
+    }*/
+
 }

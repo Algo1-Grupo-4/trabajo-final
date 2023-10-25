@@ -28,13 +28,11 @@ public class CeldaBoolean extends Celda {
         }
     }
 
-    @Override
+   @Override
     public void setContenido(Object objeto) {
         if (objeto instanceof Boolean) {
-            this.contenido = (Boolean) objeto;
-        } else if (objeto == null) {
-            throw new IllegalArgumentException("I need a value.");
-        } // no estoy seguro si es necesario esto (Object == null?)
+            this.contenido = (boolean) objeto;
+        }
     }
 
     /*@Override

@@ -5,20 +5,20 @@ import java.util.List;
 public class Columna {
     private List<Celda> columna;
 
-    public Columna(String tipoDato, int lenghtColumna) {
+    public Columna(String tipoDato, int lengthColumna) {
         columna = new ArrayList<>();
 
         // Agregar las celdas según el tipo de dato
         if (tipoDato.equals("Boolean")) {
-            for (int i = 0; i < lenghtColumna; i++) {
+            for (int i = 0; i < lengthColumna; i++) {
                 columna.add(new CeldaBoolean());
             }
         } else if (tipoDato.equals("String")) {
-            for (int i = 0; i < lenghtColumna; i++) {
+            for (int i = 0; i < lengthColumna; i++) {
                 columna.add(new CeldaString());
             }
         } else if (tipoDato.equals("Number")) {
-            for (int i = 0; i < lenghtColumna; i++) {
+            for (int i = 0; i < lengthColumna; i++) {
                 columna.add(new CeldaNumber());
             }
         } 
@@ -31,4 +31,9 @@ public class Columna {
             throw new IndexOutOfBoundsException(index);
         }
     }
+
+    public List<Celda> getCeldas() {
+        return columna;
+    }
+    
 }

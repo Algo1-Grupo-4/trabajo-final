@@ -42,4 +42,5 @@ public class CeldaNumber extends Celda {
             //lanzar excepcion;
         }
     }*/
+
 }

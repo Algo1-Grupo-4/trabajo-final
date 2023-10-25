@@ -1,29 +1,34 @@
 package com;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class Columna {
-    private List<Celda> elementos;
+    private List<Celda> columna;
 
-    public Columna() {
-        elementos = new List<Celda>();
-    }
+    public Columna(String tipoDato, int lenghtColumna) {
+        columna = new ArrayList<>();
 
-    public Columna(int lenght) {
-        elementos = new List<Celda>(lenght);
+        // Agregar las celdas según el tipo de dato
+        if (tipoDato.equals("Boolean")) {
+            for (int i = 0; i < lenghtColumna; i++) {
+                columna.add(new CeldaBoolean());
+            }
+        } else if (tipoDato.equals("String")) {
+            for (int i = 0; i < lenghtColumna; i++) {
+                columna.add(new CeldaString());
+            }
+        } else if (tipoDato.equals("Number")) {
+            for (int i = 0; i < lenghtColumna; i++) {
+                columna.add(new CeldaNumber());
+            }
+        } 
     }
 
     public Celda getCelda(int index) {
-        if (index > 0 && index < elementos.size()) {
-            return elementos.get(index);
+        if (index >= 0 && index < columna.size()) {
+            return columna.get(index);
         } else {
-            return new Celda();
+            throw new IndexOutOfBoundsException(index);
         }
     }
-
-    // hay que castearlo en la aplicacion
-    public Object getContenidoCelda(int index) {
-        return getCelda(index).getContenido();
-    }
-
 }

@@ -1,9 +1,8 @@
 package com;
 
 public class CeldaBoolean extends Celda {
-    /*
-     * Para una Celda Booleana, usamos esta celda
-     */
+    // Para una Celda Booleana, usamos esta celda
+
     private Boolean contenido;
 
     public CeldaBoolean() {
@@ -38,10 +37,10 @@ public class CeldaBoolean extends Celda {
         } // no estoy seguro si es necesario esto (Object == null?)
     }
 
-    @Override
+    /*@Override
     public void fillNA(Object objeto) {
         if (this.isNA()) {
-            this.setContenido(objeto);
+            this.setContenido(objeto.toString());
         }
-    }
+    }*/
 }

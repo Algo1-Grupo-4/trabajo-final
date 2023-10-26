@@ -35,5 +35,22 @@ public class Columna {
     public List<Celda> getCeldas() {
         return columna;
     }
+
+    public int size(){
+        return columna.size();
+    }
+
+        public boolean isColumna() {
+        Class <? extends Celda> tipoCelda = ((Columna) columna).getCelda(0).getClass();
+        for (Celda celda : columna){
+            if (celda == null){
+                continue;
+            }
+            if (!tipoCelda.isInstance(celda)){
+                return false;
+            }
+        }
+        return true;
+    }
     
 }

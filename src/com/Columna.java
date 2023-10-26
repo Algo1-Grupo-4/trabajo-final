@@ -40,17 +40,17 @@ public class Columna {
         return columna.size();
     }
 
-        public boolean isColumna() {
-        Class <? extends Celda> tipoCelda = ((Columna) columna).getCelda(0).getClass();
-        for (Celda celda : columna){
-            if (celda == null){
-                continue;
+    public boolean isColumna() {
+    Class <? extends Celda> tipoCelda = ((Columna) columna).getCelda(0).getClass();
+    for (Celda celda : columna){
+        if (celda == null){
+            continue;
             }
-            if (!tipoCelda.isInstance(celda)){
-                return false;
+        if (!tipoCelda.isInstance(celda)){
+            return false;
             }
         }
-        return true;
+    return true;
     }
     
 }

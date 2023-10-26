@@ -8,7 +8,7 @@ public abstract class Celda {
 
   public abstract void setContenido(Object objeto);
 
-  public abstract void removerContenido();
+  public abstract void removeContenido();
 
   public abstract boolean isNA();
 

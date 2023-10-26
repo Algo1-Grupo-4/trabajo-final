@@ -26,7 +26,7 @@ public class CeldaString extends Celda {
   }
 
   @Override
-  public void removerContenido() {
+  public void removeContenido() {
     this.contenido = null;
   }
 

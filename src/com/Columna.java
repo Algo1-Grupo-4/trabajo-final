@@ -36,6 +36,10 @@ public class Columna {
         return columna;
     }
 
+    public void removeCelda(int index){
+        columna.remove(index);
+    }
+
     public int size(){
         return columna.size();
     }

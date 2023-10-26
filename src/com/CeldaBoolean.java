@@ -15,7 +15,7 @@ public class CeldaBoolean extends Celda {
     }
 
     @Override
-    public void removerContenido() {
+    public void removeContenido() {
         this.contenido = null;
     }
 

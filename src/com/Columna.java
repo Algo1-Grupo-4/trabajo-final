@@ -57,4 +57,8 @@ public class Columna {
     return true;
     }
     
+    public void addCelda(Celda valor){
+        columna.add(valor);
+    }
+
 }

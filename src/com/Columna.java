@@ -1,4 +1,5 @@
 package com;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +22,14 @@ public class Columna {
             for (int i = 0; i < lengthColumna; i++) {
                 columna.add(new CeldaNumber());
             }
-        } 
+        }
     }
+
+    // @Override
+    // TODO: THIS OVERRIDE
+    // public String toString() {
+    // return "Columna [columna=" + columna + "]";
+    // }
 
     public Celda getCelda(int index) {
         if (index >= 0 && index < columna.size()) {
@@ -36,28 +43,48 @@ public class Columna {
         return columna;
     }
 
-    public void removeCelda(int index){
+    /**
+     * Removes a cell from the column
+     * 
+     * @param index
+     */
+    public void removeCelda(int index) {
         columna.remove(index);
     }
 
-    public int size(){
+    /**
+     * Returns the size of the column
+     * 
+     * @return a int with the size of the column
+     */
+    public int size() {
         return columna.size();
     }
 
+    /**
+     * No se que hace isColumna
+     * 
+     * @return
+     */
     public boolean isColumna() {
-    Class <? extends Celda> tipoCelda = ((Columna) columna).getCelda(0).getClass();
-    for (Celda celda : columna){
-        if (celda == null){
-            continue;
+        Class<? extends Celda> tipoCelda = ((Columna) columna).getCelda(0).getClass();
+        for (Celda celda : columna) {
+            if (celda == null) {
+                continue;
             }
-        if (!tipoCelda.isInstance(celda)){
-            return false;
+            if (!tipoCelda.isInstance(celda)) {
+                return false;
             }
         }
-    return true;
+        return true;
     }
-    
-    public void addCelda(Celda valor){
+
+    /**
+     * Adds a celda to the column
+     * 
+     * @param valor the Cell value to be added to the column
+     */
+    public void addCelda(Celda valor) {
         columna.add(valor);
     }
 

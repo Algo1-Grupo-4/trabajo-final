@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Columna {
     private List<Celda> columna;
+    private String tipo;
 
     public Columna(String tipoDato, int lengthColumna) {
         columna = new ArrayList<>();
@@ -23,13 +24,14 @@ public class Columna {
                 columna.add(new CeldaNumber());
             }
         }
+        this.tipo = tipoDato;
     }
 
-    // @Override
+    @Override
     // TODO: THIS OVERRIDE
-    // public String toString() {
-    // return "Columna [columna=" + columna + "]";
-    // }
+    public String toString() {
+        return "Tipo de dato " + tipo + "\nValues:" + columna + "]\ns";
+    }
 
     public Celda getCelda(int index) {
         if (index >= 0 && index < columna.size()) {
@@ -39,6 +41,11 @@ public class Columna {
         }
     }
 
+    /**
+     * Returns the list
+     * 
+     * @return
+     */
     public List<Celda> getCeldas() {
         return columna;
     }

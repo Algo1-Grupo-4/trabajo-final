@@ -17,10 +17,11 @@ public class TestTabla {
 
         Tabla tabla;
         tabla = new Tabla(tiposDato, fileName.toString(), true);
-        // tabla.mostrarTabla();
-        Columna miColumna = tabla.getColumna("cadena");
-        System.out.println(miColumna.isColumna());
-
         // System.out.println(tabla);
+        // tabla.mostrarTabla();
+        // Columna miColumna = tabla.getColumna("cadena");
+        // System.out.println(miColumna.isColumna());
+        // System.out.println(miColumna.getCeldas());
+        System.out.println(tabla);
     }
 }

@@ -35,6 +35,14 @@ public class CeldaBoolean extends Celda {
         }
     }
 
+    @Override
+    public String toString() {
+        try {
+            return this.contenido.toString();
+        } catch (NullPointerException e) {
+            return "NA";
+        }
+    }
     /*
      * @Override
      * public void fillNA(Object objeto) {

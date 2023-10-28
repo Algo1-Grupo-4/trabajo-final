@@ -34,6 +34,10 @@ public class CeldaNumber extends Celda {
         }
     }
 
+    @Override
+    public String toString() {
+        return this.contenido.toString();
+    }
     /*
      * @Override
      * public void fillNA(Object objeto) {

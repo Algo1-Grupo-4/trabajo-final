@@ -28,17 +28,19 @@ public class CeldaBoolean extends Celda {
         }
     }
 
-   @Override
+    @Override
     public void setContenido(Object objeto) {
         if (objeto instanceof Boolean) {
             this.contenido = (boolean) objeto;
         }
     }
 
-    /*@Override
-    public void fillNA(Object objeto) {
-        if (this.isNA()) {
-            this.setContenido(objeto.toString());
-        }
-    }*/
+    /*
+     * @Override
+     * public void fillNA(Object objeto) {
+     * if (this.isNA()) {
+     * this.setContenido(objeto.toString());
+     * }
+     * }
+     */
 }

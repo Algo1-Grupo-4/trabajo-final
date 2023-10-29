@@ -1,7 +1,7 @@
 package com;
 
 public class CeldaString extends Celda {
-   //Para una Celda String, usamos esta celda
+  // Para una Celda String, usamos esta celda
 
   private String contenido;
 
@@ -16,12 +16,12 @@ public class CeldaString extends Celda {
 
   @Override
   public void setContenido(Object objeto) {
-    if (objeto instanceof String){
+    if (objeto instanceof String) {
       this.contenido = (String) objeto;
-    } else if (objeto == null){
+    } else if (objeto == null) {
       this.contenido = null;
     } else {
-      this.contenido = objeto.toString() ; //fuerza lo que haya a String
+      this.contenido = objeto.toString(); // fuerza lo que haya a String
     }
   }
 
@@ -35,10 +35,16 @@ public class CeldaString extends Celda {
     return contenido == null;
   }
 
-  /*@Override
-  public void fillNA(Object objeto) {
-    if (this.isNA()) {
-      this.setContenido(objeto.toString());
-    }
-  }*/
+  @Override
+  public String toString() {
+    return this.contenido.toString();
+  }
+  /*
+   * @Override
+   * public void fillNA(Object objeto) {
+   * if (this.isNA()) {
+   * this.setContenido(objeto.toString());
+   * }
+   * }
+   */
 }

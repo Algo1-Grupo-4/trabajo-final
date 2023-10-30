@@ -11,6 +11,4 @@ public abstract class Celda {
   public abstract void removeContenido();
 
   public abstract boolean isNA();
-
-  //public abstract void fillNA(Object objeto);
 }

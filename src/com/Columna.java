@@ -1,5 +1,4 @@
 package com;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,39 +41,38 @@ public class Columna {
     }
 
     /**
-     * Returns the list
-     * 
-     * @return
-     */
+     * Devuelve una lista de celdas en la columna.
+    */
     public List<Celda> getCeldas() {
         return columna;
     }
 
     /**
-     * Removes a cell from the column
-     * 
-     * @param index
-     */
+     * Elimina una celda de la columna.
+    */
     public void removeCelda(int index) {
         columna.remove(index);
     }
 
     /**
-     * Returns the size of the column
-     * 
-     * @return a int with the size of the column
-     */
+     * Agrega una celda a la columna.
+    */
+    public void addCelda(Celda valor) {
+        columna.add(valor);
+    }
+
+    /**
+     * Devuelve el tamaño de la columna.
+    */
     public int size() {
         return columna.size();
     }
 
     /**
-     * No se que hace isColumna
-     * 
-     * @return
-     */
-    public boolean isColumna() {
-        Class<? extends Celda> tipoCelda = ((Columna) columna).getCelda(0).getClass();
+     * Comprueba si todas las celdas de la columna son del mismo tipo.
+    */
+    public boolean sonMismosTipos() {
+        Class<? extends Celda> tipoCelda = getCelda(0).getClass();
         for (Celda celda : columna) {
             if (celda == null) {
                 continue;
@@ -87,12 +85,13 @@ public class Columna {
     }
 
     /**
-     * Adds a celda to the column
-     * 
-     * @param valor the Cell value to be added to the column
-     */
-    public void addCelda(Celda valor) {
-        columna.add(valor);
+     * LLena los valores faltantes de una columna con NA.
+    */
+    public void fillNA() {
+        for (Celda celda : columna) {
+            if (celda.isNA()) {
+                celda.setContenido("NA");
+            }
+        }
     }
-
 }

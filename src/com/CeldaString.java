@@ -32,19 +32,15 @@ public class CeldaString extends Celda {
 
   @Override
   public boolean isNA() {
-    return contenido == null;
+    if (this.contenido == null) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @Override
   public String toString() {
     return this.contenido.toString();
   }
-  /*
-   * @Override
-   * public void fillNA(Object objeto) {
-   * if (this.isNA()) {
-   * this.setContenido(objeto.toString());
-   * }
-   * }
-   */
 }

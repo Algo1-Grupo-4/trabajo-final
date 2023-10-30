@@ -43,12 +43,4 @@ public class CeldaBoolean extends Celda {
             return "NA";
         }
     }
-    /*
-     * @Override
-     * public void fillNA(Object objeto) {
-     * if (this.isNA()) {
-     * this.setContenido(objeto.toString());
-     * }
-     * }
-     */
 }

@@ -1,0 +1,100 @@
+/**
+     * Returns the Columna with the specified index.
+     * This is useful if the imported dataset has no headers
+     * 
+     * @param index Index of the column. Starts with 0 with the leftmost column
+     * @return the Columna with the specified index
+     * @throws IndexOutOfBoundsException If the index is out of bounds
+     */
+    public Columna getColumna(int index) {
+        /**
+         * gets a Columna using the index
+         */
+        if (index >= 0 && index < tabla.size()) {
+            return tabla.get(index);
+        } else {
+            throw new IndexOutOfBoundsException("Columna: " + index);
+        }
+    }
+
+    public Fila getFila(int index) {
+        Fila fila = new Fila();
+        if (index >= 0 && index < cantFilas()) {
+            for (Columna columna : tabla) {
+                Celda celda = columna.getCelda(index);
+                fila.add((Celda) celda.getContenido());
+            }
+        } else {
+            throw new IndexOutOfBoundsException("No hay una fila con ese indice");
+        }
+        return fila;
+    }
+
+    public Celda getCelda(int fila, int columna) {
+        if (fila >= 0 && fila < cantFilas() && columna >= 0 && columna < tabla.size()) {
+            Columna col = tabla.get(columna);
+            return col.getCelda(fila);
+        } else {
+            throw new IndexOutOfBoundsException("Fila: " + fila + ", Columna: " + columna);
+        }
+    }
+
+    public Celda getCelda(int fila, String keyColumna) {
+        if (fila >= 0 && fila < cantFilas()) {
+            if (colLabels.containsKey(keyColumna)) {
+                return tabla.get(colLabels.get(keyColumna)).getCelda(fila);
+            } else {
+                throw new IllegalArgumentException("La columna no existe");
+            }
+        } else {
+            throw new IndexOutOfBoundsException("la fila no existe");
+        }
+    }
+
+    public Celda getCelda(String keyFila, int columna) {
+        if (columna >= 0 && columna < tabla.size()) {
+            if (rowLabels.containsKey(keyFila)) {
+                return tabla.get(columna).getCelda(rowLabels.get(keyFila));
+            } else {
+                throw new IllegalArgumentException("La fila no existe");
+            }
+        } else {
+            throw new IndexOutOfBoundsException("la columna no existe");
+        }
+    }
+
+
+    public void setCelda(String keyFila, String keyColumna, Object value) {
+        getCelda(keyFila, keyColumna).setContenido(value);
+    }
+
+    public void setColumna(Columna newColumna, int index) {
+        setColumna(newColumna, index, String.valueOf(index));
+    }
+    public void setColumna(Columna newColumna, int index, String header) {
+        if (newColumna.size() != tabla.get(0).size()) {
+            throw new IllegalArgumentException(
+                    "La nueva columna debe tener la misma longitud que las columnas existentes.");
+        }
+
+        if (index < tabla.size() && index > 0) {
+            if (newColumna.isColumna()) {
+                colLabels.remove(headers.get(index));
+                if (colLabels.containsKey(header)) {
+                    throw new IllegalArgumentException("ya existe columna con ese nombre");
+                } else {
+                    tabla.set(index, newColumna);
+                    headers.set(index, header);
+                    colLabels.put(header, index);
+                }
+            } else {
+                throw new IllegalArgumentException("Para ser una columna debe contener celdas del mismo tipo");
+            }
+
+        } else {
+            throw new IndexOutOfBoundsException("No existe una columna con ese indice");
+        }
+    }
+
+
+    

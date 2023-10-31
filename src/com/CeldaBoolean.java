@@ -37,10 +37,10 @@ public class CeldaBoolean extends Celda {
 
     @Override
     public String toString() {
-        if (this.contenido == null) {
-        return "NA";
-        } else {
-        return this.contenido.toString();
+        try {
+            return this.contenido.toString();
+        } catch (NullPointerException e) {
+            return "NA";
         }
     }
 }

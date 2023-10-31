@@ -36,7 +36,7 @@ public class Columna {
         if (index >= 0 && index < columna.size()) {
             return columna.get(index);
         } else {
-            throw new IndexOutOfBoundsException(index);
+            throw new IndexOutOfBoundsException(String.valueOf(index));
         }
     }
 

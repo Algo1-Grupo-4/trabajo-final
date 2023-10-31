@@ -36,6 +36,10 @@ public class CeldaNumber extends Celda {
 
     @Override
     public String toString() {
+        if (this.contenido == null) {
+        return "NA";
+        } else {
         return this.contenido.toString();
+        }
     }
 }

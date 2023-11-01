@@ -27,17 +27,11 @@ public class Columna {
         this.tipo = tipoDato;
     }
 
-    @Override
-    // TODO: THIS OVERRIDE
-    public String toString() {
-        return "Tipo de dato " + tipo + "\nValues:" + columna + "]\ns";
-    }
-
     public Celda getCelda(int index) {
         if (index >= 0 && index < columna.size()) {
             return columna.get(index);
         } else {
-            throw new IndexOutOfBoundsException(String.valueOf(index));
+            throw new IndexOutOfBoundsException(index);
         }
     }
 
@@ -94,5 +88,10 @@ public class Columna {
                 celda.setContenido("NA");
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Tipo de dato " + tipo + "\nValores: " + columna + "\n";
     }
 }

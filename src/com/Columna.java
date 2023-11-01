@@ -1,4 +1,5 @@
 package com;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,35 +43,35 @@ public class Columna {
 
     /**
      * Devuelve una lista de celdas en la columna.
-    */
+     */
     public List<Celda> getCeldas() {
         return columna;
     }
 
     /**
      * Elimina una celda de la columna.
-    */
+     */
     public void removeCelda(int index) {
         columna.remove(index);
     }
 
     /**
      * Agrega una celda a la columna.
-    */
+     */
     public void addCelda(Celda valor) {
         columna.add(valor);
     }
 
     /**
      * Devuelve el tamaño de la columna.
-    */
+     */
     public int size() {
         return columna.size();
     }
 
     /**
      * Comprueba si todas las celdas de la columna son del mismo tipo.
-    */
+     */
     public boolean sonMismosTipos() {
         Class<? extends Celda> tipoCelda = getCelda(0).getClass();
         for (Celda celda : columna) {
@@ -86,7 +87,7 @@ public class Columna {
 
     /**
      * LLena los valores faltantes de una columna con NA.
-    */
+     */
     public void fillNA() {
         for (Celda celda : columna) {
             if (celda.isNA()) {

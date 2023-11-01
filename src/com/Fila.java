@@ -6,7 +6,7 @@ import java.util.List;
 public class Fila {
     private List<Celda> fila;
 
-    public Fila(){
+    public Fila() {
         this.fila = new ArrayList<Celda>();
     }
 
@@ -22,7 +22,7 @@ public class Fila {
         fila.add(contenido);
     }
 
-    public int size(){
+    public int size() {
         return fila.size();
     }
 

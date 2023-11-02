@@ -250,7 +250,16 @@ public class Tabla {
         }
     }
 
-    // TODO: Add Javadoc
+    // TODO: Expandir
+    /**
+     * Crea una tabla pero tiene hasRowKey
+     * 
+     * @param tiposDato
+     * @param fileName
+     * @param hasHeaders
+     * @param hasRowKey
+     * @param columna_key
+     */
     public Tabla(String[] tiposDato, String fileName, boolean hasHeaders, boolean hasRowKey, int columna_key) {
         this.tiposDato = tiposDato;
         this.esta_ordenado = false;

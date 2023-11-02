@@ -11,24 +11,23 @@ import excepciones.*;
 
 /**
  * @author Grupo4 -
+ * 
  */
 
 public class Tabla {
-    /**
-     * Tabla es, bueno, la tabla
-     */
-    protected List<Columna> tabla;
+    private List<Columna> tabla;
     private List<String> headers;
     private List<String> order;
     private Map<String, Integer> colLabels = new HashMap<>();;
     private Map<String, Integer> rowLabels = new HashMap<>();;
     private String[] tiposDato;
     private List<String> lineas = null;
+    // TODO: Usar esta_ordenado
     private boolean esta_ordenado; // para cuando haya que poner que se reordene si ya lo estaba cada vez que
                                    // agrego una fila
 
     /**
-     * Constructor de una tabla desde una Lista de Lista de Strings.
+     * Genera una tabla desde una Lista de Lista de Strings.
      * Digamos, una Matriz de Strings.
      * 
      * @param tiposDato  String[][] indicando los tipos de dato
@@ -56,9 +55,6 @@ public class Tabla {
             }
             String str = sb.toString();
             lineas.add(str);
-            // for (String r : c) {
-            // lineas.add(r);
-            // }
         }
         try {
             if (hasHeaders) {
@@ -89,7 +85,8 @@ public class Tabla {
                     tabla.add(columna);
                 }
             } else {
-                throw new IllegalArgumentException("No se encontraron datos en el archivo CSV.");
+                throw new IllegalArgumentException(
+                        "No se encontraron datos en el archivo CSV.");
             }
             llenarTabla(data, tiposDato);
             List<String> order = new ArrayList<>();
@@ -126,7 +123,8 @@ public class Tabla {
             lineas = Tablas.leerCSV(filename);
 
             if (lineas.get(0).split(",").length != tiposDato.length) {
-                throw new IncorrectHeaderCountException("La cantidad de columnas y tipos de datos no coinciden.");
+                throw new IncorrectHeaderCountException(
+                        "La cantidad de columnas y tipos de datos no coinciden.");
             }
 
             List<String> headers = new ArrayList<>();
@@ -151,7 +149,8 @@ public class Tabla {
                     tabla.add(columna);
                 }
             } else {
-                throw new IllegalArgumentException("No se encontraron datos en el archivo CSV.");
+                throw new IllegalArgumentException(
+                        "No se encontraron datos en el archivo CSV.");
             }
 
             llenarTabla(datos, tiposDato);
@@ -192,7 +191,8 @@ public class Tabla {
         try {
             lineas = Tablas.leerCSV(fileName);
             if (lineas.get(0).split(",").length != tiposDato.length) {
-                throw new IncorrectHeaderCountException("La cantidad de columnas y tipos de datos no coinciden.");
+                throw new IncorrectHeaderCountException(
+                        "La cantidad de columnas y tipos de datos no coinciden.");
             }
             if (hasHeaders) {
                 if (!lineas.isEmpty()) {
@@ -207,7 +207,8 @@ public class Tabla {
                     this.headers = headers;
                 }
             } else {
-                throw new IllegalConstructorException("Si no tiene headers, use el constructor apropiado");
+                throw new IllegalConstructorException(
+                        "Si no tiene headers, use el constructor apropiado");
             }
 
             String[][] datos = Tablas.parserCSV(lineas, tiposDato.length, ",");
@@ -219,7 +220,8 @@ public class Tabla {
                     tabla.add(columna);
                 }
             } else {
-                throw new IllegalArgumentException("No se encontraron datos en el archivo CSV.");
+                throw new IllegalArgumentException(
+                        "No se encontraron datos en el archivo CSV.");
             }
 
             llenarTabla(datos, tiposDato);
@@ -267,7 +269,8 @@ public class Tabla {
         try {
             lineas = Tablas.leerCSV(fileName);
             if (lineas.get(0).split(",").length != tiposDato.length) {
-                throw new IncorrectHeaderCountException("La cantidad de columnas y tipos de datos no coinciden.");
+                throw new IncorrectHeaderCountException(
+                        "La cantidad de columnas y tipos de datos no coinciden.");
             }
             if (hasHeaders) {
                 if (!lineas.isEmpty()) {
@@ -282,7 +285,8 @@ public class Tabla {
                     this.headers = headers;
                 }
             } else {
-                throw new IllegalConstructorException("Si no tiene headers, use el constructor apropiado.");
+                throw new IllegalConstructorException(
+                        "Si no tiene headers, use el constructor apropiado.");
             }
 
             String[][] datos = Tablas.parserCSV(lineas, tiposDato.length, ",");

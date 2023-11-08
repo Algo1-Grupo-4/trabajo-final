@@ -1,4 +1,5 @@
 package com;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,51 +27,45 @@ public class Columna {
         this.tipo = tipoDato;
     }
 
-    @Override
-    // TODO: THIS OVERRIDE
-    public String toString() {
-        return "Tipo de dato " + tipo + "\nValues:" + columna + "]\ns";
-    }
-
     public Celda getCelda(int index) {
         if (index >= 0 && index < columna.size()) {
             return columna.get(index);
         } else {
-            throw new IndexOutOfBoundsException(String.valueOf(index));
+            throw new IndexOutOfBoundsException(index);
         }
     }
 
     /**
      * Devuelve una lista de celdas en la columna.
-    */
+     */
     public List<Celda> getCeldas() {
         return columna;
     }
 
     /**
      * Elimina una celda de la columna.
-    */
+     */
     public void removeCelda(int index) {
         columna.remove(index);
     }
 
     /**
      * Agrega una celda a la columna.
-    */
+     */
     public void addCelda(Celda valor) {
         columna.add(valor);
     }
 
     /**
      * Devuelve el tamaño de la columna.
-    */
+     */
     public int size() {
         return columna.size();
     }
 
     /**
      * Comprueba si todas las celdas de la columna son del mismo tipo.
-    */
+     */
     public boolean sonMismosTipos() {
         Class<? extends Celda> tipoCelda = getCelda(0).getClass();
         for (Celda celda : columna) {
@@ -86,12 +81,17 @@ public class Columna {
 
     /**
      * LLena los valores faltantes de una columna con NA.
-    */
+     */
     public void fillNA() {
         for (Celda celda : columna) {
             if (celda.isNA()) {
                 celda.setContenido("NA");
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Tipo de dato " + tipo + "\nValores: " + columna + "\n";
     }
 }

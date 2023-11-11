@@ -2,6 +2,8 @@ package com;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,6 +28,50 @@ public class Tabla {
     private boolean esta_ordenado; // para cuando haya que poner que se reordene si ya lo estaba cada vez que
                                    // agrego una fila
 
+    protected Tabla() {
+        this.tabla = new ArrayList<>();
+        this.headers = new ArrayList<>();
+        this.order = new ArrayList<>();
+        this.colLabels = new HashMap<>();
+        this.rowLabels = new HashMap<>();
+    }
+
+    // Helpers?
+    protected List<Columna> _dameTabla() {
+        return this.tabla;
+    }
+
+    protected List<String> _dameHeaders() {
+        return this.headers;
+    }
+
+    protected List<String> _dameOrder() {
+        return this.order;
+    }
+
+    protected Map<String, Integer> _dameColLabels() {
+        return this.colLabels;
+    }
+
+    protected Map<String, Integer> _dameRowLabels() {
+        return this.rowLabels;
+    }
+
+    protected String[] _dameTiposDato() {
+        return this.tiposDato;
+    }
+
+    protected List<String> _dameLineas() {
+        return this.lineas;
+    }
+
+    protected Tabla(Tabla t) {
+        List<Columna> ct = new ArrayList<>();
+        for (Columna c : this._dameTabla()) {
+            ct.add(c);
+        }
+    }
+
     /**
      * Genera una tabla desde una Lista de Lista de Strings.
      * Digamos, una Matriz de Strings.
@@ -42,7 +88,7 @@ public class Tabla {
      *                           { "D", "E", "F" },
      *                           { "G", "H", "I" }
      *                   };
-     *                   tabla = new Tabla(tiposDato, array, false);
+     * 
      *                   </pre>
      */
     public Tabla(String[] tiposDato, String[][] datos, boolean hasHeaders) {
@@ -752,5 +798,26 @@ public class Tabla {
             e.printStackTrace();
         }
     }
+    /* Sort */
 
+    // public Tabla Sort() {
+    // // Tabla sorted = this.clone();
+    // Collections.sort(sorted.tabla, Comparator.comparing(o -> (o.getCelda(0))));
+    // return sorted;
+    // // Collections.sort(data, Comparator.comparing(o -> ((Comparable)
+    // // o.get(sortByColumn))));
+    // // for (String rowlabel : rowLabels.keySet()) {
+    // // Fila f = this.getFila(rowlabel);
+
+    // // System.out.println(f);
+
+    // // }
+    // // // for (Columna c : sorted.tabla) {
+    // // // // aca hago algo por columna
+    // // // sorted.getFila()
+    // // // c.ordenarColumna();
+    // // // }
+    // // System.out.println("aca hago algo");
+    // // return sorted;
+    // }
 }

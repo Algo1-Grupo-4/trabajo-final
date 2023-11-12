@@ -1,11 +1,11 @@
 package excepciones;
 
 public class IllegalLibraryUse extends RuntimeException {
-    public IllegalLibraryUse(){
+    public IllegalLibraryUse() {
         super();
     }
 
-    public IllegalLibraryUse(String error_message){
+    public IllegalLibraryUse(String error_message) {
         super(error_message);
     }
 }

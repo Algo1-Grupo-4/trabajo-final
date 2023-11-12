@@ -443,23 +443,22 @@ public class Tabla {
         }
     }
 
-     /**
+    /**
      * Constructor de una tabla desde otra tabla
      * 
-     * @param tabla   Tabla origen 
+     * @param tabla Tabla origen
      * 
      */
     // public Tabla(Tabla tabla){
-    //     this.esta_ordenado = false;
-    //     this.tabla = tabla.tabla;
-    //     this.headers = tabla.headers;
-    //     this.order = tabla.order;
-    //     this.colLabels = tabla.colLabels;
-    //     this.rowLabels = tabla.rowLabels;
-    //     this.tiposDato = tabla.tiposDato;
-    //     this.lineas = tabla.lineas;
+    // this.esta_ordenado = false;
+    // this.tabla = tabla.tabla;
+    // this.headers = tabla.headers;
+    // this.order = tabla.order;
+    // this.colLabels = tabla.colLabels;
+    // this.rowLabels = tabla.rowLabels;
+    // this.tiposDato = tabla.tiposDato;
+    // this.lineas = tabla.lineas;
     // }
-
 
     private void llenarTabla(String[][] datos, String[] tiposDato) throws InvalidDataTypeException {
 
@@ -513,36 +512,37 @@ public class Tabla {
     @Override
     public String toString() {
         StringBuilder out = new StringBuilder();
-    
+
         // Auto-detección del ancho de columna
         int[] columnWidths = new int[headers.size()];
         Arrays.fill(columnWidths, 0);
-    
+
         // Obtener el orden de las filas
         List<String> orderFilas = order;
-    
+
         // Agregar labels de columna si hay
         for (int i = 0; i < headers.size(); i++) {
             String header = headers.get(i);
-            out.append(String.format("%-" + (columnWidths[i] + 4) + "s", centerText(header))); // +4 para espacio adicional
+            out.append(String.format("%-" + (columnWidths[i] + 4) + "s", centerText(header))); // +4 para espacio
+                                                                                               // adicional
         }
         out.append("\n");
-    
+
         // Agregar divisiones entre las columnas
         for (int i = 0; i < headers.size(); i++) {
             out.append(String.format("%-" + (columnWidths[i] + 8) + "s", "").replace(' ', '-'));
         }
         out.append("\n");
-    
+
         // Iterar y agregar filas en el orden especificado
         for (String filaKey : orderFilas) {
             Map<String, Integer> rowLabels = this.rowLabels;
             if (!rowLabels.containsKey(filaKey)) {
                 throw new IllegalArgumentException("La fila con la clave " + filaKey + " no existe en la tabla.");
             }
-    
+
             int rowIndex = rowLabels.get(filaKey);
-    
+
             for (int i = 0; i < headers.size(); i++) {
                 String header = headers.get(i);
                 int columnIndex = colLabels.get(header); // Obtener el índice de la columna a partir del header
@@ -552,11 +552,9 @@ public class Tabla {
             }
             out.append("\n");
         }
-    
+
         return out.toString();
     }
-    
-
 
     // Método para centrar el texto en una columna
     private String centerText(String text) {
@@ -564,7 +562,6 @@ public class Tabla {
         int padding = (totalWidth - text.length()) / 2;
         return String.format("%" + (padding + text.length()) + "s", text);
     }
-
 
     /**
      * Gives a string representation of the table
@@ -614,24 +611,23 @@ public class Tabla {
         return tabla.get(0).size();
     }
 
-    private int ultimoIndice(){
-        return tabla.size() - 1 ;
+    private int ultimoIndice() {
+        return tabla.size() - 1;
     }
 
     public int size() {
         return tabla.size();
     }
 
-    private boolean contieneFila(Fila fila){
-        for (String rowKey : order){
+    private boolean contieneFila(Fila fila) {
+        for (String rowKey : order) {
             Fila row = getFila(rowKey);
-            if (fila.equals(row)){
+            if (fila.equals(row)) {
                 return true;
             }
         }
         return false;
     }
-
 
     // --GETTERS--------------------------------------------------------------------------------------------------
 
@@ -716,7 +712,6 @@ public class Tabla {
         }
     }
 
-    
     public void setFila(Fila newFila, String key) {
         /**
          * Reemplaza el contenido de una fila por una nueva, mantiene la label.
@@ -736,7 +731,8 @@ public class Tabla {
 
     public void setFila(Fila newFila, String oldKey, String newKey) { // Funciona pero no lo imprime bien
         /**
-         * Reemplaza el contenido de una fila por una nueva, cambia la label sirve solo para rowkeys no numericas, sino no tiene sentido.
+         * Reemplaza el contenido de una fila por una nueva, cambia la label sirve solo
+         * para rowkeys no numericas, sino no tiene sentido.
          */
         if (newFila.size() == tabla.size()) {
             if (rowLabels.containsKey(oldKey)) {
@@ -758,13 +754,13 @@ public class Tabla {
         }
     }
 
-    public void setCelda(String keyFila, String keyColumna, Object value) {
+    public void setCelda(String keyFila, String keyColumna, Object value) throws InvalidDataTypeException {
         /**
          * Reemplaza el contenido de una celda
          */
         Celda celda = getCelda(keyFila, keyColumna);
-        if (celda.getContenido() instanceof Boolean){
-            if (value.equals(true) || value.equals(false)){
+        if (celda.getContenido() instanceof Boolean) {
+            if (value.equals(true) || value.equals(false)) {
                 celda.setContenido(value);
             } else {
                 throw new InvalidDataTypeException("el valor no es booleano");
@@ -772,7 +768,7 @@ public class Tabla {
 
         }
 
-        if (celda.getContenido() instanceof Number){
+        if (celda.getContenido() instanceof Number) {
             if (value instanceof Number) {
                 celda.setContenido(value);
             } else {
@@ -780,7 +776,7 @@ public class Tabla {
             }
         }
 
-        if (celda.getContenido() instanceof String){
+        if (celda.getContenido() instanceof String) {
             if (value instanceof String) {
                 celda.setContenido(value);
             } else {
@@ -791,7 +787,7 @@ public class Tabla {
 
     // --MODIFICADORES--------------------------------------------------------------------------------------------------
     public void addColumna(Columna nuevaCol) {
-        //sirve solo para cosas sin headers, habria que poner alguna verificacion
+        // sirve solo para cosas sin headers, habria que poner alguna verificacion
         /**
          * Agrega una nueva columna para tablas sin encabezado.
          */
@@ -837,16 +833,16 @@ public class Tabla {
         /**
          * Agrega una nueva fila.
          */
-        if (!contieneFila(nuevaFila)){
+        if (!contieneFila(nuevaFila)) {
             for (int i = 0; i < tabla.size(); i++) {
-            tabla.get(i).addCelda(nuevaFila.getFila().get(i));
-            rowLabels.put(String.valueOf(cantFilas() -1), cantFilas() -1);
-            order.add(String.valueOf(cantFilas() -1));
+                tabla.get(i).addCelda(nuevaFila.getFila().get(i));
+                rowLabels.put(String.valueOf(cantFilas() - 1), cantFilas() - 1);
+                order.add(String.valueOf(cantFilas() - 1));
             }
         } else {
             throw new IllegalLibraryUse("No se permite duplicar las filas");
         }
-        
+
     }
 
     public void removeFila(String key) {

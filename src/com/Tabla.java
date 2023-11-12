@@ -70,7 +70,12 @@ public class Tabla {
         return this.esta_ordenado;
     }
 
-    protected Tabla(Tabla t) {
+    /**
+     * Crea una tabla usando una tabla (un deep copy)
+     * 
+     * @param t tabla a copiar
+     */
+    private Tabla(Tabla t) {
         List<Columna> ct = new ArrayList<>();
         List<String> ht = new ArrayList<>();
         List<String> ot = new ArrayList<>();
@@ -196,6 +201,8 @@ public class Tabla {
             System.err.println("Check for aproppiate constructor");
             System.exit(1);
         }
+        this.tiposDato = tiposDato;
+        this.lineas = lineas;
 
     }
 
@@ -770,7 +777,6 @@ public class Tabla {
     //// ----NO--REFACTORIZADO----------------------------------------------------------------------------------------------------
 
     public void infoBasica() {
-
         /*
          * Lo que esperamos es que salga algo asi
          * # nombreColumna Non-Null Count tipoDato
@@ -785,27 +791,12 @@ public class Tabla {
          * tipoDato = [Number,String,boolean] tipo String
          * y despues imprimir la tabla que generamos
          */
-        /*
-         * Lo que esperamos es que salga algo asi
-         * # nombreColumna Non-Null Count tipoDato
-         * --- ------------- -------------- -------
-         * 0 int_col 5 non-null Number
-         * 1 text_col 5 non-null String
-         * 2 col_boolean 5 non-null boolean
-         * 
-         * Number[] indiceColumnas = [0, 1, 2] tipo Number
-         * nombreColumna = [int_col, text_col, col_boolean] tipo String
-         * nonNullCount = [5, 5, 5] tipo Number
-         * tipoDato = [Number,String,boolean] tipo String
-         * y despues imprimir la tabla que generamos
-         */
-        List<String> indiceColumna = new ArrayList<>();
+        // { "A", "B", "C" },
+        // { "D", "E", "F" },
+        // { "G", "H", "I" }
+        // };
         List<String> nombreColumna = new ArrayList<>();
         List<String> cantidadNonNull = new ArrayList<>();
-
-        for (int index_columna = 0; index_columna < tabla.size(); index_columna++) {
-            indiceColumna.add(String.valueOf(index_columna));
-        }
 
         for (int index_columna = 0; index_columna < tabla.size(); index_columna++) {
             nombreColumna.add(headers.get(index_columna)); /*
@@ -829,20 +820,43 @@ public class Tabla {
          * DE ACA PARA ARRIBA NO SE TOCA
          * TODO: headers
          */
-
-        String[] indCol = indiceColumna.toArray(new String[0]);
+        String[] headers = { "Nombre", "NonNull", "TipoDato" };
+        String[] tipoDeDato = { "String", "String", "String" };
         String[] nomCol = nombreColumna.toArray(new String[0]);
         String[] noNulo = cantidadNonNull.toArray(new String[0]);
-        String[] tipoDeDato = { "String", "String", "String", "String" };
-
-        String[][] datos = { indCol, nomCol, noNulo, tiposDato };
-        try {
-            llenarTabla(datos, tipoDeDato);
-        } catch (InvalidDataTypeException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        List<String[]> data_fila = new ArrayList<>();
+        data_fila.add(headers);
+        for (int i = 0; i < headers.length; i++) {
+            String[] row = { nomCol[i], noNulo[i], this.tiposDato[i] };
+            data_fila.add(row);
         }
+        // String[][] datos = {
+        // indCol,
+        // nomCol,
+        // noNulo,
+        // tiposDato };
+        String[][] datos = new String[data_fila.size()][data_fila.get(0).length];
+        for (int i = 0; i < data_fila.size(); i++) {
+            String[] row = data_fila.get(i);
+            System.arraycopy(row, 0, datos[i], 0, data_fila.get(0).length);
+        }
+        Tabla infoTabla = new Tabla(tipoDeDato, datos, true);
+        System.out.println(infoTabla.toString());
     }
+
+    /* Copy */
+    /**
+     * Copia la tabla en otra tabla. La nueva tabla es independiente de
+     * la original
+     * entonces
+     * copia != original == true
+     * 
+     * @return Tabla
+     */
+    public Tabla copy() {
+        return new Tabla(this);
+    }
+
     /* Sort */
 
     // public Tabla Sort() {

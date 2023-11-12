@@ -3,6 +3,9 @@ package com;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,8 +22,8 @@ public class Tabla {
     private List<Columna> tabla;
     private List<String> headers;
     private List<String> order;
-    private Map<String, Integer> colLabels = new HashMap<>();;
-    private Map<String, Integer> rowLabels = new HashMap<>();;
+    private Map<String, Integer> colLabels = new HashMap<>();
+    private Map<String, Integer> rowLabels = new HashMap<>();
     private String[] tiposDato;
     private List<String> lineas = null;
     // TODO: Usar esta_ordenado
@@ -28,11 +31,12 @@ public class Tabla {
                                    // agrego una fila
 
     protected Tabla() {
-    this.tabla = new ArrayList<>();
-    this.headers = new ArrayList<>();
-    this.order = new ArrayList<>();
-    this.colLabels = new HashMap<>();
-    this.rowLabels = new HashMap<>();
+        this.tabla = new ArrayList<>();
+        this.headers = new ArrayList<>();
+        this.order = new ArrayList<>();
+        this.colLabels = new HashMap<>();
+        this.rowLabels = new HashMap<>();
+
     }
 
     // Helpers?
@@ -64,11 +68,61 @@ public class Tabla {
         return this.lineas;
     }
 
-    protected Tabla(Tabla t) {
+    protected Boolean _dameEstaOrdenado() {
+        return this.esta_ordenado;
+    }
+
+    /**
+     * Crea una tabla usando una tabla (un deep copy)
+     * 
+     * @param t tabla a copiar
+     */
+    private Tabla(Tabla t) {
         List<Columna> ct = new ArrayList<>();
-        for (Columna c : this._dameTabla()) {
-            ct.add(c);
+        List<String> ht = new ArrayList<>();
+        List<String> ot = new ArrayList<>();
+        Map<String, Integer> colT = new HashMap<>();
+        Map<String, Integer> rowT = new HashMap<>();
+        String[] tdt;
+        List<String> lt = new ArrayList<>();
+        Boolean eot;
+        // Genero tabla
+        for (Columna c : t._dameTabla()) {
+            ct.add((Columna) c.clone());
         }
+        this.tabla = ct;
+        // Genero headers
+        for (String h : t._dameHeaders()) {
+            ht.add(h.toString());
+        }
+        this.headers = ht;
+        // Genero order
+        for (String h : t._dameOrder()) {
+            ot.add(h.toString());
+        }
+        this.order = ot;
+        // Genero collabels
+        for (Map.Entry<String, Integer> entry : t._dameColLabels().entrySet()) {
+            colT.put(entry.getKey(), entry.getValue());
+        }
+        this.colLabels = colT;
+        // Genero rowlabels
+        for (Map.Entry<String, Integer> entry : t._dameRowLabels().entrySet()) {
+            rowT.put(entry.getKey(), entry.getValue());
+        }
+        this.rowLabels = rowT;
+        // Genero tiposDato
+        tdt = Arrays.copyOf(t._dameTiposDato(), t._dameTiposDato().length);
+        this.tiposDato = tdt;
+        // Genero lineas
+        for (String l : t._dameLineas()) {
+            lt.add(l.toString());
+        }
+        this.lineas = lt;
+        // Genero esta ordenado
+        eot = t._dameEstaOrdenado();
+        this.esta_ordenado = eot;
+
     }
 
     /**
@@ -87,7 +141,7 @@ public class Tabla {
      *                           { "D", "E", "F" },
      *                           { "G", "H", "I" }
      *                   };
-     *                   tabla = new Tabla(tiposDato, array, false);
+     * 
      *                   </pre>
      */
     public Tabla(String[] tiposDato, String[][] datos, boolean hasHeaders) {
@@ -150,6 +204,8 @@ public class Tabla {
             System.err.println("Check for aproppiate constructor");
             System.exit(1);
         }
+        this.tiposDato = tiposDato;
+        this.lineas = lineas;
 
     }
 
@@ -817,7 +873,6 @@ public class Tabla {
     //// ----NO--REFACTORIZADO----------------------------------------------------------------------------------------------------
 
     public void infoBasica() {
-
         /*
          * Lo que esperamos es que salga algo asi
          * # nombreColumna Non-Null Count tipoDato
@@ -832,27 +887,12 @@ public class Tabla {
          * tipoDato = [Number,String,boolean] tipo String
          * y despues imprimir la tabla que generamos
          */
-        /*
-         * Lo que esperamos es que salga algo asi
-         * # nombreColumna Non-Null Count tipoDato
-         * --- ------------- -------------- -------
-         * 0 int_col 5 non-null Number
-         * 1 text_col 5 non-null String
-         * 2 col_boolean 5 non-null boolean
-         * 
-         * Number[] indiceColumnas = [0, 1, 2] tipo Number
-         * nombreColumna = [int_col, text_col, col_boolean] tipo String
-         * nonNullCount = [5, 5, 5] tipo Number
-         * tipoDato = [Number,String,boolean] tipo String
-         * y despues imprimir la tabla que generamos
-         */
-        List<String> indiceColumna = new ArrayList<>();
+        // { "A", "B", "C" },
+        // { "D", "E", "F" },
+        // { "G", "H", "I" }
+        // };
         List<String> nombreColumna = new ArrayList<>();
         List<String> cantidadNonNull = new ArrayList<>();
-
-        for (int index_columna = 0; index_columna < tabla.size(); index_columna++) {
-            indiceColumna.add(String.valueOf(index_columna));
-        }
 
         for (int index_columna = 0; index_columna < tabla.size(); index_columna++) {
             nombreColumna.add(headers.get(index_columna)); /*
@@ -876,19 +916,61 @@ public class Tabla {
          * DE ACA PARA ARRIBA NO SE TOCA
          * TODO: headers
          */
-
-        String[] indCol = indiceColumna.toArray(new String[0]);
+        String[] headers = { "Nombre", "NonNull", "TipoDato" };
+        String[] tipoDeDato = { "String", "String", "String" };
         String[] nomCol = nombreColumna.toArray(new String[0]);
         String[] noNulo = cantidadNonNull.toArray(new String[0]);
-        String[] tipoDeDato = { "String", "String", "String", "String" };
-
-        String[][] datos = { indCol, nomCol, noNulo, tiposDato };
-        try {
-            llenarTabla(datos, tipoDeDato);
-        } catch (InvalidDataTypeException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        List<String[]> data_fila = new ArrayList<>();
+        data_fila.add(headers);
+        for (int i = 0; i < headers.length; i++) {
+            String[] row = { nomCol[i], noNulo[i], this.tiposDato[i] };
+            data_fila.add(row);
         }
+        // String[][] datos = {
+        // indCol,
+        // nomCol,
+        // noNulo,
+        // tiposDato };
+        String[][] datos = new String[data_fila.size()][data_fila.get(0).length];
+        for (int i = 0; i < data_fila.size(); i++) {
+            String[] row = data_fila.get(i);
+            System.arraycopy(row, 0, datos[i], 0, data_fila.get(0).length);
+        }
+        Tabla infoTabla = new Tabla(tipoDeDato, datos, true);
+        System.out.println(infoTabla.toString());
     }
 
+    /* Copy */
+    /**
+     * Copia la tabla en otra tabla. La nueva tabla es independiente de
+     * la original
+     * entonces
+     * copia != original == true
+     * 
+     * @return Tabla
+     */
+    public Tabla copy() {
+        return new Tabla(this);
+    }
+
+    /* Sort */
+
+    // public Tabla Sort() {
+    // Tabla sorted = this.clone();
+    // Collections.sort(sorted.tabla, Comparator.comparing(o -> (o.getCelda(0))));
+    // return sorted;
+    // // Collections.sort(data, Comparator.comparing(o -> ((Comparable)
+    // // o.get(sortByColumn))));
+    // // for (String rowlabel : rowLabels.keySet()) {
+    // // Fila f = this.getFila(rowlabel);
+    // // System.out.println(f);
+    // // }
+    // // // for (Columna c : sorted.tabla) {
+    // // // // aca hago algo por columna
+    // // // sorted.getFila()
+    // // // c.ordenarColumna();
+    // // // }
+    // // System.out.println("aca hago algo");
+    // // return sorted;
+    // }
 }

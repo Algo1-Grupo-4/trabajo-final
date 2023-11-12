@@ -1,5 +1,6 @@
 package com;
 
+
 public abstract class Celda {
   /**
    * Clase abstracta para la Celda

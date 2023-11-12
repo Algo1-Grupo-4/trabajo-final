@@ -476,10 +476,12 @@ public class Tabla {
                 if (valor != null) {
                     // Si el tipo de dato es Boolean lo convierte y asigna a una celda.
                     if (tiposDato[index_columna].equals("Boolean")) {
+                        valor = valor.replaceAll("\\s", ""); // remove whitespace
                         boolean valorBoolean = Boolean.parseBoolean(valor);
                         celda.setContenido(valorBoolean);
                         // Si el tipo de dato es Number lo convierte y asigna a una celda.
                     } else if (tiposDato[index_columna].equals("Number")) {
+                        valor = valor.replaceAll("\\s", ""); // remove whitespaces on Numbers
                         try {
                             if (valor.contains(".")) {
                                 Double valorDouble = Double.parseDouble(valor);

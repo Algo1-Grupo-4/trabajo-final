@@ -2,6 +2,7 @@ package com;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -20,8 +21,8 @@ public class Tabla {
     private List<Columna> tabla;
     private List<String> headers;
     private List<String> order;
-    private Map<String, Integer> colLabels = new HashMap<>();;
-    private Map<String, Integer> rowLabels = new HashMap<>();;
+    private Map<String, Integer> colLabels = new HashMap<>();
+    private Map<String, Integer> rowLabels = new HashMap<>();
     private String[] tiposDato;
     private List<String> lineas = null;
     // TODO: Usar esta_ordenado
@@ -65,11 +66,55 @@ public class Tabla {
         return this.lineas;
     }
 
+    protected Boolean _dameEstaOrdenado() {
+        return this.esta_ordenado;
+    }
+
     protected Tabla(Tabla t) {
         List<Columna> ct = new ArrayList<>();
-        for (Columna c : this._dameTabla()) {
-            ct.add(c);
+        List<String> ht = new ArrayList<>();
+        List<String> ot = new ArrayList<>();
+        Map<String, Integer> colT = new HashMap<>();
+        Map<String, Integer> rowT = new HashMap<>();
+        String[] tdt;
+        List<String> lt = new ArrayList<>();
+        Boolean eot;
+        // Genero tabla
+        for (Columna c : t._dameTabla()) {
+            ct.add((Columna) c.clone());
         }
+        this.tabla = ct;
+        // Genero headers
+        for (String h : t._dameHeaders()) {
+            ht.add(h.toString());
+        }
+        this.headers = ht;
+        // Genero order
+        for (String h : t._dameOrder()) {
+            ot.add(h.toString());
+        }
+        this.order = ot;
+        // Genero collabels
+        for (Map.Entry<String, Integer> entry : t._dameColLabels().entrySet()) {
+            colT.put(entry.getKey(), entry.getValue());
+        }
+        this.colLabels = colT;
+        // Genero rowlabels
+        for (Map.Entry<String, Integer> entry : t._dameRowLabels().entrySet()) {
+            rowT.put(entry.getKey(), entry.getValue());
+        }
+        this.rowLabels = rowT;
+        // Genero tiposDato
+        tdt = Arrays.copyOf(t._dameTiposDato(), t._dameTiposDato().length);
+        this.tiposDato = tdt;
+        // Genero lineas
+        for (String l : t._dameLineas()) {
+            lt.add(l.toString());
+        }
+        this.lineas = lt;
+        // Genero esta ordenado
+        eot = t._dameEstaOrdenado();
+        this.esta_ordenado = eot;
     }
 
     /**
@@ -801,16 +846,14 @@ public class Tabla {
     /* Sort */
 
     // public Tabla Sort() {
-    // // Tabla sorted = this.clone();
+    // Tabla sorted = this.clone();
     // Collections.sort(sorted.tabla, Comparator.comparing(o -> (o.getCelda(0))));
     // return sorted;
     // // Collections.sort(data, Comparator.comparing(o -> ((Comparable)
     // // o.get(sortByColumn))));
     // // for (String rowlabel : rowLabels.keySet()) {
     // // Fila f = this.getFila(rowlabel);
-
     // // System.out.println(f);
-
     // // }
     // // // for (Columna c : sorted.tabla) {
     // // // // aca hago algo por columna

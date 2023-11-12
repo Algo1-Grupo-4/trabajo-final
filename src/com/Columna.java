@@ -158,10 +158,19 @@ public class Columna implements Cloneable {
     @Override
     protected Object clone() {
         Columna c = new Columna(this.tipo, this.columna.size());
+        List<Celda> nc = new ArrayList<>();
         c.tipo = this.tipo;
-
-        // TODO Auto-generated method stub
-        return super.clone();
+        for (Celda cell : this.columna) {
+            try {
+                nc.add((Celda) cell.clone());
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+                // TODO: fix error message
+                System.out.println("Error al clonar celda");
+            }
+        }
+        c.columna = nc;
+        return c;
     }
 
 }

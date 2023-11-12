@@ -12,4 +12,10 @@ public abstract class Celda implements Comparable<Celda>, Cloneable {
 
   public abstract boolean isNA();
 
+  @Override
+  protected Object clone() throws CloneNotSupportedException {
+    // TODO Auto-generated method stub
+    return super.clone();
+  }
+
 }

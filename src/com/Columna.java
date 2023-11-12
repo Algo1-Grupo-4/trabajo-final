@@ -27,6 +27,33 @@ public class Columna {
         this.tipo = tipoDato;
     }
 
+    public Columna(String tipoDato, Object[] valores){
+        //no admite datos faltantes, tiene sentido pero importante mencionarlo
+        columna = new ArrayList<>();
+
+        // Agregar las celdas según el tipo de dato
+        if (tipoDato.equals("Boolean")) {
+            for (int i = 0; i < valores.length; i++) {
+                Celda celda = new CeldaBoolean();
+                celda.setContenido(valores[i]);
+                columna.add(celda);
+            }
+        } else if (tipoDato.equals("String")) {
+            for (int i = 0; i < valores.length; i++) {
+                Celda celda = new CeldaString();
+                celda.setContenido(valores[i]);
+                columna.add(celda);
+            }
+        } else if (tipoDato.equals("Number")) {
+            for (int i = 0; i < valores.length; i++) {
+                Celda celda = new CeldaNumber();
+                celda.setContenido(valores[i]);
+                columna.add(celda);
+            }
+        }
+        this.tipo = tipoDato;
+    }
+
     public Celda getCelda(int index) {
         if (index >= 0 && index < columna.size()) {
             return columna.get(index);

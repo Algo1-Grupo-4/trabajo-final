@@ -47,4 +47,18 @@ public class CeldaString extends Celda {
       return this.contenido.toString();
     }
   }
+
+  @Override
+  public int compareTo(Celda o) {
+    return this.getContenido().compareTo(
+        o.getContenido().toString());
+  }
+
+  @Override
+  protected Object clone() {
+    CeldaString cs = new CeldaString();
+    cs.setContenido(this.getContenido());
+    return cs;
+  }
+
 }

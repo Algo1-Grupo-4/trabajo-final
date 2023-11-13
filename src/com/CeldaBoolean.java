@@ -43,4 +43,18 @@ public class CeldaBoolean extends Celda {
             return this.contenido.toString();
         }
     }
+
+    @Override
+    public int compareTo(Celda o) {
+        return this.getContenido().compareTo(
+                (Boolean) o.getContenido());
+    }
+
+    @Override
+    protected Object clone() {
+        CeldaBoolean cb = new CeldaBoolean();
+        cb.setContenido(this.getContenido());
+        return cb;
+    }
+
 }

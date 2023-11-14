@@ -82,4 +82,8 @@ public class Tablas {
     }
   }
 
+  // public Tabla copyTabla(Tabla tabla_origen){
+  // return new Tabla(tabla_origen);
+  // } esto es un metodo de tabla
+
 }

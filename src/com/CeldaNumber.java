@@ -1,6 +1,18 @@
 package com;
 
 public class CeldaNumber extends Celda {
+    public static Object convertToPrimitive(Number number) {
+        if (number instanceof Double || number instanceof Float) {
+            return number.doubleValue();
+        } else if (number instanceof Long || number instanceof Integer || number instanceof Short
+                || number instanceof Byte) {
+            return number.longValue();
+        } else {
+            // Handle other cases or throw an exception
+            throw new IllegalArgumentException("Unsupported Number type: " + number.getClass());
+        }
+    }
+
     // Para una Celda Number, usamos esta celda
     private Number contenido;
 
@@ -16,7 +28,13 @@ public class CeldaNumber extends Celda {
     @Override
     public void setContenido(Object objeto) {
         if (objeto instanceof Number) {
-            this.contenido = (Number) objeto;
+            if (objeto instanceof Integer) {
+                this.contenido = (Integer) objeto;
+            } else if (objeto instanceof Double) {
+                this.contenido = (Double) objeto;
+            } else if (objeto instanceof Float) {
+                this.contenido = (Float) objeto;
+            }
         }
     }
 
@@ -42,4 +60,18 @@ public class CeldaNumber extends Celda {
             return this.contenido.toString();
         }
     }
+
+    @Override
+    public int compareTo(Celda o) {
+        CeldaNumber c = (CeldaNumber) o;
+        return ((Double) this.contenido.doubleValue()).compareTo(c.getContenido().doubleValue());
+    }
+
+    @Override
+    protected Object clone() {
+        CeldaNumber cn = new CeldaNumber();
+        cn.setContenido(this.getContenido());
+        return cn;
+    }
+
 }

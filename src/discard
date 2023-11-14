@@ -97,4 +97,61 @@
     }
 
 
-    
+// setters mutabilidad parcial 
+
+public void setColumna(Columna newColumna, String key) {
+    /**
+     * Reemplaza el contenido de una columna por una nueva, mantiene la label.
+     */
+    if (newColumna.size() == cantFilas()) {
+        if (colLabels.containsKey(key)) {
+            tabla.add(newColumna);
+            colLabels.put(key, ultimoIndice());
+        } else {
+            throw new IllegalLabelException("La columna especificada no existe.");
+        }
+    } else {
+        throw new LengthMismatchException("El tamaño de la columna nueva no coincide con la cantidad de filas.");
+    }
+}
+
+public void setColumna(Columna newColumna, String oldKey, String newKey) { // Funciona pero no lo imprime bien
+    /**
+     * Reemplaza el contenido de una columna por una nueva, cambia la label.
+     */
+    if (newColumna.size() == cantFilas()) {
+        if (colLabels.containsKey(oldKey)) {
+            if (!colLabels.containsKey(newKey)) {
+                tabla.add(newColumna);
+                colLabels.put(newKey, ultimoIndice());
+                headers.set(colLabels.get(oldKey), newKey);
+            } else {
+                throw new IllegalLabelException(
+                        "La nueva etiqueta ya corresponde a otra columna y no puede ser duplicada.");
+            }
+        } else {
+            throw new IllegalLabelException("La columna especificada no existe.");
+        }
+    } else {
+        throw new LengthMismatchException("El tamaño de la columna nueva no coincide con la cantidad de filas.");
+    }
+}
+
+public void setFila(Fila newFila, String key) {
+    /**
+     * Reemplaza el contenido de una fila por una nueva, mantiene la label.
+     */
+    if (newFila.size() == tabla.size()) {
+        if (rowLabels.containsKey(key)) {
+            for (int i = 0; i < newFila.size(); i++) {
+                tabla.get(i).getCeldas().add(newFila.getCelda(i));
+            }
+            rowLabels.put(key, cantFilas() -1);
+            
+        } else {
+            throw new IllegalLabelException("La fila especificada no existe");
+        }
+    } else {
+        throw new LengthMismatchException("El tamaño de la fila nueva no coincide con la cantidad de columnas.");
+    }
+}

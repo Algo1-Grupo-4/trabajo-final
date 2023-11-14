@@ -871,31 +871,11 @@ public class Tabla {
     //// ----NO--REFACTORIZADO----------------------------------------------------------------------------------------------------
 
     public void infoBasica() {
-        /*
-         * Lo que esperamos es que salga algo asi
-         * # nombreColumna Non-Null Count tipoDato
-         * --- ------------- -------------- -------
-         * 0 int_col 5 non-null Number
-         * 1 text_col 5 non-null String
-         * 2 col_boolean 5 non-null boolean
-         * 
-         * Number[] indiceColumnas = [0, 1, 2] tipo Number
-         * nombreColumna = [int_col, text_col, col_boolean] tipo String
-         * nonNullCount = [5, 5, 5] tipo Number
-         * tipoDato = [Number,String,boolean] tipo String
-         * y despues imprimir la tabla que generamos
-         */
-        // { "A", "B", "C" },
-        // { "D", "E", "F" },
-        // { "G", "H", "I" }
-        // };
         List<String> nombreColumna = new ArrayList<>();
         List<String> cantidadNonNull = new ArrayList<>();
 
         for (int index_columna = 0; index_columna < tabla.size(); index_columna++) {
-            nombreColumna.add(headers.get(index_columna)); /*
-                                                            * despues se cambia para usar el metodo para darle headers
-                                                            */
+            nombreColumna.add(headers.get(index_columna));
         }
 
         for (int index_columna = 0; index_columna < tabla.size(); index_columna++) {
@@ -910,10 +890,6 @@ public class Tabla {
             cantidadNonNull.add(String.valueOf(celdasCompletas));
         }
 
-        /*
-         * DE ACA PARA ARRIBA NO SE TOCA
-         * TODO: headers
-         */
         String[] headers = { "Nombre", "NonNull", "TipoDato" };
         String[] tipoDeDato = { "String", "String", "String" };
         String[] nomCol = nombreColumna.toArray(new String[0]);
@@ -924,11 +900,6 @@ public class Tabla {
             String[] row = { nomCol[i], noNulo[i], this.tiposDato[i] };
             data_fila.add(row);
         }
-        // String[][] datos = {
-        // indCol,
-        // nomCol,
-        // noNulo,
-        // tiposDato };
         String[][] datos = new String[data_fila.size()][data_fila.get(0).length];
         for (int i = 0; i < data_fila.size(); i++) {
             String[] row = data_fila.get(i);
@@ -971,4 +942,51 @@ public class Tabla {
     // // System.out.println("aca hago algo");
     // // return sorted;
     // }
+
+    public Tabla seleccionar(String[] etiquetaFilas) {
+        Tabla nueva = this.copy(); // reemplazar esto por shallow copy cuando esté listo
+        nueva.rowLabels = new HashMap<>();
+        nueva.order = new ArrayList<>();
+        //nueva.lineas = new LinkedList<>();
+        //nueva.tabla = new ArrayList<>();
+        
+        for(String e : etiquetaFilas){ 
+          // String s = _dameLineas().get(Integer.valueOf(e));
+          // nueva.lineas.add(s);
+           int v =  _dameRowLabels().get(e);
+           nueva.rowLabels.put(e, v);
+           nueva.order.add(e);
+        }
+        
+        return nueva;
+    }
+        // ponele que ande asi: tablita.seleccionar([0,3]) y te devuelve las filas 0, 1  y 2.
+        // y si le haces tablita.seleccionar([[0,3],5]) y te devuelve 0, 1, 2 y 5.
+        //String[][] datosVacios = new String[this.tiposDato.length][0];
+        //Fila headers = new Fila();
+        //List<String> ht = this.headers;
+        //for(String header : ht){
+        //    headers.add(header);
+        //}
+        // Fila ht = new Fila();
+        //Tabla tablaSel = new Tabla(tiposDato, datosVacios, false);
+        // for (String h : this._dameHeaders()) {
+        //     ht.add(h.toString());
+        // }
+
+        // tablaSel.addFila(ht);
+        // for (int i: rowLabels) {
+        //     Fila f = this.getFila(Integer.toString(i));
+        //     tablaSel.addFila(f);
+            
+        // }
+//        for (String i: colLabels.keySet()) {
+//            Columna c = this.getColumna(i);
+//            tablaSel.addColumna(c);
+            //tablaSel.tabla.add(c);
+//        }
+
+//        return tablaSel;
+//    }
+    
 }

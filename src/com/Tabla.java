@@ -1,16 +1,14 @@
 package com;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
-
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
+import java.util.function.Predicate;
 import excepciones.*;
 
 /**
@@ -688,6 +686,14 @@ public class Tabla {
         }
     }
 
+    public Map<String, Integer> getColLabels() {
+        return colLabels;
+    }
+
+    public Map<String, Integer> getRowLabels() {
+        return colLabels;
+    }
+
     // --SETTERS--------------------------------------------------------------------------------------------------
     public void setColumna(Columna newColumna, String key) {
         /**
@@ -855,7 +861,7 @@ public class Tabla {
         }
         if (!contieneFila(nuevaFila)) {
             for (int i = 0; i < tabla.size(); i++) {
-                tabla.get(i).addCelda(nuevaFila.getFila().get(i));
+                tabla.get(i).addCelda(nuevaFila.getCeldas().get(i));
             }
             rowLabels.put(String.valueOf(cantFilas() - 1), cantFilas() - 1);
             order.add(String.valueOf(cantFilas() - 1));
@@ -867,18 +873,24 @@ public class Tabla {
     public void removeFila(String key) {
         /**
          * Elimina una fila
-        */
+         */
         if (rowLabels.containsKey(key)) {
             int rowIndex = rowLabels.get(key);
-
-            // Elimino las celdas de cada columna
+            // Elimino celdas de cada columna
             for (Columna col : tabla) {
-                col.removeCelda(rowIndex);
+                col.removeCelda(rowLabels.get(key));
+
+                for (String row : order
+                ) {
+                    if (rowLabels.get(row) > rowIndex) {
+                        rowLabels.put(row, rowLabels.get(row) - 1);
+                    }
+                }
+
+                order.remove(key);
             }
-            rowLabels.remove(key);
-            order.remove(key);
         } else {
-            throw new IllegalLabelException("No existe la fila " + key + ".");
+            throw new IllegalArgumentException("No existe la fila " + key + ".");
         }
     }
 
@@ -983,4 +995,39 @@ public class Tabla {
         Tabla sortedTabla = new Tabla();
         return sortedTabla;
     }
+
+    public void generarRowLabelsFiltrado (List<String> filas) {
+        Map<String, Integer> nuevasRowLabels = new LinkedHashMap<>();
+        List<String> nuevoOrder = new ArrayList<>();
+
+        for(String fila : filas) {
+            nuevasRowLabels.put(fila, rowLabels.get(fila));
+            nuevoOrder.add(fila);
+        }
+        // Ordenar las etiquetas de fila
+        nuevoOrder.sort(Comparator.comparingInt(rowLabels::get));
+
+        rowLabels.clear(); 
+        rowLabels = nuevasRowLabels;
+        order.clear();
+        order = nuevoOrder;
+    }
+
+    public Tabla filtrar(Predicate<Fila> condicion) {
+        List<String> salida = new ArrayList<>();
+
+        if (condicion == null) {
+            throw new IllegalArgumentException("Se debe proporcionar una condición válida.");
+        }
+        for(String etiquetaFila : rowLabels.keySet()){
+            Fila filaAComparar = getFila(etiquetaFila);
+            if (condicion.test(filaAComparar) ){
+                salida.add(etiquetaFila);
+            }
+        }        
+        Tabla tablaFiltrada = new Tabla(this);
+        tablaFiltrada.generarRowLabelsFiltrado(salida);
+        return tablaFiltrada;
+    }
+    
 }

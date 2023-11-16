@@ -523,41 +523,47 @@ public class Tabla {
         StringBuilder out = new StringBuilder();
 
         // Auto-detección del ancho de columna
-        int[] columnWidths = new int[headers.size()];
-        Arrays.fill(columnWidths, 0);
+        int[] anchoColumna = new int[headers.size()];
 
         // Obtener el orden de las filas
         List<String> orderFilas = order;
 
+        // Calcular la longitud máxima de cada columna
+        for (int i = 0; i < headers.size(); i++) {
+            String header = headers.get(i);
+            anchoColumna[i] = Math.max(anchoColumna[i], header.length());
+        }
+
         // Agregar labels de columna si hay
         for (int i = 0; i < headers.size(); i++) {
             String header = headers.get(i);
-            out.append(String.format("%-" + (columnWidths[i] + 4) + "s", centerText(header))); // +4 para espacio
-                                                                                               // adicional
+            out.append(String.format("%" + (anchoColumna[i] + 6) + "s", centrarTexto(header))); // +4 para espacio adicional
         }
         out.append("\n");
 
         // Agregar divisiones entre las columnas
         for (int i = 0; i < headers.size(); i++) {
-            out.append(String.format("%-" + (columnWidths[i] + 8) + "s", "").replace(' ', '-'));
+            out.append(String.format("%-" + (anchoColumna[i] + 8) + "s", "").replace(' ', '-'));
         }
         out.append("\n");
 
         // Iterar y agregar filas en el orden especificado
         for (String filaKey : orderFilas) {
-            Map<String, Integer> rowLabels = this.rowLabels;
             if (!rowLabels.containsKey(filaKey)) {
                 throw new IllegalArgumentException("La fila con la clave " + filaKey + " no existe en la tabla.");
             }
 
             int rowIndex = rowLabels.get(filaKey);
 
+            // Agregar la etiqueta de fila
+            out.append(String.format("%-" + 8 + "s", filaKey));
+
             for (int i = 0; i < headers.size(); i++) {
                 String header = headers.get(i);
                 int columnIndex = colLabels.get(header); // Obtener el índice de la columna a partir del header
                 Celda celda = tabla.get(columnIndex).getCelda(rowIndex);
                 String contenido = (celda.getContenido() == null) ? "NA" : String.valueOf(celda.getContenido());
-                out.append(String.format("%-" + (columnWidths[i] + 6) + "s", centerText(contenido)));
+                out.append(String.format("%-" + (anchoColumna[i] + 6) + "s", contenido));
             }
             out.append("\n");
         }
@@ -566,10 +572,10 @@ public class Tabla {
     }
 
     // Método para centrar el texto en una columna
-    private String centerText(String text) {
-        int totalWidth = 15; // Puedes ajustar el ancho deseado
-        int padding = (totalWidth - text.length()) / 2;
-        return String.format("%" + (padding + text.length()) + "s", text);
+    private String centrarTexto(String texto) {
+        int anchoTotal = 15; // Puedes ajustar el ancho deseado
+        int padding = (anchoTotal - texto.length()) / 2;
+        return String.format("%" + (padding + texto.length()) + "s", texto);
     }
 
     /**
@@ -675,10 +681,10 @@ public class Tabla {
             if (rowLabels.containsKey(keyFila)) {
                 return tabla.get(colLabels.get(keyColumna)).getCelda(rowLabels.get(keyFila));
             } else {
-                throw new IllegalArgumentException("No existe esa fila");
+                throw new IllegalArgumentException("No existe la fila " + keyFila + ".");
             }
         } else {
-            throw new IllegalArgumentException("No existe esa columna");
+            throw new IllegalArgumentException("No existe la columna '" + keyColumna + "'.");
         }
     }
 
@@ -814,7 +820,7 @@ public class Tabla {
             colLabels.put(label, ultimoIndice());
             headers.add(label);
         } else {
-            throw new IllegalLabelException("Ya existe una columna con ese nombre");
+            throw new IllegalLabelException("Ya existe una columna con el nombre '" + label + "'.");
         }
     }
 
@@ -834,44 +840,43 @@ public class Tabla {
             headers.remove(index);
 
         } else {
-            throw new IllegalLabelException("Este encabezado no existe");
+            throw new IllegalLabelException("El encabezado '" + key +  "' no existe.");
         }
     }
 
     public void addFila(Fila nuevaFila) {
         /**
          * Agrega una nueva fila.
-         */
+        */ 
+        if (nuevaFila.size() != tabla.size()) {
+            throw new IllegalArgumentException("La cantidad de datos de la fila no corresponde con el tamaño de la tabla.");
+        }
         if (!contieneFila(nuevaFila)) {
             for (int i = 0; i < tabla.size(); i++) {
                 tabla.get(i).addCelda(nuevaFila.getFila().get(i));
-                rowLabels.put(String.valueOf(cantFilas() - 1), cantFilas() - 1);
-                order.add(String.valueOf(cantFilas() - 1));
             }
+            rowLabels.put(String.valueOf(cantFilas() - 1), cantFilas() - 1);
+            order.add(String.valueOf(cantFilas() - 1));
         } else {
-            throw new IllegalLibraryUse("No se permite duplicar las filas");
+            throw new IllegalLibraryUse("No se permite duplicar las filas.");
         }
-
     }
 
     public void removeFila(String key) {
         /**
          * Elimina una fila
-         */
+        */
         if (rowLabels.containsKey(key)) {
+            int rowIndex = rowLabels.get(key);
+
+            // Elimino las celdas de cada columna
             for (Columna col : tabla) {
-                col.removeCelda(rowLabels.get(key));
-
-                for (String row : order) {
-                    if (rowLabels.get(row) > rowLabels.get(key)) {
-                        rowLabels.put(row, rowLabels.get(row) - 1);
-                    }
-                }
-
-                order.remove(key);
+                col.removeCelda(rowIndex);
             }
+            rowLabels.remove(key);
+            order.remove(key);
         } else {
-            throw new IllegalLabelException("No existe fila con esa key");
+            throw new IllegalLabelException("No existe la fila " + key + ".");
         }
     }
 

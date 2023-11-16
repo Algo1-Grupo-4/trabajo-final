@@ -42,5 +42,8 @@ public class Main {
         booleana.addFila(fila);
         System.out.println(booleana);
 
+        booleana.removeFila("15");
+        System.out.println(booleana);
+
     }
 }

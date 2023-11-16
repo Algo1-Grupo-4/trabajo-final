@@ -695,7 +695,8 @@ public class Tabla {
          */
         if (newColumna.size() == cantFilas()) {
             if (colLabels.containsKey(key)) {
-                tabla.set(colLabels.get(key), newColumna);
+                tabla.add(newColumna);
+                colLabels.put(key, ultimoIndice());
             } else {
                 throw new IllegalLabelException("La columna especificada no existe.");
             }
@@ -704,17 +705,16 @@ public class Tabla {
         }
     }
 
-    public void setColumna(Columna newColumna, String oldKey, String newKey) { // Funciona pero no lo imprime bien
+    public void setColumna(Columna newColumna, String oldKey, String newKey) { // 
         /**
          * Reemplaza el contenido de una columna por una nueva, cambia la label.
          */
         if (newColumna.size() == cantFilas()) {
             if (colLabels.containsKey(oldKey)) {
                 if (!colLabels.containsKey(newKey)) {
-                    tabla.set(colLabels.get(oldKey), newColumna);
-                    colLabels.put(newKey, colLabels.get(oldKey));
-                    headers.set(colLabels.get(oldKey), newKey);
-                    colLabels.remove(oldKey);
+                    tabla.add(newColumna);
+                    colLabels.put(newKey, ultimoIndice());
+                    headers.set(colLabels.get(oldKey) , newKey);
                 } else {
                     throw new IllegalLabelException(
                             "La nueva etiqueta ya corresponde a otra columna y no puede ser duplicada.");
@@ -734,8 +734,10 @@ public class Tabla {
         if (newFila.size() == tabla.size()) {
             if (rowLabels.containsKey(key)) {
                 for (int i = 0; i < newFila.size(); i++) {
-                    tabla.get(i).getCeldas().set(rowLabels.get(key), newFila.getCelda(i));
+                    tabla.get(i).getCeldas().add(newFila.getCelda(i));
                 }
+                rowLabels.put(key, cantFilas() -1);
+                
             } else {
                 throw new IllegalLabelException("La fila especificada no existe");
             }
@@ -744,30 +746,30 @@ public class Tabla {
         }
     }
 
-    public void setFila(Fila newFila, String oldKey, String newKey) { // Funciona pero no lo imprime bien
-        /**
-         * Reemplaza el contenido de una fila por una nueva, cambia la label sirve solo
-         * para rowkeys no numericas, sino no tiene sentido.
-         */
-        if (newFila.size() == tabla.size()) {
-            if (rowLabels.containsKey(oldKey)) {
-                if (!rowLabels.containsKey(newKey)) {
-                    for (int i = 0; i < newFila.size(); i++) {
-                        tabla.get(i).getCeldas().set(rowLabels.get(oldKey), newFila.getCelda(i));
-                    }
-                    rowLabels.put(newKey, rowLabels.get(oldKey));
-                    rowLabels.remove(oldKey);
-                } else {
-                    throw new IllegalLabelException(
-                            "La nueva etiqueta ya corresponde a otra fila y no puede ser duplicada.");
-                }
-            } else {
-                throw new IllegalLabelException("La fila especificada no existe.");
-            }
-        } else {
-            throw new LengthMismatchException("El tamaño de la fila nueva no coincide con la cantidad de columnas.");
-        }
-    }
+    // public void setFila(Fila newFila, String oldKey, String newKey) { // Funciona pero no lo imprime bien
+    //     /**
+    //      * Reemplaza el contenido de una fila por una nueva, cambia la label sirve solo
+    //      * para rowkeys no numericas, sino no tiene sentido.
+    //      */
+    //     if (newFila.size() == tabla.size()) {
+    //         if (rowLabels.containsKey(oldKey)) {
+    //             if (!rowLabels.containsKey(newKey)) {
+    //                 for (int i = 0; i < newFila.size(); i++) {
+    //                     tabla.get(i).getCeldas().set(rowLabels.get(oldKey), newFila.getCelda(i));
+    //                 }
+    //                 rowLabels.put(newKey, rowLabels.get(oldKey));
+    //                 rowLabels.remove(oldKey);
+    //             } else {
+    //                 throw new IllegalLabelException(
+    //                         "La nueva etiqueta ya corresponde a otra fila y no puede ser duplicada.");
+    //             }
+    //         } else {
+    //             throw new IllegalLabelException("La fila especificada no existe.");
+    //         }
+    //     } else {
+    //         throw new LengthMismatchException("El tamaño de la fila nueva no coincide con la cantidad de columnas.");
+    //     }
+    // }
 
     public void setCelda(String keyFila, String keyColumna, Object value) throws InvalidDataTypeException {
         /**
@@ -802,7 +804,7 @@ public class Tabla {
 
     // --MODIFICADORES--------------------------------------------------------------------------------------------------
     public void addColumna(Columna nuevaCol) {
-        // sirve solo para cosas sin headers, habria que poner alguna verificacion
+        // sirve solo para cosas sin headers, habria que poner alguna verificacion, ni se si es necesario este constructor
         /**
          * Agrega una nueva columna para tablas sin encabezado.
          */
@@ -977,22 +979,8 @@ public class Tabla {
     }
     /* Sort */
 
-    // public Tabla Sort() {
-    // Tabla sorted = this.clone();
-    // Collections.sort(sorted.tabla, Comparator.comparing(o -> (o.getCelda(0))));
-    // return sorted;
-    // // Collections.sort(data, Comparator.comparing(o -> ((Comparable)
-    // // o.get(sortByColumn))));
-    // // for (String rowlabel : rowLabels.keySet()) {
-    // // Fila f = this.getFila(rowlabel);
-    // // System.out.println(f);
-    // // }
-    // // // for (Columna c : sorted.tabla) {
-    // // // // aca hago algo por columna
-    // // // sorted.getFila()
-    // // // c.ordenarColumna();
-    // // // }
-    // // System.out.println("aca hago algo");
-    // // return sorted;
-    // }
+    public Tabla Sort() {
+        Tabla sortedTabla = new Tabla();
+        return sortedTabla;
+    }
 }

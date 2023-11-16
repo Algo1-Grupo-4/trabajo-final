@@ -974,8 +974,63 @@ public class Tabla {
     }
     /* Sort */
 
-    public Tabla Sort() {
-        Tabla sortedTabla = new Tabla();
+    public Tabla Sort(String[] columnas) {
+        // habria que agregar check de que esten y bla bla
+        Tabla sortedTabla = this.shallowCopy();
+
+        Tabla reducida = sortedTabla.select(columnas);
+        int n = reducida.cantFilas();
+
+        boolean huboCambio;
+        
+        do {
+            huboCambio = false;
+            for (int i = 1; i < n; i++) {
+
+                Fila filaPrevia = reducida.getFila(order.get(i - 1));
+                Fila filaActual = reducida.getFila(order.get(i));
+                int comparacion = 0;
+                
+                for (String header: columnas) {
+                    Celda celdaPrevia = filaPrevia.getCelda(colLabels.get(header));
+                    Celda celdaActual = filaActual.getCelda(colLabels.get(header));
+                    comparacion = celdaPrevia.compareTo(celdaActual);
+
+                    if (comparacion != 0){
+                        break;
+                    }
+
+                }
+
+                if (comparacion > 0){
+                    String etiqueta = sortedTabla.order.get(i - 1);
+                    sortedTabla.order.set(i-1, order.get(i));
+                    sortedTabla.order.set(i, etiqueta);
+                    huboCambio = true;
+                }
+            }
+            n--;
+        } while (huboCambio);
         return sortedTabla;
     }
+
+    public Tabla select(String[] columnas) {
+        Tabla reducida = new Tabla(this);
+
+        for (int i = 0; i < columnas.length; i++){
+            reducida.addColumna(tabla.get(1), columnas[i]);
+            reducida.colLabels.put(columnas[i], i);
+            reducida.order.add(columnas[i]);
+        }
+
+        return reducida;
+    }
+
+    public Tabla merge(Tabla other){
+        Tabla newTabla = new Tabla(this);
+
+        return newTabla;
+    }
+
+
 }

@@ -16,8 +16,8 @@ public class Main {
         Columna newCol = new Columna("String", new String[]{"hola","false","Todo","ah","h","3","!!!!","si","no","blanco","negro","ya no se","que paja","odio testear","se la banca"});
         System.out.println(newCol);
 
-        // booleana.setColumna(newCol, "columna1");
-        // System.out.println(booleana.toString());
+        booleana.setColumna(newCol, "columna1");
+        System.out.println(booleana.toString());
 
         booleana.setColumna(newCol, "columna1", "columnaNueva");
         System.out.println(booleana.toString());

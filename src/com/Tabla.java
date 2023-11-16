@@ -697,9 +697,10 @@ public class Tabla {
         if (newColumna.size() == cantFilas()) {
             if (colLabels.containsKey(oldKey)) {
                 if (!colLabels.containsKey(newKey)) {
+                    int index = colLabels.get(oldKey);
                     tabla.add(newColumna);
                     colLabels.put(newKey, ultimoIndice());
-                    headers.set(colLabels.get(oldKey) , newKey);
+                    headers.set(index, newKey);
                 } else {
                     throw new IllegalLabelException(
                             "La nueva etiqueta ya corresponde a otra columna y no puede ser duplicada.");
@@ -731,30 +732,30 @@ public class Tabla {
         }
     }
 
-    // public void setFila(Fila newFila, String oldKey, String newKey) { // Funciona pero no lo imprime bien
-    //     /**
-    //      * Reemplaza el contenido de una fila por una nueva, cambia la label sirve solo
-    //      * para rowkeys no numericas, sino no tiene sentido.
-    //      */
-    //     if (newFila.size() == tabla.size()) {
-    //         if (rowLabels.containsKey(oldKey)) {
-    //             if (!rowLabels.containsKey(newKey)) {
-    //                 for (int i = 0; i < newFila.size(); i++) {
-    //                     tabla.get(i).getCeldas().set(rowLabels.get(oldKey), newFila.getCelda(i));
-    //                 }
-    //                 rowLabels.put(newKey, rowLabels.get(oldKey));
-    //                 rowLabels.remove(oldKey);
-    //             } else {
-    //                 throw new IllegalLabelException(
-    //                         "La nueva etiqueta ya corresponde a otra fila y no puede ser duplicada.");
-    //             }
-    //         } else {
-    //             throw new IllegalLabelException("La fila especificada no existe.");
-    //         }
-    //     } else {
-    //         throw new LengthMismatchException("El tamaño de la fila nueva no coincide con la cantidad de columnas.");
-    //     }
-    // }
+    public void setFila(Fila newFila, String oldKey, String newKey) { // Funciona pero no lo imprime bien
+        /**
+         * Reemplaza el contenido de una fila por una nueva, cambia la label sirve solo
+         * para rowkeys no numericas, sino no tiene sentido.
+         */
+        if (newFila.size() == tabla.size()) {
+            if (rowLabels.containsKey(oldKey)) {
+                if (!rowLabels.containsKey(newKey)) {
+                    for (int i = 0; i < newFila.size(); i++) {
+                        tabla.get(i).getCeldas().set(rowLabels.get(oldKey), newFila.getCelda(i));
+                    }
+                    rowLabels.put(newKey, rowLabels.get(oldKey));
+                    rowLabels.remove(oldKey);
+                } else {
+                    throw new IllegalLabelException(
+                            "La nueva etiqueta ya corresponde a otra fila y no puede ser duplicada.");
+                }
+            } else {
+                throw new IllegalLabelException("La fila especificada no existe.");
+            }
+        } else {
+            throw new LengthMismatchException("El tamaño de la fila nueva no coincide con la cantidad de columnas.");
+        }
+    }
 
     public void setCelda(String keyFila, String keyColumna, Object value) throws InvalidDataTypeException {
         /**
@@ -1041,7 +1042,6 @@ public class Tabla {
             newTabla.addFila(filaAgregar);
 
         }
-
         return newTabla;
     }
 

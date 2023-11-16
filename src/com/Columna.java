@@ -77,7 +77,11 @@ public class Columna implements Cloneable {
      * Elimina una celda de la columna.
      */
     public void removeCelda(int index) {
-        columna.remove(index);
+        if (index >= 0 && index < columna.size()) {
+            columna.remove(index);
+        } else {
+            throw new IndexOutOfBoundsException("Índice fuera de rango: " + index + ".");
+        }
     }
 
     /**

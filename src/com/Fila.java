@@ -40,6 +40,15 @@ public class Fila {
         }
     }
 
+    public Celda getCelda(String etiquetaColumna, Tabla tabla) {
+        Integer indiceColuma = tabla.getColLabels().get(etiquetaColumna);
+        if (indiceColuma != null && indiceColuma < fila.size()) {
+            return fila.get(indiceColuma);
+        } else {
+            throw new IllegalArgumentException("La columna '" + etiquetaColumna + "' no existe.");
+        }
+    }
+
     /**
      * Devuelve una lista de celdas en la fila.
      */
@@ -48,28 +57,24 @@ public class Fila {
     }
 
     /**
-     * Elimina una celda de la columna.
+     * Elimina una celda de la fila.
      */
     public void removeCelda(int index) {
         fila.remove(index);
     }
 
     /**
-     * Agrega una celda a la columna.
+     * Agrega una celda a la fila.
      */
     public void addCelda(Celda valor) {
         fila.add(valor);
     }
 
     /**
-     * Devuelve el tamaño de la columna.
+     * Devuelve el tamaño de la fila.
      */
     public int size() {
         return fila.size();
-    }
-
-    public List<Celda> getFila() {
-        return fila;
     }
 
     @Override

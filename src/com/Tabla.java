@@ -850,6 +850,7 @@ public class Tabla implements Summarize{
     //// ----NO--REFACTORIZADO----------------------------------------------------------------------------------------------------
 
     public void infoBasica() {
+
         /*
          * Lo que esperamos es que salga algo asi
          * # Encabezados Non-Null Count tipoDato
@@ -872,6 +873,7 @@ public class Tabla implements Summarize{
         List<String> tipoDato = new ArrayList<>();
         for (String encabezado : _dameHeaders()){
             tipoDato.add(getColumna(encabezado).getCelda(0).getContenido().getClass().getSimpleName());
+
         }
 
         String[] tipoDatoDetectado = tipoDato.toArray(new String[0]);
@@ -1158,4 +1160,50 @@ public class Tabla implements Summarize{
         return tabla_agrupada;
     }
 
+    public Tabla seleccionar(String[] etiquetaFilas) {
+        Tabla nueva = this.copy(); // reemplazar esto por shallow copy cuando esté listo
+        nueva.rowLabels = new HashMap<>();
+        nueva.order = new ArrayList<>();
+        //nueva.lineas = new LinkedList<>();
+        //nueva.tabla = new ArrayList<>();
+        
+        for(String e : etiquetaFilas){ 
+          // String s = _dameLineas().get(Integer.valueOf(e));
+          // nueva.lineas.add(s);
+           int v =  _dameRowLabels().get(e);
+           nueva.rowLabels.put(e, v);
+           nueva.order.add(e);
+        }
+        
+        return nueva;
+    }
+        // ponele que ande asi: tablita.seleccionar([0,3]) y te devuelve las filas 0, 1  y 2.
+        // y si le haces tablita.seleccionar([[0,3],5]) y te devuelve 0, 1, 2 y 5.
+        //String[][] datosVacios = new String[this.tiposDato.length][0];
+        //Fila headers = new Fila();
+        //List<String> ht = this.headers;
+        //for(String header : ht){
+        //    headers.add(header);
+        //}
+        // Fila ht = new Fila();
+        //Tabla tablaSel = new Tabla(tiposDato, datosVacios, false);
+        // for (String h : this._dameHeaders()) {
+        //     ht.add(h.toString());
+        // }
+
+        // tablaSel.addFila(ht);
+        // for (int i: rowLabels) {
+        //     Fila f = this.getFila(Integer.toString(i));
+        //     tablaSel.addFila(f);
+            
+        // }
+//        for (String i: colLabels.keySet()) {
+//            Columna c = this.getColumna(i);
+//            tablaSel.addColumna(c);
+            //tablaSel.tabla.add(c);
+//        }
+
+//        return tablaSel;
+//    }
+    
 }

@@ -26,7 +26,6 @@ public class Tabla {
     private Map<String, Integer> rowLabels = new HashMap<>();
     private String[] tiposDato;
     private List<String> lineas = null;
-    // TODO: Usar esta_ordenado
     private boolean esta_ordenado; // para cuando haya que poner que se reordene si ya lo estaba cada vez que
                                    // agrego una fila
 
@@ -36,7 +35,15 @@ public class Tabla {
         this.order = new ArrayList<>();
         this.colLabels = new HashMap<>();
         this.rowLabels = new HashMap<>();
+        this.lineas = new ArrayList<>();
+    }
 
+    private void _setOrdenado(Boolean o) {
+        this.esta_ordenado = o;
+    }
+
+    private void _setTiposDato(String[] t) {
+        this.tiposDato = t;
     }
 
     // Helpers?
@@ -951,6 +958,18 @@ public class Tabla {
         return new Tabla(this);
     }
 
+    public Tabla shallowCopy() {
+        Tabla t = new Tabla();
+        t.tabla = this.tabla;
+        t.headers = this.headers;
+        t.order = this.order;
+        t.colLabels = this.colLabels;
+        t.rowLabels = this.rowLabels;
+        t.lineas = this.lineas;
+        t._setTiposDato(this.tiposDato);
+        t._setOrdenado(this.esta_ordenado);
+        return t;
+    }
     /* Sort */
 
     // public Tabla Sort() {

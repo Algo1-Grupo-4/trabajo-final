@@ -2,7 +2,7 @@ package com;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,7 +15,7 @@ import excepciones.*;
  * 
  */
 
-public class Tabla {
+public class Tabla implements Summarize{
     private List<Columna> tabla;
     private List<String> headers;
     private List<String> order;
@@ -1029,10 +1029,133 @@ public class Tabla {
         return newTabla;
     }
 
+    public Tabla sample(int cantidad_datos){
+
+        if (cantidad_datos > cantFilas()){
+            throw new LengthMismatchException("El sample debe ser menor a la cantidad de filas");
+        }
+
+        Tabla sample = new Tabla(this);
+        Collections.shuffle(sample._dameOrder());
+        //sample.head(cantidad_datos);
+        return sample;
+    }
+
+
+    @Override
+    public double sum(Columna columna){
+        if (columna.getCelda(0) instanceof CeldaNumber){
+            double acumulado = 0.0;
+            for (Celda celda : columna.getCeldas()){
+                if (celda.getContenido() != null){
+                    Number contenido = (Number) celda.getContenido();
+                    acumulado += contenido.doubleValue();
+                }
+                
+            }
+            return acumulado;
+        } else {
+            throw new InvalidDataTypeException("No se pueden sumar columnas no numericas");
+        }
+        
+    }
+
+    @Override
+    public double max(Columna columna) {
+        if (columna.getCelda(0) instanceof CeldaNumber) {
+            double maximo = Double.NaN; 
+            boolean encontrado = false;
+
+            for (Celda celda : columna.getCeldas()) {
+                Number contenido = (Number) celda.getContenido();
+
+                if (contenido != null) {
+                    if (!encontrado) {
+                        maximo = contenido.doubleValue();
+                        encontrado = true;
+                    } else if (contenido.doubleValue() > maximo) {
+                        maximo = contenido.doubleValue();
+                    }
+                }
+            }
+            if (encontrado) {
+                return maximo;
+            } else {
+                throw new IllegalStateException("No se encontraron valores no nulos en la columna");
+            }
+        } else {
+            throw new InvalidDataTypeException("No se puede obtener el máximo en columnas no numéricas");
+        }
+    }
+
+
+    @Override
+    public double min(Columna columna) {
+        if (columna.getCelda(0) instanceof CeldaNumber) {
+            double minimo = Double.NaN; 
+            boolean encontrado = false;
+
+            for (Celda celda : columna.getCeldas()) {
+                Number contenido = (Number) celda.getContenido();
+
+                if (contenido != null) {
+                    if (!encontrado) {
+                        minimo = contenido.doubleValue();
+                        encontrado = true;
+                    } else if (contenido.doubleValue() < minimo) {
+                        minimo = contenido.doubleValue();
+                    }
+                }
+            }
+            if (encontrado) {
+                return minimo;
+            } else {
+                throw new IllegalStateException("No se encontraron valores no nulos en la columna");
+            }
+        } else {
+            throw new InvalidDataTypeException("No se puede obtener el minimo en columnas no numéricas");
+        }
+    }
+
+    @Override
+    public int count(Columna columna) {
+        //debe tirar/ imprimir warning si hay valores nulos (NA)
+        return columna.size();
+    }
+
+    @Override
+    public double mean(Columna columna) {
+        return sum(columna) / count(columna);
+    }
+
+
+    @Override
+    public double variance(Columna columna) {
+        if (columna.getCelda(0) instanceof CeldaNumber){
+            double mean = mean(columna);
+            double acumulado = 0;
+
+            for (Celda celda : columna.getCeldas()){
+                if (celda.getContenido() != null) {
+                    Number contenido = (Number) celda.getContenido();
+                    acumulado += Math.pow(contenido.doubleValue() - mean, 2);
+                }
+            }
+            return acumulado / count(columna);
+
+        } else {
+            throw new InvalidDataTypeException("No se puede calcular la varianza en columnas no numericas");
+        }
+    }
+
+    @Override
+    public double standardDeviation(Columna columna) {
+        return Math.sqrt(variance(columna));
+    }
+
     public Tabla groupBy(String[] columnas){
         Tabla tabla_agrupada = new Tabla(this);
         return tabla_agrupada;
     }
-
 
 }

@@ -2,11 +2,8 @@ package com;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -22,28 +19,17 @@ public class Tabla {
     private List<Columna> tabla;
     private List<String> headers;
     private List<String> order;
-    private Map<String, Integer> colLabels = new HashMap<>();
-    private Map<String, Integer> rowLabels = new HashMap<>();
-    private String[] tiposDato;
+    private Map<String, Integer> colLabels = new LinkedHashMap<>();
+    private Map<String, Integer> rowLabels = new LinkedHashMap<>();
     private List<String> lineas = null;
-    private boolean esta_ordenado; // para cuando haya que poner que se reordene si ya lo estaba cada vez que
-                                   // agrego una fila
 
     protected Tabla() {
         this.tabla = new ArrayList<>();
         this.headers = new ArrayList<>();
         this.order = new ArrayList<>();
-        this.colLabels = new HashMap<>();
-        this.rowLabels = new HashMap<>();
+        this.colLabels = new LinkedHashMap<>();
+        this.rowLabels = new LinkedHashMap<>();
         this.lineas = new ArrayList<>();
-    }
-
-    private void _setOrdenado(Boolean o) {
-        this.esta_ordenado = o;
-    }
-
-    private void _setTiposDato(String[] t) {
-        this.tiposDato = t;
     }
 
     // Helpers?
@@ -67,17 +53,10 @@ public class Tabla {
         return this.rowLabels;
     }
 
-    protected String[] _dameTiposDato() {
-        return this.tiposDato;
-    }
-
     protected List<String> _dameLineas() {
         return this.lineas;
     }
 
-    protected Boolean _dameEstaOrdenado() {
-        return this.esta_ordenado;
-    }
 
     /**
      * Crea una tabla usando una tabla (un deep copy)
@@ -88,11 +67,9 @@ public class Tabla {
         List<Columna> ct = new ArrayList<>();
         List<String> ht = new ArrayList<>();
         List<String> ot = new ArrayList<>();
-        Map<String, Integer> colT = new HashMap<>();
-        Map<String, Integer> rowT = new HashMap<>();
-        String[] tdt;
+        Map<String, Integer> colT = new LinkedHashMap<>();
+        Map<String, Integer> rowT = new LinkedHashMap<>();
         List<String> lt = new ArrayList<>();
-        Boolean eot;
         // Genero tabla
         for (Columna c : t._dameTabla()) {
             ct.add((Columna) c.clone());
@@ -118,17 +95,12 @@ public class Tabla {
             rowT.put(entry.getKey(), entry.getValue());
         }
         this.rowLabels = rowT;
-        // Genero tiposDato
-        tdt = Arrays.copyOf(t._dameTiposDato(), t._dameTiposDato().length);
-        this.tiposDato = tdt;
+
         // Genero lineas
         for (String l : t._dameLineas()) {
             lt.add(l.toString());
         }
         this.lineas = lt;
-        // Genero esta ordenado
-        eot = t._dameEstaOrdenado();
-        this.esta_ordenado = eot;
 
     }
 
@@ -211,7 +183,6 @@ public class Tabla {
             System.err.println("Check for aproppiate constructor");
             System.exit(1);
         }
-        this.tiposDato = tiposDato;
         this.lineas = lineas;
 
     }
@@ -224,8 +195,6 @@ public class Tabla {
      * 
      */
     public Tabla(String[] tiposDato, String filename) {
-        this.tiposDato = tiposDato;
-        this.esta_ordenado = false;
 
         try {
             lineas = Tablas.leerCSV(filename);
@@ -294,8 +263,6 @@ public class Tabla {
      * 
      */
     public Tabla(String[] tiposDato, String fileName, boolean hasHeaders) {
-        this.tiposDato = tiposDato;
-        this.esta_ordenado = false;
         try {
             lineas = Tablas.leerCSV(fileName);
             if (lineas.get(0).split(",").length != tiposDato.length) {
@@ -371,8 +338,6 @@ public class Tabla {
      * @param columna_key
      */
     public Tabla(String[] tiposDato, String fileName, boolean hasHeaders, boolean hasRowKey, int columna_key) {
-        this.tiposDato = tiposDato;
-        this.esta_ordenado = false;
 
         try {
             lineas = Tablas.leerCSV(fileName);
@@ -457,13 +422,11 @@ public class Tabla {
      * 
      */
     // public Tabla(Tabla tabla){
-    // this.esta_ordenado = false;
     // this.tabla = tabla.tabla;
     // this.headers = tabla.headers;
     // this.order = tabla.order;
     // this.colLabels = tabla.colLabels;
     // this.rowLabels = tabla.rowLabels;
-    // this.tiposDato = tabla.tiposDato;
     // this.lineas = tabla.lineas;
     // }
 
@@ -524,7 +487,7 @@ public class Tabla {
 
         // Auto-detección del ancho de columna
         int[] anchoColumna = new int[headers.size()];
-
+        
         // Obtener el orden de las filas
         List<String> orderFilas = order;
 
@@ -549,7 +512,7 @@ public class Tabla {
 
         // Iterar y agregar filas en el orden especificado
         for (String filaKey : orderFilas) {
-            if (!rowLabels.containsKey(filaKey)) {
+                        if (!rowLabels.containsKey(filaKey)) {
                 throw new IllegalArgumentException("La fila con la clave " + filaKey + " no existe en la tabla.");
             }
 
@@ -681,10 +644,10 @@ public class Tabla {
             if (rowLabels.containsKey(keyFila)) {
                 return tabla.get(colLabels.get(keyColumna)).getCelda(rowLabels.get(keyFila));
             } else {
-                throw new IllegalArgumentException("No existe la fila " + keyFila + ".");
+                throw new IllegalArgumentException("No existe esa fila");
             }
         } else {
-            throw new IllegalArgumentException("No existe la columna '" + keyColumna + "'.");
+            throw new IllegalArgumentException("No existe esa columna");
         }
     }
 
@@ -712,9 +675,10 @@ public class Tabla {
         if (newColumna.size() == cantFilas()) {
             if (colLabels.containsKey(oldKey)) {
                 if (!colLabels.containsKey(newKey)) {
+                    int index = colLabels.get(oldKey);
                     tabla.add(newColumna);
                     colLabels.put(newKey, ultimoIndice());
-                    headers.set(colLabels.get(oldKey) , newKey);
+                    headers.set(index, newKey);
                 } else {
                     throw new IllegalLabelException(
                             "La nueva etiqueta ya corresponde a otra columna y no puede ser duplicada.");
@@ -746,30 +710,30 @@ public class Tabla {
         }
     }
 
-    // public void setFila(Fila newFila, String oldKey, String newKey) { // Funciona pero no lo imprime bien
-    //     /**
-    //      * Reemplaza el contenido de una fila por una nueva, cambia la label sirve solo
-    //      * para rowkeys no numericas, sino no tiene sentido.
-    //      */
-    //     if (newFila.size() == tabla.size()) {
-    //         if (rowLabels.containsKey(oldKey)) {
-    //             if (!rowLabels.containsKey(newKey)) {
-    //                 for (int i = 0; i < newFila.size(); i++) {
-    //                     tabla.get(i).getCeldas().set(rowLabels.get(oldKey), newFila.getCelda(i));
-    //                 }
-    //                 rowLabels.put(newKey, rowLabels.get(oldKey));
-    //                 rowLabels.remove(oldKey);
-    //             } else {
-    //                 throw new IllegalLabelException(
-    //                         "La nueva etiqueta ya corresponde a otra fila y no puede ser duplicada.");
-    //             }
-    //         } else {
-    //             throw new IllegalLabelException("La fila especificada no existe.");
-    //         }
-    //     } else {
-    //         throw new LengthMismatchException("El tamaño de la fila nueva no coincide con la cantidad de columnas.");
-    //     }
-    // }
+    public void setFila(Fila newFila, String oldKey, String newKey) { // Funciona pero no lo imprime bien
+        /**
+         * Reemplaza el contenido de una fila por una nueva, cambia la label sirve solo
+         * para rowkeys no numericas, sino no tiene sentido.
+         */
+        if (newFila.size() == tabla.size()) {
+            if (rowLabels.containsKey(oldKey)) {
+                if (!rowLabels.containsKey(newKey)) {
+                    for (int i = 0; i < newFila.size(); i++) {
+                        tabla.get(i).getCeldas().set(rowLabels.get(oldKey), newFila.getCelda(i));
+                    }
+                    rowLabels.put(newKey, rowLabels.get(oldKey));
+                    rowLabels.remove(oldKey);
+                } else {
+                    throw new IllegalLabelException(
+                            "La nueva etiqueta ya corresponde a otra fila y no puede ser duplicada.");
+                }
+            } else {
+                throw new IllegalLabelException("La fila especificada no existe.");
+            }
+        } else {
+            throw new LengthMismatchException("El tamaño de la fila nueva no coincide con la cantidad de columnas.");
+        }
+    }
 
     public void setCelda(String keyFila, String keyColumna, Object value) throws InvalidDataTypeException {
         /**
@@ -822,7 +786,7 @@ public class Tabla {
             colLabels.put(label, ultimoIndice());
             headers.add(label);
         } else {
-            throw new IllegalLabelException("Ya existe una columna con el nombre '" + label + "'.");
+            throw new IllegalLabelException("Ya existe una columna con ese nombre");
         }
     }
 
@@ -842,43 +806,44 @@ public class Tabla {
             headers.remove(index);
 
         } else {
-            throw new IllegalLabelException("El encabezado '" + key +  "' no existe.");
+            throw new IllegalLabelException("Este encabezado no existe");
         }
     }
 
     public void addFila(Fila nuevaFila) {
         /**
          * Agrega una nueva fila.
-        */ 
-        if (nuevaFila.size() != tabla.size()) {
-            throw new IllegalArgumentException("La cantidad de datos de la fila no corresponde con el tamaño de la tabla.");
-        }
+         */
         if (!contieneFila(nuevaFila)) {
             for (int i = 0; i < tabla.size(); i++) {
                 tabla.get(i).addCelda(nuevaFila.getFila().get(i));
+                rowLabels.put(String.valueOf(cantFilas() - 1), cantFilas() - 1);
+                order.add(String.valueOf(cantFilas() - 1));
             }
-            rowLabels.put(String.valueOf(cantFilas() - 1), cantFilas() - 1);
-            order.add(String.valueOf(cantFilas() - 1));
         } else {
-            throw new IllegalLibraryUse("No se permite duplicar las filas.");
+            throw new IllegalLibraryUse("No se permite duplicar las filas");
         }
+
     }
 
     public void removeFila(String key) {
         /**
          * Elimina una fila
-        */
+         */
         if (rowLabels.containsKey(key)) {
-            int rowIndex = rowLabels.get(key);
-
-            // Elimino las celdas de cada columna
             for (Columna col : tabla) {
-                col.removeCelda(rowIndex);
+                col.removeCelda(rowLabels.get(key));
+
+                for (String row : order) {
+                    if (rowLabels.get(row) > rowLabels.get(key)) {
+                        rowLabels.put(row, rowLabels.get(row) - 1);
+                    }
+                }
+
+                order.remove(key);
             }
-            rowLabels.remove(key);
-            order.remove(key);
         } else {
-            throw new IllegalLabelException("No existe la fila " + key + ".");
+            throw new IllegalLabelException("No existe fila con esa key");
         }
     }
 
@@ -887,14 +852,14 @@ public class Tabla {
     public void infoBasica() {
         /*
          * Lo que esperamos es que salga algo asi
-         * # nombreColumna Non-Null Count tipoDato
+         * # Encabezados Non-Null Count tipoDato
          * --- ------------- -------------- -------
          * 0 int_col 5 non-null Number
          * 1 text_col 5 non-null String
          * 2 col_boolean 5 non-null boolean
          * 
          * Number[] indiceColumnas = [0, 1, 2] tipo Number
-         * nombreColumna = [int_col, text_col, col_boolean] tipo String
+         * Encabezados = [int_col, text_col, col_boolean] tipo String
          * nonNullCount = [5, 5, 5] tipo Number
          * tipoDato = [Number,String,boolean] tipo String
          * y despues imprimir la tabla que generamos
@@ -903,52 +868,49 @@ public class Tabla {
         // { "D", "E", "F" },
         // { "G", "H", "I" }
         // };
-        List<String> nombreColumna = new ArrayList<>();
-        List<String> cantidadNonNull = new ArrayList<>();
 
-        for (int index_columna = 0; index_columna < tabla.size(); index_columna++) {
-            nombreColumna.add(headers.get(index_columna)); /*
-                                                            * despues se cambia para usar el metodo para darle headers
-                                                            */
+        List<String> tipoDato = new ArrayList<>();
+        for (String encabezado : _dameHeaders()){
+            tipoDato.add(getColumna(encabezado).getCelda(0).getContenido().getClass().getSimpleName());
         }
 
-        for (int index_columna = 0; index_columna < tabla.size(); index_columna++) {
-            Columna miColumna = tabla.get(index_columna); /* esta mugre fue porque Columna no es iterable? */
-            int celdasCompletas = 0;
-            List<Celda> miLista = miColumna.getCeldas();
-            for (Celda celda : miLista) {
-                if (celda.isNA() == false) {
-                    celdasCompletas++;
+        String[] tipoDatoDetectado = tipoDato.toArray(new String[0]);
+
+        List<String> cantidadNonNull = new ArrayList<>();
+        for (String encabezado : _dameHeaders()){
+            Columna col = getColumna(encabezado);
+            int celdasNoNulas = 0;
+
+            for (Celda celda : col.getCeldas()){
+                if (!celda.isNA()){
+                    celdasNoNulas++;
                 }
             }
-            cantidadNonNull.add(String.valueOf(celdasCompletas));
+            cantidadNonNull.add(String.valueOf(celdasNoNulas));
         }
 
-        /*
-         * DE ACA PARA ARRIBA NO SE TOCA
-         * TODO: headers
-         */
-        String[] headers = { "Nombre", "NonNull", "TipoDato" };
-        String[] tipoDeDato = { "String", "String", "String" };
-        String[] nomCol = nombreColumna.toArray(new String[0]);
+        String[] encabezados = {"Nombre", "NonNull", "TipoDato" };
+        String[] tipoDeDatoHeaders = { "String", "String", "String" };
+        String[] nomCol = _dameHeaders().toArray(new String[0]);
         String[] noNulo = cantidadNonNull.toArray(new String[0]);
+
         List<String[]> data_fila = new ArrayList<>();
-        data_fila.add(headers);
-        for (int i = 0; i < headers.length; i++) {
-            String[] row = { nomCol[i], noNulo[i], this.tiposDato[i] };
+        data_fila.add(encabezados);
+
+        for (int i = 0; i < encabezados.length; i++) {
+            String[] row = { nomCol[i], noNulo[i], tipoDatoDetectado[i] };
             data_fila.add(row);
         }
-        // String[][] datos = {
-        // indCol,
-        // nomCol,
-        // noNulo,
-        // tiposDato };
+
         String[][] datos = new String[data_fila.size()][data_fila.get(0).length];
         for (int i = 0; i < data_fila.size(); i++) {
             String[] row = data_fila.get(i);
             System.arraycopy(row, 0, datos[i], 0, data_fila.get(0).length);
         }
-        Tabla infoTabla = new Tabla(tipoDeDato, datos, true);
+        Tabla infoTabla = new Tabla(tipoDeDatoHeaders, datos, true);
+        System.out.println("Cantidad de columnas: " + _dameHeaders().size());
+        System.out.println("Cantidad de filas: " + cantFilas());
+        System.out.println();
         System.out.println(infoTabla.toString());
     }
 
@@ -973,8 +935,6 @@ public class Tabla {
         t.colLabels = this.colLabels;
         t.rowLabels = this.rowLabels;
         t.lineas = this.lineas;
-        t._setTiposDato(this.tiposDato);
-        t._setOrdenado(this.esta_ordenado);
         return t;
     }
     /* Sort */
@@ -1031,10 +991,47 @@ public class Tabla {
         return reducida;
     }
 
-    public Tabla merge(Tabla other){
+    public Tabla concat(Tabla other){
+        // si es una tabla con rowkeys no numericas habria que chequear que no se repitan
+
         Tabla newTabla = new Tabla(this);
 
+        for (String header : newTabla._dameHeaders()){
+            if (!other._dameHeaders().contains(header)){
+                throw new MismatchedDataException("Un encabezado de la tabla a agregar no existe en la tabla actual");
+            }
+        }
+
+        for (String header : other._dameHeaders()){
+            if (!newTabla._dameHeaders().contains(header)){
+                throw new MismatchedDataException("Un encabezado de la tabla actual no existe en la tabla a agregar");
+            }
+        }
+
+        Tabla other_ordenada = other.select((String[])newTabla._dameHeaders().toArray());
+
+        for (String header : newTabla._dameHeaders()){
+            Celda cNT = newTabla.getCelda("0", header);
+            Celda cO = other_ordenada.getCelda("0", header);
+
+            if (!(cNT.getClass() == cO.getClass() || (cNT.getContenido() != null && cO.getContenido() != null && !cNT.getContenido().getClass().equals(cO.getContenido().getClass())))) {
+                throw new InvalidDataTypeException("No coinciden los tipos de datos en las columnas " + header);
+            }
+            
+        }
+
+        for (String rowKey : other_ordenada._dameOrder()){
+
+            Fila filaAgregar = other_ordenada.getFila(rowKey);
+            newTabla.addFila(filaAgregar);
+
+        }
         return newTabla;
+    }
+
+    public Tabla groupBy(String[] columnas){
+        Tabla tabla_agrupada = new Tabla(this);
+        return tabla_agrupada;
     }
 
 

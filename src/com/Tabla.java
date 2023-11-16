@@ -2,11 +2,8 @@ package com;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -22,23 +19,17 @@ public class Tabla {
     private List<Columna> tabla;
     private List<String> headers;
     private List<String> order;
-    private Map<String, Integer> colLabels = new HashMap<>();
-    private Map<String, Integer> rowLabels = new HashMap<>();
-    private String[] tiposDato;
+    private Map<String, Integer> colLabels = new LinkedHashMap<>();
+    private Map<String, Integer> rowLabels = new LinkedHashMap<>();
     private List<String> lineas = null;
 
     protected Tabla() {
         this.tabla = new ArrayList<>();
         this.headers = new ArrayList<>();
         this.order = new ArrayList<>();
-        this.colLabels = new HashMap<>();
-        this.rowLabels = new HashMap<>();
+        this.colLabels = new LinkedHashMap<>();
+        this.rowLabels = new LinkedHashMap<>();
         this.lineas = new ArrayList<>();
-    }
-
-
-    private void _setTiposDato(String[] t) {
-        this.tiposDato = t;
     }
 
     // Helpers?
@@ -62,10 +53,6 @@ public class Tabla {
         return this.rowLabels;
     }
 
-    protected String[] _dameTiposDato() {
-        return this.tiposDato;
-    }
-
     protected List<String> _dameLineas() {
         return this.lineas;
     }
@@ -80,11 +67,9 @@ public class Tabla {
         List<Columna> ct = new ArrayList<>();
         List<String> ht = new ArrayList<>();
         List<String> ot = new ArrayList<>();
-        Map<String, Integer> colT = new HashMap<>();
-        Map<String, Integer> rowT = new HashMap<>();
-        String[] tdt;
+        Map<String, Integer> colT = new LinkedHashMap<>();
+        Map<String, Integer> rowT = new LinkedHashMap<>();
         List<String> lt = new ArrayList<>();
-        Boolean eot;
         // Genero tabla
         for (Columna c : t._dameTabla()) {
             ct.add((Columna) c.clone());
@@ -110,9 +95,7 @@ public class Tabla {
             rowT.put(entry.getKey(), entry.getValue());
         }
         this.rowLabels = rowT;
-        // Genero tiposDato
-        tdt = Arrays.copyOf(t._dameTiposDato(), t._dameTiposDato().length);
-        this.tiposDato = tdt;
+
         // Genero lineas
         for (String l : t._dameLineas()) {
             lt.add(l.toString());
@@ -200,7 +183,6 @@ public class Tabla {
             System.err.println("Check for aproppiate constructor");
             System.exit(1);
         }
-        this.tiposDato = tiposDato;
         this.lineas = lineas;
 
     }
@@ -213,7 +195,6 @@ public class Tabla {
      * 
      */
     public Tabla(String[] tiposDato, String filename) {
-        this.tiposDato = tiposDato;
 
         try {
             lineas = Tablas.leerCSV(filename);
@@ -282,7 +263,6 @@ public class Tabla {
      * 
      */
     public Tabla(String[] tiposDato, String fileName, boolean hasHeaders) {
-        this.tiposDato = tiposDato;
         try {
             lineas = Tablas.leerCSV(fileName);
             if (lineas.get(0).split(",").length != tiposDato.length) {
@@ -358,7 +338,6 @@ public class Tabla {
      * @param columna_key
      */
     public Tabla(String[] tiposDato, String fileName, boolean hasHeaders, boolean hasRowKey, int columna_key) {
-        this.tiposDato = tiposDato;
 
         try {
             lineas = Tablas.leerCSV(fileName);
@@ -448,7 +427,6 @@ public class Tabla {
     // this.order = tabla.order;
     // this.colLabels = tabla.colLabels;
     // this.rowLabels = tabla.rowLabels;
-    // this.tiposDato = tabla.tiposDato;
     // this.lineas = tabla.lineas;
     // }
 
@@ -874,14 +852,14 @@ public class Tabla {
     public void infoBasica() {
         /*
          * Lo que esperamos es que salga algo asi
-         * # nombreColumna Non-Null Count tipoDato
+         * # Encabezados Non-Null Count tipoDato
          * --- ------------- -------------- -------
          * 0 int_col 5 non-null Number
          * 1 text_col 5 non-null String
          * 2 col_boolean 5 non-null boolean
          * 
          * Number[] indiceColumnas = [0, 1, 2] tipo Number
-         * nombreColumna = [int_col, text_col, col_boolean] tipo String
+         * Encabezados = [int_col, text_col, col_boolean] tipo String
          * nonNullCount = [5, 5, 5] tipo Number
          * tipoDato = [Number,String,boolean] tipo String
          * y despues imprimir la tabla que generamos
@@ -890,52 +868,49 @@ public class Tabla {
         // { "D", "E", "F" },
         // { "G", "H", "I" }
         // };
-        List<String> nombreColumna = new ArrayList<>();
-        List<String> cantidadNonNull = new ArrayList<>();
 
-        for (int index_columna = 0; index_columna < tabla.size(); index_columna++) {
-            nombreColumna.add(headers.get(index_columna)); /*
-                                                            * despues se cambia para usar el metodo para darle headers
-                                                            */
+        List<String> tipoDato = new ArrayList<>();
+        for (String encabezado : _dameHeaders()){
+            tipoDato.add(getColumna(encabezado).getCelda(0).getContenido().getClass().getSimpleName());
         }
 
-        for (int index_columna = 0; index_columna < tabla.size(); index_columna++) {
-            Columna miColumna = tabla.get(index_columna); /* esta mugre fue porque Columna no es iterable? */
-            int celdasCompletas = 0;
-            List<Celda> miLista = miColumna.getCeldas();
-            for (Celda celda : miLista) {
-                if (celda.isNA() == false) {
-                    celdasCompletas++;
+        String[] tipoDatoDetectado = tipoDato.toArray(new String[0]);
+
+        List<String> cantidadNonNull = new ArrayList<>();
+        for (String encabezado : _dameHeaders()){
+            Columna col = getColumna(encabezado);
+            int celdasNoNulas = 0;
+
+            for (Celda celda : col.getCeldas()){
+                if (!celda.isNA()){
+                    celdasNoNulas++;
                 }
             }
-            cantidadNonNull.add(String.valueOf(celdasCompletas));
+            cantidadNonNull.add(String.valueOf(celdasNoNulas));
         }
 
-        /*
-         * DE ACA PARA ARRIBA NO SE TOCA
-         * TODO: headers
-         */
-        String[] headers = { "Nombre", "NonNull", "TipoDato" };
-        String[] tipoDeDato = { "String", "String", "String" };
-        String[] nomCol = nombreColumna.toArray(new String[0]);
+        String[] encabezados = {"Nombre", "NonNull", "TipoDato" };
+        String[] tipoDeDatoHeaders = { "String", "String", "String" };
+        String[] nomCol = _dameHeaders().toArray(new String[0]);
         String[] noNulo = cantidadNonNull.toArray(new String[0]);
+
         List<String[]> data_fila = new ArrayList<>();
-        data_fila.add(headers);
-        for (int i = 0; i < headers.length; i++) {
-            String[] row = { nomCol[i], noNulo[i], this.tiposDato[i] };
+        data_fila.add(encabezados);
+
+        for (int i = 0; i < encabezados.length; i++) {
+            String[] row = { nomCol[i], noNulo[i], tipoDatoDetectado[i] };
             data_fila.add(row);
         }
-        // String[][] datos = {
-        // indCol,
-        // nomCol,
-        // noNulo,
-        // tiposDato };
+
         String[][] datos = new String[data_fila.size()][data_fila.get(0).length];
         for (int i = 0; i < data_fila.size(); i++) {
             String[] row = data_fila.get(i);
             System.arraycopy(row, 0, datos[i], 0, data_fila.get(0).length);
         }
-        Tabla infoTabla = new Tabla(tipoDeDato, datos, true);
+        Tabla infoTabla = new Tabla(tipoDeDatoHeaders, datos, true);
+        System.out.println("Cantidad de columnas: " + _dameHeaders().size());
+        System.out.println("Cantidad de filas: " + cantFilas());
+        System.out.println();
         System.out.println(infoTabla.toString());
     }
 
@@ -960,7 +935,6 @@ public class Tabla {
         t.colLabels = this.colLabels;
         t.rowLabels = this.rowLabels;
         t.lineas = this.lineas;
-        t._setTiposDato(this.tiposDato);
         return t;
     }
     /* Sort */
@@ -1017,26 +991,36 @@ public class Tabla {
         return reducida;
     }
 
-    public Tabla merge(Tabla other){
+    public Tabla concat(Tabla other){
         // si es una tabla con rowkeys no numericas habria que chequear que no se repitan
 
         Tabla newTabla = new Tabla(this);
 
-        for (String header : newTabla.headers){
-            if (!other.headers.contains(header)){
+        for (String header : newTabla._dameHeaders()){
+            if (!other._dameHeaders().contains(header)){
                 throw new MismatchedDataException("Un encabezado de la tabla a agregar no existe en la tabla actual");
             }
         }
 
-        for (String header : other.headers){
-            if (!newTabla.headers.contains(header)){
+        for (String header : other._dameHeaders()){
+            if (!newTabla._dameHeaders().contains(header)){
                 throw new MismatchedDataException("Un encabezado de la tabla actual no existe en la tabla a agregar");
             }
         }
 
-        Tabla other_ordenada = other.select((String[])newTabla.headers.toArray());
+        Tabla other_ordenada = other.select((String[])newTabla._dameHeaders().toArray());
 
-        for (String rowKey : other_ordenada.order){
+        for (String header : newTabla._dameHeaders()){
+            Celda cNT = newTabla.getCelda("0", header);
+            Celda cO = other_ordenada.getCelda("0", header);
+
+            if (!(cNT.getClass() == cO.getClass() || (cNT.getContenido() != null && cO.getContenido() != null && !cNT.getContenido().getClass().equals(cO.getContenido().getClass())))) {
+                throw new InvalidDataTypeException("No coinciden los tipos de datos en las columnas " + header);
+            }
+            
+        }
+
+        for (String rowKey : other_ordenada._dameOrder()){
 
             Fila filaAgregar = other_ordenada.getFila(rowKey);
             newTabla.addFila(filaAgregar);
@@ -1047,8 +1031,6 @@ public class Tabla {
 
     public Tabla groupBy(String[] columnas){
         Tabla tabla_agrupada = new Tabla(this);
-
-
         return tabla_agrupada;
     }
 

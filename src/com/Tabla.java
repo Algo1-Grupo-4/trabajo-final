@@ -1,4 +1,5 @@
 package com;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,8 +14,13 @@ import java.util.function.Predicate;
 import excepciones.*;
 
 /**
- * @author Grupo4 -
+ * La clase Tabla permite generar una estructura de datos.
  * 
+ * @author Grupo4 - Giorgetti, Nicolás - Molena, Ivana - Sosa, Naiara - Strika,
+ *         Camila - Vazquez, Lucía
+ * @version 0.9
+ * @see <a href=https://www.taylorswift.com/ /> It's me, hi, I'm the Dataframe,
+ *      it's me </a>
  */
 
 public class Tabla implements Summarize {
@@ -24,86 +30,6 @@ public class Tabla implements Summarize {
     private Map<String, Integer> colLabels = new LinkedHashMap<>();
     private Map<String, Integer> rowLabels = new LinkedHashMap<>();
     private List<String> lineas = null;
-
-    protected Tabla() {
-        this.tabla = new ArrayList<>();
-        this.headers = new ArrayList<>();
-        this.order = new ArrayList<>();
-        this.colLabels = new LinkedHashMap<>();
-        this.rowLabels = new LinkedHashMap<>();
-        this.lineas = new ArrayList<>();
-    }
-
-    // Helpers?
-    protected List<Columna> _dameTabla() {
-        return this.tabla;
-    }
-
-    protected List<String> _dameHeaders() {
-        return this.headers;
-    }
-
-    protected List<String> _dameOrder() {
-        return this.order;
-    }
-
-    protected Map<String, Integer> _dameColLabels() {
-        return this.colLabels;
-    }
-
-    protected Map<String, Integer> _dameRowLabels() {
-        return this.rowLabels;
-    }
-
-    protected List<String> _dameLineas() {
-        return this.lineas;
-    }
-
-    /**
-     * Crea una tabla usando una tabla (un deep copy)
-     * 
-     * @param t tabla a copiar
-     */
-    private Tabla(Tabla t) {
-        List<Columna> ct = new ArrayList<>();
-        List<String> ht = new ArrayList<>();
-        List<String> ot = new ArrayList<>();
-        Map<String, Integer> colT = new LinkedHashMap<>();
-        Map<String, Integer> rowT = new LinkedHashMap<>();
-        List<String> lt = new ArrayList<>();
-        // Genero tabla
-        for (Columna c : t._dameTabla()) {
-            ct.add((Columna) c.clone());
-        }
-        this.tabla = ct;
-        // Genero headers
-        for (String h : t._dameHeaders()) {
-            ht.add(h.toString());
-        }
-        this.headers = ht;
-        // Genero order
-        for (String h : t._dameOrder()) {
-            ot.add(h.toString());
-        }
-        this.order = ot;
-        // Genero collabels
-        for (Map.Entry<String, Integer> entry : t._dameColLabels().entrySet()) {
-            colT.put(entry.getKey(), entry.getValue());
-        }
-        this.colLabels = colT;
-        // Genero rowlabels
-        for (Map.Entry<String, Integer> entry : t._dameRowLabels().entrySet()) {
-            rowT.put(entry.getKey(), entry.getValue());
-        }
-        this.rowLabels = rowT;
-
-        // Genero lineas
-        for (String l : t._dameLineas()) {
-            lt.add(l.toString());
-        }
-        this.lineas = lt;
-
-    }
 
     /**
      * Genera una tabla desde una Lista de Lista de Strings.
@@ -148,7 +74,6 @@ public class Tabla implements Summarize {
                     this.headers = headers;
                 }
             } else {
-
                 List<String> headers = new ArrayList<>();
                 for (int j = 0; j < lineas.get(0).split(",").length; j++) {
                     colLabels.put(String.valueOf(j), j);
@@ -157,15 +82,14 @@ public class Tabla implements Summarize {
                 this.headers = headers;
             }
             String[][] data = Tablas.parserCSV(lineas, tiposDato.length, ",");
-            if (data.length > 0) {
-                tabla = new ArrayList<>();
-                for (String tipoDato : tiposDato) {
-                    Columna columna = new Columna(tipoDato, data.length);
-                    tabla.add(columna);
-                }
-            } else {
+            if (data.length <= 0) {
                 throw new IllegalArgumentException(
                         "No se encontraron datos en el archivo CSV.");
+            }
+            tabla = new ArrayList<>();
+            for (String tipoDato : tiposDato) {
+                Columna columna = new Columna(tipoDato, data.length);
+                tabla.add(columna);
             }
             llenarTabla(data, tiposDato);
             List<String> order = new ArrayList<>();
@@ -173,7 +97,6 @@ public class Tabla implements Summarize {
                 rowLabels.put(String.valueOf(k), k);
                 order.add(String.valueOf(k));
             }
-
             this.order = order;
         } catch (InvalidDataTypeException e) {
             e.printStackTrace();
@@ -185,7 +108,6 @@ public class Tabla implements Summarize {
             System.exit(1);
         }
         this.lineas = lineas;
-
     }
 
     /**
@@ -196,50 +118,40 @@ public class Tabla implements Summarize {
      * 
      */
     public Tabla(String[] tiposDato, String filename) {
-
         try {
             lineas = Tablas.leerCSV(filename);
-
             if (lineas.get(0).split(",").length != tiposDato.length) {
                 throw new IncorrectHeaderCountException(
                         "La cantidad de columnas y tipos de datos no coinciden.");
             }
-
             List<String> headers = new ArrayList<>();
             for (int j = 0; j < lineas.get(0).split(",").length; j++) {
                 colLabels.put(String.valueOf(j), j);
                 headers.add(String.valueOf(j));
             }
             this.headers = headers;
-
             for (int j = 0; j < lineas.get(0).split(",").length; j++) {
                 colLabels.put(String.valueOf(j), j);
                 headers.add(String.valueOf(j));
             }
             this.headers = headers;
-
             String[][] datos = Tablas.parserCSV(lineas, tiposDato.length, ",");
-
-            if (datos.length > 0) {
-                tabla = new ArrayList<>();
-                for (String tipoDato : tiposDato) {
-                    Columna columna = new Columna(tipoDato, datos.length);
-                    tabla.add(columna);
-                }
-            } else {
+            if (datos.length <= 0) {
                 throw new IllegalArgumentException(
                         "No se encontraron datos en el archivo CSV.");
             }
-
+            tabla = new ArrayList<>();
+            for (String tipoDato : tiposDato) {
+                Columna columna = new Columna(tipoDato, datos.length);
+                tabla.add(columna);
+            }
             llenarTabla(datos, tiposDato);
-
             List<String> order = new ArrayList<>();
             for (int k = 0; k < tabla.get(0).size(); k++) {
                 rowLabels.put(String.valueOf(k), k);
                 order.add(String.valueOf(k));
             }
             this.order = order;
-
         } catch (IOException e) {
             System.err.println(e + " \nNo puedo avanzar sin archivo");
             System.exit(1);
@@ -259,9 +171,8 @@ public class Tabla implements Summarize {
      * encabezados.
      * 
      * @param tiposDato  String[] indicando los tipos de dato
-     * @param datos      List<String> Con los datos para cargar en tabla
+     * @param fileName   String con el path hacia el archivo
      * @param hasHeaders boolean de si el archivo tiene headers o no
-     * 
      */
     public Tabla(String[] tiposDato, String fileName, boolean hasHeaders) {
         try {
@@ -286,30 +197,23 @@ public class Tabla implements Summarize {
                 throw new IllegalConstructorException(
                         "Si no tiene headers, use el constructor apropiado");
             }
-
             String[][] datos = Tablas.parserCSV(lineas, tiposDato.length, ",");
-
-            if (datos.length > 0) {
-                tabla = new ArrayList<>();
-                for (String tipoDato : tiposDato) {
-                    Columna columna = new Columna(tipoDato, datos.length);
-                    tabla.add(columna);
-                }
-            } else {
+            if (datos.length <= 0) {
                 throw new IllegalArgumentException(
                         "No se encontraron datos en el archivo CSV.");
             }
-
+            tabla = new ArrayList<>();
+            for (String tipoDato : tiposDato) {
+                Columna columna = new Columna(tipoDato, datos.length);
+                tabla.add(columna);
+            }
             llenarTabla(datos, tiposDato);
-
             List<String> order = new ArrayList<>();
             for (int k = 0; k < tabla.get(0).size(); k++) {
                 rowLabels.put(String.valueOf(k), k);
                 order.add(String.valueOf(k));
             }
-
             this.order = order;
-
         } catch (IOException e) {
             System.err.println(e + " \nNo puedo avanzar sin archivo");
             System.exit(1);
@@ -328,17 +232,18 @@ public class Tabla implements Summarize {
         }
     }
 
-    // TODO: Expandir
+    // TODO: Responder esta pregunta: ¿Cuándo se usa esta tabla?
+    // TODO: Vamos a dejarla publica?
     /**
-     * Crea una tabla pero tiene hasRowKey
+     * Crea una tabla cuando
      * 
-     * @param tiposDato
-     * @param fileName
-     * @param hasHeaders
-     * @param hasRowKey
-     * @param columna_key
+     * @param tiposDato  lista de tipos de datos
+     * @param fileName   path al archivo csv
+     * @param hasHeaders si el archivo tiene headers
+     * @param hasRowKey  si las filas del archivo tienen una clave
+     * @param columnaKey la key de la columna que debe ser tratada como clave
      */
-    public Tabla(String[] tiposDato, String fileName, boolean hasHeaders, boolean hasRowKey, int columna_key) {
+    public Tabla(String[] tiposDato, String fileName, boolean hasHeaders, boolean hasRowKey, int columnaKey) {
 
         try {
             lineas = Tablas.leerCSV(fileName);
@@ -362,25 +267,20 @@ public class Tabla implements Summarize {
                 throw new IllegalConstructorException(
                         "Si no tiene headers, use el constructor apropiado.");
             }
-
             String[][] datos = Tablas.parserCSV(lineas, tiposDato.length, ",");
-
-            if (datos.length > 0) {
-                tabla = new ArrayList<>();
-                for (String tipoDato : tiposDato) {
-                    Columna columna = new Columna(tipoDato, datos.length);
-                    tabla.add(columna);
-                }
-            } else {
+            if (datos.length <= 0) {
                 throw new IllegalArgumentException("No se encontraron datos en el archivo CSV.");
             }
-
+            tabla = new ArrayList<>();
+            for (String tipoDato : tiposDato) {
+                Columna columna = new Columna(tipoDato, datos.length);
+                tabla.add(columna);
+            }
             llenarTabla(datos, tiposDato);
-
             if (hasRowKey) {
                 List<String> order = new ArrayList<>();
                 int i = 0;
-                for (Celda celda : tabla.get(columna_key).getCeldas()) {
+                for (Celda celda : tabla.get(columnaKey).getCeldas()) {
                     rowLabels.put(String.valueOf(celda.getContenido()), i);
                     order.add(String.valueOf(celda.getContenido()));
                 }
@@ -389,11 +289,9 @@ public class Tabla implements Summarize {
                 } else {
                     throw new IllegalLabelException("La columna dada no es una key");
                 }
-
             } else {
                 throw new IllegalConstructorException("Si no tiene clave, use el constructor apropiado");
             }
-
         } catch (IOException e) {
             System.err.println(e + " \nNo puedo avanzar sin archivo");
             System.exit(1);
@@ -417,68 +315,55 @@ public class Tabla implements Summarize {
     }
 
     /**
-     * Constructor de una tabla desde otra tabla
-     * 
-     * @param tabla Tabla origen
+     * Genera una tabla vacía
+     * Esto es utilizado para un shallowCopy
      * 
      */
-    // public Tabla(Tabla tabla){
-    // this.tabla = tabla.tabla;
-    // this.headers = tabla.headers;
-    // this.order = tabla.order;
-    // this.colLabels = tabla.colLabels;
-    // this.rowLabels = tabla.rowLabels;
-    // this.lineas = tabla.lineas;
-    // }
+    protected Tabla() {
+        this.tabla = new ArrayList<>();
+        this.headers = new ArrayList<>();
+        this.order = new ArrayList<>();
+        this.colLabels = new LinkedHashMap<>();
+        this.rowLabels = new LinkedHashMap<>();
+        this.lineas = new ArrayList<>();
+    }
 
-    private void llenarTabla(String[][] datos, String[] tiposDato) throws InvalidDataTypeException {
-
-        for (int index_columna = 0; index_columna < tiposDato.length; index_columna++) {
-            Columna columna = tabla.get(index_columna);
-
-            // Verificar si los tipos de las celdas son iguales NO FUNCIONA
-            if (!columna.sonMismosTipos()) {
-                throw new InvalidDataTypeException("Los tipos de datos en la columna no coinciden.");
-            }
-
-            for (int index_fila = 0; index_fila < datos.length; index_fila++) {
-                Celda celda = columna.getCelda(index_fila);
-                String valor = datos[index_fila][index_columna];
-                if (valor != null) {
-                    // Si el tipo de dato es Boolean lo convierte y asigna a una celda.
-                    if (tiposDato[index_columna].equals("Boolean")) {
-                        valor = valor.replaceAll("\\s", ""); // remove whitespace
-                        boolean valorBoolean = Boolean.parseBoolean(valor);
-                        celda.setContenido(valorBoolean);
-                        // Si el tipo de dato es Number lo convierte y asigna a una celda.
-                    } else if (tiposDato[index_columna].equals("Number")) {
-                        valor = valor.replaceAll("\\s", ""); // remove whitespaces on Numbers
-                        try {
-                            if (valor.contains(".")) {
-                                Double valorDouble = Double.parseDouble(valor);
-                                celda.setContenido(valorDouble);
-                            } else {
-                                Integer valorInteger = Integer.parseInt(valor);
-                                celda.setContenido(valorInteger);
-                            }
-                        } catch (NumberFormatException e) {
-                            throw new InvalidDataTypeException("Valor: " + valor + " no pudo ser parseado.");
-                        }
-                        // Si el tipo de dato es String lo convierte y asigna a una celda.
-                    } else if (tiposDato[index_columna].equals("String")) {
-                        celda.setContenido(valor);
-                    }
-
-                    // Verificar si los tipos de las celdas son iguales NO FUNCIONA
-                    if (!columna.sonMismosTipos()) {
-                        throw new InvalidDataTypeException("Los tipos de datos en la columna no coinciden.");
-                    }
-
-                } else {
-                    columna.fillNA();
-                }
-            }
+    /**
+     * Crea una tabla usando una tabla (un deep copy)
+     * 
+     * @param t tabla a copiar
+     */
+    private Tabla(Tabla t) {
+        List<Columna> ct = new ArrayList<>();
+        List<String> ht = new ArrayList<>();
+        List<String> ot = new ArrayList<>();
+        Map<String, Integer> colT = new LinkedHashMap<>();
+        Map<String, Integer> rowT = new LinkedHashMap<>();
+        List<String> lt = new ArrayList<>();
+        for (Columna c : t._dameTabla()) {
+            ct.add((Columna) c.clone());
         }
+        this.tabla = ct;
+        for (String h : t._dameHeaders()) {
+            ht.add(h.toString());
+        }
+        this.headers = ht;
+        for (String h : t._dameOrder()) {
+            ot.add(h.toString());
+        }
+        this.order = ot;
+        for (Map.Entry<String, Integer> entry : t._dameColLabels().entrySet()) {
+            colT.put(entry.getKey(), entry.getValue());
+        }
+        this.colLabels = colT;
+        for (Map.Entry<String, Integer> entry : t._dameRowLabels().entrySet()) {
+            rowT.put(entry.getKey(), entry.getValue());
+        }
+        this.rowLabels = rowT;
+        for (String l : t._dameLineas()) {
+            lt.add(l.toString());
+        }
+        this.lineas = lt;
     }
 
     // Método toString para mostrar la tabla
@@ -536,13 +421,6 @@ public class Tabla implements Summarize {
         return out.toString();
     }
 
-    // Método para centrar el texto en una columna
-    private String centrarTexto(String texto) {
-        int anchoTotal = 15; // Puedes ajustar el ancho deseado
-        int padding = (anchoTotal - texto.length()) / 2;
-        return String.format("%" + (padding + texto.length()) + "s", texto);
-    }
-
     /**
      * Gives a string representation of the table
      * 
@@ -582,34 +460,9 @@ public class Tabla implements Summarize {
         return out.toString();
     }
 
-    // --METODOS
-    // UTILES--------------------------------------------------------------------------------------------------
-    private int cantFilas() {
-        /**
-         * Devuelve la cantidad de filas en la tabla.
-         */
-        return tabla.get(0).size();
-    }
-
-    private int ultimoIndice() {
-        return tabla.size() - 1;
-    }
-
     public int size() {
         return tabla.size();
     }
-
-    private boolean contieneFila(Fila fila) {
-        for (String rowKey : order) {
-            Fila row = getFila(rowKey);
-            if (fila.equals(row)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // --GETTERS--------------------------------------------------------------------------------------------------
 
     /**
      * Devuelve la columna con la etiqueta especificada.
@@ -788,6 +641,8 @@ public class Tabla implements Summarize {
         headers.add(String.valueOf(tabla.size()));
     }
 
+    // --GETTERS--------------------------------------------------------------------------------------------------
+
     public void addColumna(Columna nuevaCol, String label) {
         /**
          * Agrega una nueva columna para tablas con encabezado.
@@ -824,9 +679,10 @@ public class Tabla implements Summarize {
     public void addFila(Fila nuevaFila) {
         /**
          * Agrega una nueva fila.
-        */ 
+         */
         if (nuevaFila.size() != tabla.size()) {
-            throw new IllegalArgumentException("La cantidad de datos de la fila no corresponde con el tamaño de la tabla.");
+            throw new IllegalArgumentException(
+                    "La cantidad de datos de la fila no corresponde con el tamaño de la tabla.");
         }
         if (!contieneFila(nuevaFila)) {
             for (int i = 0; i < tabla.size(); i++) {
@@ -849,8 +705,7 @@ public class Tabla implements Summarize {
             for (Columna col : tabla) {
                 col.removeCelda(rowLabels.get(key));
 
-                for (String row : order
-                ) {
+                for (String row : order) {
                     if (rowLabels.get(row) > rowIndex) {
                         rowLabels.put(row, rowLabels.get(row) - 1);
                     }
@@ -862,8 +717,6 @@ public class Tabla implements Summarize {
             throw new IllegalArgumentException("No existe la fila " + key + ".");
         }
     }
-
-    //// ----NO--REFACTORIZADO----------------------------------------------------------------------------------------------------
 
     public void infoBasica() {
 
@@ -997,18 +850,18 @@ public class Tabla implements Summarize {
         return sortedTabla;
     }
 
-    public void generarRowLabelsFiltrado (List<String> filas) {
+    public void generarRowLabelsFiltrado(List<String> filas) {
         Map<String, Integer> nuevasRowLabels = new LinkedHashMap<>();
         List<String> nuevoOrder = new ArrayList<>();
 
-        for(String fila : filas) {
+        for (String fila : filas) {
             nuevasRowLabels.put(fila, rowLabels.get(fila));
             nuevoOrder.add(fila);
         }
         // Ordenar las etiquetas de fila
         nuevoOrder.sort(Comparator.comparingInt(rowLabels::get));
 
-        rowLabels.clear(); 
+        rowLabels.clear();
         rowLabels = nuevasRowLabels;
         order.clear();
         order = nuevoOrder;
@@ -1020,17 +873,16 @@ public class Tabla implements Summarize {
         if (condicion == null) {
             throw new IllegalArgumentException("Se debe proporcionar una condición válida.");
         }
-        for(String etiquetaFila : rowLabels.keySet()){
+        for (String etiquetaFila : rowLabels.keySet()) {
             Fila filaAComparar = getFila(etiquetaFila);
-            if (condicion.test(filaAComparar) ){
+            if (condicion.test(filaAComparar)) {
                 salida.add(etiquetaFila);
             }
-        }        
+        }
         Tabla tablaFiltrada = new Tabla(this);
         tablaFiltrada.generarRowLabelsFiltrado(salida);
         return tablaFiltrada;
     }
-    
 
     public Tabla select(String[] columnas) {
         Tabla reducida = new Tabla(this);
@@ -1142,6 +994,8 @@ public class Tabla implements Summarize {
         }
     }
 
+    //// ----NO--REFACTORIZADO----------------------------------------------------------------------------------------------------
+
     @Override
     public double min(Columna columna) {
         if (columna.getCelda(0) instanceof CeldaNumber) {
@@ -1227,35 +1081,109 @@ public class Tabla implements Summarize {
 
         return nueva;
     }
-    // ponele que ande asi: tablita.seleccionar([0,3]) y te devuelve las filas 0, 1
-    // y 2.
-    // y si le haces tablita.seleccionar([[0,3],5]) y te devuelve 0, 1, 2 y 5.
-    // String[][] datosVacios = new String[this.tiposDato.length][0];
-    // Fila headers = new Fila();
-    // List<String> ht = this.headers;
-    // for(String header : ht){
-    // headers.add(header);
-    // }
-    // Fila ht = new Fila();
-    // Tabla tablaSel = new Tabla(tiposDato, datosVacios, false);
-    // for (String h : this._dameHeaders()) {
-    // ht.add(h.toString());
-    // }
 
-    // tablaSel.addFila(ht);
-    // for (int i: rowLabels) {
-    // Fila f = this.getFila(Integer.toString(i));
-    // tablaSel.addFila(f);
+    protected List<Columna> _dameTabla() {
+        return this.tabla;
+    }
 
-    // }
-    // for (String i: colLabels.keySet()) {
-    // Columna c = this.getColumna(i);
-    // tablaSel.addColumna(c);
-    // tablaSel.tabla.add(c);
-    // }
+    protected List<String> _dameHeaders() {
+        return this.headers;
+    }
 
-    // return tablaSel;
-    // }
+    protected List<String> _dameOrder() {
+        return this.order;
+    }
 
+    protected Map<String, Integer> _dameColLabels() {
+        return this.colLabels;
+    }
+
+    protected Map<String, Integer> _dameRowLabels() {
+        return this.rowLabels;
+    }
+
+    protected List<String> _dameLineas() {
+        return this.lineas;
+    }
+
+    private void llenarTabla(String[][] datos, String[] tiposDato) throws InvalidDataTypeException {
+
+        for (int index_columna = 0; index_columna < tiposDato.length; index_columna++) {
+            Columna columna = tabla.get(index_columna);
+
+            // Verificar si los tipos de las celdas son iguales NO FUNCIONA
+            if (!columna.sonMismosTipos()) {
+                throw new InvalidDataTypeException("Los tipos de datos en la columna no coinciden.");
+            }
+
+            for (int index_fila = 0; index_fila < datos.length; index_fila++) {
+                Celda celda = columna.getCelda(index_fila);
+                String valor = datos[index_fila][index_columna];
+                if (valor != null) {
+                    // Si el tipo de dato es Boolean lo convierte y asigna a una celda.
+                    if (tiposDato[index_columna].equals("Boolean")) {
+                        valor = valor.replaceAll("\\s", ""); // remove whitespace
+                        boolean valorBoolean = Boolean.parseBoolean(valor);
+                        celda.setContenido(valorBoolean);
+                        // Si el tipo de dato es Number lo convierte y asigna a una celda.
+                    } else if (tiposDato[index_columna].equals("Number")) {
+                        valor = valor.replaceAll("\\s", ""); // remove whitespaces on Numbers
+                        try {
+                            if (valor.contains(".")) {
+                                Double valorDouble = Double.parseDouble(valor);
+                                celda.setContenido(valorDouble);
+                            } else {
+                                Integer valorInteger = Integer.parseInt(valor);
+                                celda.setContenido(valorInteger);
+                            }
+                        } catch (NumberFormatException e) {
+                            throw new InvalidDataTypeException("Valor: " + valor + " no pudo ser parseado.");
+                        }
+                        // Si el tipo de dato es String lo convierte y asigna a una celda.
+                    } else if (tiposDato[index_columna].equals("String")) {
+                        celda.setContenido(valor);
+                    }
+
+                    // Verificar si los tipos de las celdas son iguales NO FUNCIONA
+                    if (!columna.sonMismosTipos()) {
+                        throw new InvalidDataTypeException("Los tipos de datos en la columna no coinciden.");
+                    }
+
+                } else {
+                    columna.fillNA();
+                }
+            }
+        }
+    }
+
+    // Método para centrar el texto en una columna
+    private String centrarTexto(String texto) {
+        int anchoTotal = 15; // Puedes ajustar el ancho deseado
+        int padding = (anchoTotal - texto.length()) / 2;
+        return String.format("%" + (padding + texto.length()) + "s", texto);
+    }
+
+    // --METODOS
+    // UTILES--------------------------------------------------------------------------------------------------
+    private int cantFilas() {
+        /**
+         * Devuelve la cantidad de filas en la tabla.
+         */
+        return tabla.get(0).size();
+    }
+
+    private int ultimoIndice() {
+        return tabla.size() - 1;
+    }
+
+    private boolean contieneFila(Fila fila) {
+        for (String rowKey : order) {
+            Fila row = getFila(rowKey);
+            if (fila.equals(row)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

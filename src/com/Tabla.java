@@ -366,12 +366,11 @@ public class Tabla implements Summarize {
         this.lineas = lt;
     }
 
-    // Método toString para mostrar la tabla
     @Override
     public String toString() {
         StringBuilder out = new StringBuilder();
 
-        // Auto-detección del ancho de columna
+        // detecti del ancho de columna
         int[] anchoColumna = new int[headers.size()];
 
         // Obtener el orden de las filas
@@ -417,19 +416,17 @@ public class Tabla implements Summarize {
             }
             out.append("\n");
         }
-
         return out.toString();
     }
 
     /**
-     * Gives a string representation of the table
+     * Da una representación de la tabla en una string
      * 
      * @param headers   true if you want headers
      * @param delimiter the delimiter of the csv. "defaults" to ,
      * @return a String representation
      */
     public String toString(boolean headers, String delimiter) {
-        // TODO: discutir si este catch es util
         if (delimiter == null) {
             delimiter = ",";
         }
@@ -460,39 +457,49 @@ public class Tabla implements Summarize {
         return out.toString();
     }
 
+    /**
+     * Devuelve el size de tabla
+     * 
+     * @return int value del tamaño de la tabla
+     */
     public int size() {
         return tabla.size();
     }
 
     /**
      * Devuelve la columna con la etiqueta especificada.
+     * 
+     * @param key String -> la clave de la Columna
      */
     public Columna getColumna(String key) {
-        if (colLabels.containsKey(key)) {
-            return tabla.get(colLabels.get(key));
-        } else {
+        if (!colLabels.containsKey(key)) {
             throw new IllegalArgumentException("No existe una columna con esa clave");
         }
+        return tabla.get(colLabels.get(key));
     }
 
     /**
      * Devuelve la fila con la etiqueta especificada.
+     * 
+     * @param key String -> la clave de la Fila
      */
     public Fila getFila(String key) {
-        if (rowLabels.containsKey(key)) {
-            Fila fila = new Fila();
-            for (Columna col : tabla) {
-                Celda celda = col.getCelda(rowLabels.get(key));
-                fila.addCelda(celda);
-            }
-            return fila;
-        } else {
+        if (!rowLabels.containsKey(key)) {
             throw new IllegalArgumentException("No hay fila con esa key");
         }
+        Fila fila = new Fila();
+        for (Columna col : tabla) {
+            Celda celda = col.getCelda(rowLabels.get(key));
+            fila.addCelda(celda);
+        }
+        return fila;
     }
 
     /**
-     * Devuelve la celda con la etiqueta especificada.
+     * Devuelve la celda con las etiqueta especificada.
+     * 
+     * @param keyFila    String key de la fila
+     * @param keyColumna String key de la columna
      */
     public Celda getCelda(String keyFila, String keyColumna) {
         if (colLabels.containsKey(keyColumna)) {
@@ -515,10 +522,13 @@ public class Tabla implements Summarize {
     }
 
     // --SETTERS--------------------------------------------------------------------------------------------------
+    /**
+     * Setea una columna nueva, manteniendo la label
+     * 
+     * @param newColumna
+     * @param key
+     */
     public void setColumna(Columna newColumna, String key) {
-        /**
-         * Reemplaza el contenido de una columna por una nueva, mantiene la label.
-         */
         if (newColumna.size() == cantFilas()) {
             if (colLabels.containsKey(key)) {
                 tabla.add(newColumna);
@@ -531,10 +541,14 @@ public class Tabla implements Summarize {
         }
     }
 
-    public void setColumna(Columna newColumna, String oldKey, String newKey) { //
-        /**
-         * Reemplaza el contenido de una columna por una nueva, cambia la label.
-         */
+    /**
+     * Setea una columan, generando una key nueva
+     * 
+     * @param newColumna
+     * @param oldKey
+     * @param newKey
+     */
+    public void setColumna(Columna newColumna, String oldKey, String newKey) {
         if (newColumna.size() == cantFilas()) {
             if (colLabels.containsKey(oldKey)) {
                 if (!colLabels.containsKey(newKey)) {
@@ -554,10 +568,13 @@ public class Tabla implements Summarize {
         }
     }
 
+    /**
+     * Setea la fila manteniendo la label
+     * 
+     * @param newFila
+     * @param key
+     */
     public void setFila(Fila newFila, String key) {
-        /**
-         * Reemplaza el contenido de una fila por una nueva, mantiene la label.
-         */
         if (newFila.size() == tabla.size()) {
             if (rowLabels.containsKey(key)) {
                 for (int i = 0; i < newFila.size(); i++) {
@@ -573,11 +590,16 @@ public class Tabla implements Summarize {
         }
     }
 
+    /**
+     * setFila para reemplazar keys
+     * Reemplaza el contenido de una fila por una nueva, cambia la label sirve solo
+     * para rowkeys no numericas, sino no tiene sentido
+     * 
+     * @param newFila
+     * @param oldKey
+     * @param newKey
+     */
     public void setFila(Fila newFila, String oldKey, String newKey) { // Funciona pero no lo imprime bien
-        /**
-         * Reemplaza el contenido de una fila por una nueva, cambia la label sirve solo
-         * para rowkeys no numericas, sino no tiene sentido.
-         */
         if (newFila.size() == tabla.size()) {
             if (rowLabels.containsKey(oldKey)) {
                 if (!rowLabels.containsKey(newKey)) {
@@ -591,17 +613,26 @@ public class Tabla implements Summarize {
                             "La nueva etiqueta ya corresponde a otra fila y no puede ser duplicada.");
                 }
             } else {
-                throw new IllegalLabelException("La fila especificada no existe.");
+                throw new IllegalLabelException(
+                        "La fila especificada no existe.");
             }
         } else {
-            throw new LengthMismatchException("El tamaño de la fila nueva no coincide con la cantidad de columnas.");
+            throw new LengthMismatchException(
+                    "El tamaño de la fila nueva no coincide con la cantidad de columnas.");
         }
     }
 
+    /**
+     * Reemplaza el contenido de una celda
+     * 
+     * @param keyFila    String key de la Fila
+     * @param keyColumna String key de la Columna
+     * @param value      valor a ser reemplazado
+     * @throws InvalidDataTypeException
+     *                                  Si el tipo de dato de value no corresponde
+     *                                  con el de la columna, tirra este error
+     */
     public void setCelda(String keyFila, String keyColumna, Object value) throws InvalidDataTypeException {
-        /**
-         * Reemplaza el contenido de una celda
-         */
         Celda celda = getCelda(keyFila, keyColumna);
         if (celda.getContenido() instanceof Boolean) {
             if (value.equals(true) || value.equals(false)) {
@@ -611,7 +642,6 @@ public class Tabla implements Summarize {
             }
 
         }
-
         if (celda.getContenido() instanceof Number) {
             if (value instanceof Number) {
                 celda.setContenido(value);
@@ -619,7 +649,6 @@ public class Tabla implements Summarize {
                 throw new InvalidDataTypeException("El valor no es de tipo Number.");
             }
         }
-
         if (celda.getContenido() instanceof String) {
             if (value instanceof String) {
                 celda.setContenido(value);
@@ -629,57 +658,60 @@ public class Tabla implements Summarize {
         }
     }
 
-    // --MODIFICADORES--------------------------------------------------------------------------------------------------
+    /**
+     * Agrego una columna al final de la tabla sin header
+     * 
+     * @param nuevaCol
+     */
     public void addColumna(Columna nuevaCol) {
+        // TODO: deprecar?
         // sirve solo para cosas sin headers, habria que poner alguna verificacion, ni
         // se si es necesario este constructor
-        /**
-         * Agrega una nueva columna para tablas sin encabezado.
-         */
         tabla.add(nuevaCol);
         colLabels.put(String.valueOf(ultimoIndice()), ultimoIndice());
         headers.add(String.valueOf(tabla.size()));
     }
 
-    // --GETTERS--------------------------------------------------------------------------------------------------
-
+    /**
+     * Agrego una columna al final de la tabla con label (header)
+     * 
+     * @param nuevaCol Columna a agregar
+     * @param label    label de la columna
+     */
     public void addColumna(Columna nuevaCol, String label) {
-        /**
-         * Agrega una nueva columna para tablas con encabezado.
-         */
-        if (!colLabels.containsKey(label)) {
-            tabla.add(nuevaCol);
-            colLabels.put(label, ultimoIndice());
-            headers.add(label);
-        } else {
+        if (colLabels.containsKey(label)) {
             throw new IllegalLabelException("Ya existe una columna con ese nombre");
         }
+        tabla.add(nuevaCol);
+        colLabels.put(label, ultimoIndice());
+        headers.add(label);
     }
 
+    /**
+     * Borro una columna dada una key
+     * 
+     * @param key key de la Columna a eliminar
+     */
     public void removeColumna(String key) {
-        /**
-         * Elimina una columna.
-         */
-        if (colLabels.containsKey(key)) {
-            int index = colLabels.get(key);
-            tabla.remove(index);
-
-            for (String header : headers) {
-                if (colLabels.get(header) > index) {
-                    colLabels.put(header, colLabels.get(header) - 1);
-                }
-            }
-            headers.remove(index);
-
-        } else {
+        if (!colLabels.containsKey(key)) {
             throw new IllegalLabelException("Este encabezado no existe");
         }
+        int index = colLabels.get(key);
+        tabla.remove(index);
+        for (String header : headers) {
+            if (colLabels.get(header) > index) {
+                colLabels.put(header, colLabels.get(header) - 1);
+            }
+        }
+        headers.remove(index);
     }
 
+    /**
+     * Agrego una fila a la tabla
+     * 
+     * @param nuevaFila Fila a agregar
+     */
     public void addFila(Fila nuevaFila) {
-        /**
-         * Agrega una nueva fila.
-         */
         if (nuevaFila.size() != tabla.size()) {
             throw new IllegalArgumentException(
                     "La cantidad de datos de la fila no corresponde con el tamaño de la tabla.");
@@ -695,50 +727,35 @@ public class Tabla implements Summarize {
         }
     }
 
+    /**
+     * Borro una fila dada una key
+     * 
+     * @param key Key de la fila a eliminar
+     */
     public void removeFila(String key) {
-        /**
-         * Elimina una fila
-         */
-        if (rowLabels.containsKey(key)) {
-            int rowIndex = rowLabels.get(key);
-            // Elimino celdas de cada columna
-            for (Columna col : tabla) {
-                col.removeCelda(rowLabels.get(key));
-
-                for (String row : order) {
-                    if (rowLabels.get(row) > rowIndex) {
-                        rowLabels.put(row, rowLabels.get(row) - 1);
-                    }
-                }
-
-                order.remove(key);
-            }
-        } else {
+        if (!rowLabels.containsKey(key)) {
             throw new IllegalArgumentException("No existe la fila " + key + ".");
+        }
+        int rowIndex = rowLabels.get(key);
+        // Elimino celdas de cada columna
+        for (Columna col : tabla) {
+            col.removeCelda(rowLabels.get(key));
+
+            for (String row : order) {
+                if (rowLabels.get(row) > rowIndex) {
+                    rowLabels.put(row, rowLabels.get(row) - 1);
+                }
+            }
+            order.remove(key);
         }
     }
 
+    /**
+     * Muestra en stdout una tabla con información
+     * "Nombre", "NonNull", "TipoDato"
+     * Adicionalmente Muestra la cantidad de columnas y cantidad de filas
+     */
     public void infoBasica() {
-
-        /*
-         * Lo que esperamos es que salga algo asi
-         * # Encabezados Non-Null Count tipoDato
-         * --- ------------- -------------- -------
-         * 0 int_col 5 non-null Number
-         * 1 text_col 5 non-null String
-         * 2 col_boolean 5 non-null boolean
-         * 
-         * Number[] indiceColumnas = [0, 1, 2] tipo Number
-         * Encabezados = [int_col, text_col, col_boolean] tipo String
-         * nonNullCount = [5, 5, 5] tipo Number
-         * tipoDato = [Number,String,boolean] tipo String
-         * y despues imprimir la tabla que generamos
-         */
-        // { "A", "B", "C" },
-        // { "D", "E", "F" },
-        // { "G", "H", "I" }
-        // };
-
         List<String> tipoDato = new ArrayList<>();
         for (String encabezado : _dameHeaders()) {
             tipoDato.add(getColumna(encabezado).getCelda(0).getContenido().getClass().getSimpleName());
@@ -759,7 +776,6 @@ public class Tabla implements Summarize {
             }
             cantidadNonNull.add(String.valueOf(celdasNoNulas));
         }
-
         String[] encabezados = { "Nombre", "NonNull", "TipoDato" };
         String[] tipoDeDatoHeaders = { "String", "String", "String" };
         String[] nomCol = _dameHeaders().toArray(new String[0]);
@@ -785,19 +801,23 @@ public class Tabla implements Summarize {
         System.out.println(infoTabla.toString());
     }
 
-    /* Copy */
     /**
      * Copia la tabla en otra tabla. La nueva tabla es independiente de
      * la original
      * entonces
      * copia != original == true
      * 
-     * @return Tabla
+     * @return Tabla nueva
      */
     public Tabla copy() {
         return new Tabla(this);
     }
 
+    /**
+     * Devuelve una copia superficial de la tabla
+     * 
+     * @return Tabla nueva (copia superficial)
+     */
     public Tabla shallowCopy() {
         Tabla t = new Tabla();
         t.tabla = this.tabla;
@@ -808,17 +828,19 @@ public class Tabla implements Summarize {
         t.lineas = this.lineas;
         return t;
     }
-    /* Sort */
 
+    /**
+     * Ordena la tabla dada una cantidad de columnas
+     * 
+     * @param columnas
+     * @return Una tabla ordenada
+     */
     public Tabla Sort(String[] columnas) {
         // habria que agregar check de que esten y bla bla
         Tabla sortedTabla = this.shallowCopy();
-
         Tabla reducida = sortedTabla.select(columnas);
         int n = reducida.cantFilas();
-
         boolean huboCambio;
-
         do {
             huboCambio = false;
             for (int i = 1; i < n; i++) {
@@ -831,13 +853,10 @@ public class Tabla implements Summarize {
                     Celda celdaPrevia = filaPrevia.getCelda(colLabels.get(header));
                     Celda celdaActual = filaActual.getCelda(colLabels.get(header));
                     comparacion = celdaPrevia.compareTo(celdaActual);
-
                     if (comparacion != 0) {
                         break;
                     }
-
                 }
-
                 if (comparacion > 0) {
                     String etiqueta = sortedTabla.order.get(i - 1);
                     sortedTabla.order.set(i - 1, order.get(i));
@@ -850,6 +869,12 @@ public class Tabla implements Summarize {
         return sortedTabla;
     }
 
+    /**
+     * Genera rowlabels dado un filto
+     * 
+     * @param filas
+     */
+    // TODO: mejorar javadoc
     public void generarRowLabelsFiltrado(List<String> filas) {
         Map<String, Integer> nuevasRowLabels = new LinkedHashMap<>();
         List<String> nuevoOrder = new ArrayList<>();
@@ -867,11 +892,18 @@ public class Tabla implements Summarize {
         order = nuevoOrder;
     }
 
+    /**
+     * Filtra
+     * 
+     * @param condicion
+     * @return Tabla filtrada
+     */
     public Tabla filtrar(Predicate<Fila> condicion) {
         List<String> salida = new ArrayList<>();
 
         if (condicion == null) {
-            throw new IllegalArgumentException("Se debe proporcionar una condición válida.");
+            throw new IllegalArgumentException(
+                    "Se debe proporcionar una condición válida.");
         }
         for (String etiquetaFila : rowLabels.keySet()) {
             Fila filaAComparar = getFila(etiquetaFila);
@@ -884,9 +916,14 @@ public class Tabla implements Summarize {
         return tablaFiltrada;
     }
 
+    /**
+     * Select
+     * 
+     * @param columnas
+     * @return
+     */
     public Tabla select(String[] columnas) {
         Tabla reducida = new Tabla(this);
-
         for (int i = 0; i < columnas.length; i++) {
             reducida.addColumna(tabla.get(1), columnas[i]);
             reducida.colLabels.put(columnas[i], i);
@@ -896,6 +933,12 @@ public class Tabla implements Summarize {
         return reducida;
     }
 
+    /**
+     * Concatena
+     * 
+     * @param other
+     * @return
+     */
     public Tabla concat(Tabla other) {
         // si es una tabla con rowkeys no numericas habria que chequear que no se
         // repitan

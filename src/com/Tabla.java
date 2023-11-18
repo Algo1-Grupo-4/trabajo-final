@@ -380,8 +380,8 @@ public class Tabla implements Summarize {
         for (int i = 0; i < headers.size(); i++) {
             String header = headers.get(i);
             anchoColumna[i] = Math.max(anchoColumna[i], header.length());
-        }
-
+    }
+    
         // Agregar labels de columna si hay
         for (int i = 0; i < headers.size(); i++) {
             String header = headers.get(i);
@@ -395,27 +395,70 @@ public class Tabla implements Summarize {
             out.append(String.format("%-" + (anchoColumna[i] + 8) + "s", "").replace(' ', '-'));
         }
         out.append("\n");
+        if (cantFilas() > 20) {
 
-        // Iterar y agregar filas en el orden especificado
-        for (String filaKey : orderFilas) {
+            // Iterar y agregar filas en el orden especificado
+            for (int rowIndex = 0; rowIndex < 5; rowIndex++) {
+                String filaKey = orderFilas.get(rowIndex);
+                if (!rowLabels.containsKey(filaKey)) {
+                    throw new IllegalArgumentException("La fila con la clave " + filaKey + " no existe en la tabla.");
+                }
+                // Agregar la etiqueta de fila
+                out.append(String.format("%-" + 8 + "s", filaKey));
+                for (int i = 0; i < headers.size(); i++) {
+                    String header = headers.get(i);
+                    int columnIndex = colLabels.get(header);
+                    Celda celda = tabla.get(columnIndex).getCelda(rowIndex);
+                    String contenido = (celda.getContenido() == null) ? "NA" : String.valueOf(celda.getContenido());
+                    out.append(String.format("%-" + (anchoColumna[i] + 6) + "s", contenido));
+                }
+                out.append("\n");
+            }
+        // Si hay más de 20 filas, agregar tres puntos suspensivos y mostrar las últimas 5 filas
+        out.append("... (y otras " + (cantFilas() - 10) + " filas)\n");
+        
+        for (int rowIndex = cantFilas() - 5; rowIndex < cantFilas(); rowIndex++) {
+            String filaKey = orderFilas.get(rowIndex);
+            
             if (!rowLabels.containsKey(filaKey)) {
                 throw new IllegalArgumentException("La fila con la clave " + filaKey + " no existe en la tabla.");
             }
-
-            int rowIndex = rowLabels.get(filaKey);
-
             // Agregar la etiqueta de fila
             out.append(String.format("%-" + 8 + "s", filaKey));
+            
+            for (int i = 0; i < headers.size(); i++) {
+                String header = headers.get(i);
+                int columnIndex = colLabels.get(header);
+                Celda celda = tabla.get(columnIndex).getCelda(rowIndex);
+                String contenido = (celda.getContenido() == null) ? "NA" : String.valueOf(celda.getContenido());
+                contenido = contenido.length() > 40 ? contenido.substring(0, 37) + "..." : contenido;
+                out.append(String.format("%-" + (anchoColumna[i] + 6) + "s", contenido));
+            }
+            out.append("\n");
+    }
+    } else {
 
+           for (String filaKey : orderFilas) {
+            if (!rowLabels.containsKey(filaKey)) {
+                throw new IllegalArgumentException("La fila con la clave " + filaKey + " no existe en la tabla.");
+            }
+            
+            int rowIndex = rowLabels.get(filaKey);
+            
+            // Agregar la etiqueta de fila
+            out.append(String.format("%-" + 8 + "s", filaKey));
+            
             for (int i = 0; i < headers.size(); i++) {
                 String header = headers.get(i);
                 int columnIndex = colLabels.get(header); // Obtener el índice de la columna a partir del header
                 Celda celda = tabla.get(columnIndex).getCelda(rowIndex);
                 String contenido = (celda.getContenido() == null) ? "NA" : String.valueOf(celda.getContenido());
+                contenido = contenido.length() > 40 ? contenido.substring(0, 37) + "..." : contenido;
                 out.append(String.format("%-" + (anchoColumna[i] + 6) + "s", contenido));
             }
             out.append("\n");
         }
+    }
         return out.toString();
     }
 

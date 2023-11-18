@@ -380,8 +380,8 @@ public class Tabla implements Summarize {
         for (int i = 0; i < headers.size(); i++) {
             String header = headers.get(i);
             anchoColumna[i] = Math.max(anchoColumna[i], header.length());
-        }
-
+    }
+    
         // Agregar labels de columna si hay
         for (int i = 0; i < headers.size(); i++) {
             String header = headers.get(i);
@@ -431,6 +431,7 @@ public class Tabla implements Summarize {
                 int columnIndex = colLabels.get(header);
                 Celda celda = tabla.get(columnIndex).getCelda(rowIndex);
                 String contenido = (celda.getContenido() == null) ? "NA" : String.valueOf(celda.getContenido());
+                contenido = contenido.length() > 40 ? contenido.substring(0, 37) + "..." : contenido;
                 out.append(String.format("%-" + (anchoColumna[i] + 6) + "s", contenido));
             }
             out.append("\n");

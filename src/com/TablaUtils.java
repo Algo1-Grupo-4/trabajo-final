@@ -2,7 +2,7 @@ package com;
 
 import excepciones.*;
 import java.util.ArrayList;
-
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -204,6 +204,47 @@ public class TablaUtils {
     // Actualizar las etiquetas y el orden después de verificar todas las filas
     nuevaTabla.setRowLabels(newRowLabels);
     nuevaTabla.setOrder(newOrder);
+    return nuevaTabla;
+  }
+
+  protected static Tabla concatenate(Tabla left, Tabla right) {
+    // Verifico que coincidan las columnas
+    List<String> tablaHeaders = left._dameHeaders();
+    List<String> otherHeaders = right._dameHeaders();
+    if (!tablaHeaders.equals(otherHeaders)) {
+      throw new MismatchedDataException("Las columnas de ambas tablas no coinciden.");
+    }
+
+    // Verifico que coincidan los tipos de datos
+    for (String header : tablaHeaders) {
+      Celda celdaThis = left.getCelda("0", header);
+      Celda celdaOther = right.getCelda("0", header);
+
+      if (!celdaThis.getClass().equals(celdaOther.getClass())) {
+        throw new InvalidDataTypeException("No coinciden los tipos de datos en la columna " + header + ".");
+      }
+    }
+    Tabla newTabla = left.deepCopy();
+    // Agregar filas de la otra tabla
+    for (String etiquetaFila : right._dameOrder()) {
+      Fila filaAgregar = right.getFila(etiquetaFila);
+      newTabla.addFila(filaAgregar);
+    }
+    return newTabla;
+  }
+
+  protected static Tabla doSample(Tabla t, int porcentaje) {
+    Tabla copia = t.deepCopy();
+    if (porcentaje <= 0 || porcentaje > 100) {
+      throw new IllegalArgumentException("El porcentaje debe estar entre 1 y 100.");
+    }
+    // Mezcla el orden de la tabla y toma una sublista aleatoria
+    Collections.shuffle(copia._dameOrder());
+    int cantidadMuestras = (int) Math.ceil(t.cantFilas() * (porcentaje / 100.0));
+    String[] muestras = copia._dameOrder().subList(0, cantidadMuestras).toArray(new String[0]);
+
+    // Filtrar la tabla para incluir solo las muestras
+    Tabla nuevaTabla = copia.seleccionarFilas(muestras);
     return nuevaTabla;
   }
 }

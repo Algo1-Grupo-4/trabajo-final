@@ -2,7 +2,6 @@ package com;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -383,8 +382,8 @@ public class Tabla {
             out.append(String.format("%-" + (anchoColumna[i] + 8) + "s", "").replace(' ', '-'));
         }
         out.append("\n");
-        if (cantFilas() > 20) {
-
+        // if (cantFilas() > 20) {
+        if (orderFilas.size() > 50) {
             // Iterar y agregar filas en el orden especificado
             for (int rowIndex = 0; rowIndex < 5; rowIndex++) {
                 String filaKey = orderFilas.get(rowIndex);
@@ -404,9 +403,9 @@ public class Tabla {
             }
             // Si hay más de 20 filas, agregar tres puntos suspensivos y mostrar las últimas
             // 5 filas
-            out.append("... (y otras " + (cantFilas() - 10) + " filas)\n");
+            out.append("... (y otras " + (orderFilas.size() - 10) + " filas)\n");
 
-            for (int rowIndex = cantFilas() - 5; rowIndex < cantFilas(); rowIndex++) {
+            for (int rowIndex = orderFilas.size() - 5; rowIndex < orderFilas.size(); rowIndex++) {
                 String filaKey = orderFilas.get(rowIndex);
 
                 if (!rowLabels.containsKey(filaKey)) {
@@ -489,11 +488,13 @@ public class Tabla {
     }
 
     /**
-     * Devuelve el size de tabla
+     * Devuelve cantidad de columas en la tabla
      * 
-     * @return int value del tamaño de la tabla
+     * @deprecated To be removed
+     * @return cantidad de columnas
      */
-    public int size() {
+    @Deprecated
+    public int countColumns() {
         return this._dameTabla().size();
     }
 
@@ -785,6 +786,7 @@ public class Tabla {
      * @param n filas de la tabla a mostrar
      */
     public void head(int n) {
+        // TODO: Heads grandes a veces hacen una "race condition" con cortar la tabla
         TablaUtils.head(this, n);
     }
 
@@ -861,42 +863,17 @@ public class Tabla {
      * @return
      */
     public Tabla concatenarTabla(Tabla other) {
-        // Verifico que coincidan las columnas
-        List<String> tablaHeaders = _dameHeaders();
-        List<String> otherHeaders = other._dameHeaders();
-        if (!tablaHeaders.equals(otherHeaders)) {
-            throw new MismatchedDataException("Las columnas de ambas tablas no coinciden.");
-        }
-
-        // Verifico que coincidan los tipos de datos
-        for (String header : tablaHeaders) {
-            Celda celdaThis = getCelda("0", header);
-            Celda celdaOther = other.getCelda("0", header);
-
-            if (!celdaThis.getClass().equals(celdaOther.getClass())) {
-                throw new InvalidDataTypeException("No coinciden los tipos de datos en la columna " + header + ".");
-            }
-        }
-        Tabla newTabla = new Tabla(this);
-        // Agregar filas de la otra tabla
-        for (String etiquetaFila : other._dameOrder()) {
-            Fila filaAgregar = other.getFila(etiquetaFila);
-            newTabla.addFila(filaAgregar);
-        }
-
-        return newTabla;
+        return TablaUtils.concatenate(this, other);
     }
 
-    public void sample(int porcentaje) {
-        if (porcentaje <= 0 || porcentaje > 100) {
-            throw new IllegalArgumentException("El porcentaje debe estar entre 1 y 100.");
-        }
-        Collections.shuffle(order);
-        int cantidadMuestras = (int) Math.ceil(cantFilas() * (porcentaje / 100.0));
-        String[] muestras = order.subList(0, cantidadMuestras).toArray(new String[0]);
-
-        // Filtrar la tabla original para incluir solo las muestras
-        seleccionarFilas(muestras);
+    /**
+     * Genera un sample de la tabla
+     * 
+     * @param porcentaje
+     * @return
+     */
+    public Tabla sample(int porcentaje) {
+        return TablaUtils.doSample(this, porcentaje);
     }
 
     protected List<Columna> _dameTabla() {
@@ -924,15 +901,13 @@ public class Tabla {
     }
 
     private void llenarTabla(String[][] datos, String[] tiposDato) throws InvalidDataTypeException {
-
         for (int index_columna = 0; index_columna < tiposDato.length; index_columna++) {
             Columna columna = tabla.get(index_columna);
 
-            // Verificar si los tipos de las celdas son iguales NO FUNCIONA
             if (!columna.sonMismosTipos()) {
-                throw new InvalidDataTypeException("Los tipos de datos en la columna no coinciden.");
+                throw new InvalidDataTypeException(
+                        "Los tipos de datos en la columna no coinciden.");
             }
-
             for (int index_fila = 0; index_fila < datos.length; index_fila++) {
                 Celda celda = columna.getCelda(index_fila);
                 String valor = datos[index_fila][index_columna];
@@ -1026,9 +1001,5 @@ public class Tabla {
     public void setLineas(List<String> lineas) {
         this.lineas = lineas;
     }
-
-    // public Tabla groupBy(List<Columna> columnasGroupo) {
-
-    // }
 
 }

@@ -31,4 +31,17 @@ public class Tablas {
     return new Tabla(tiposDato, fileName);
   }
 
+  /**
+   * Genera una tabla desde una Lista de Lista de Strings.
+   * Digamos, una Matriz de Strings.
+   * 
+   * @param tiposDato  String[][] indicando los tipos de dato
+   * @param datos      Array de Array de Strings con los datos para cargar en
+   *                   tabla
+   * @param hasHeaders boolean de si datos tiene headers o no.
+   */
+  public static Tabla fromMatriz(String[] tiposDato, String[][] datos, boolean hasHeaders) {
+    return new Tabla(tiposDato, datos, hasHeaders);
+  }
+
 }

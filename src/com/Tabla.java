@@ -30,25 +30,16 @@ public class Tabla {
     private List<String> lineas = null;
 
     /**
-     * Genera una tabla desde una Lista de Lista de Strings.
-     * Digamos, una Matriz de Strings.
+     * Crea una tabla dada una matriz de Strings
      * 
-     * @param tiposDato  String[][] indicando los tipos de dato
-     * @param datos      List\<String\> con los datos para cargar en tabla
-     * @param hasHeaders boolean de si datos tiene headers o no.
-     *                   Ejemplo:
-     * 
-     *                   <pre>
-     *                   String[] tiposDato = { "String", "String", "String" };
-     *                   String[][] array = {
-     *                           { "A", "B", "C" },
-     *                           { "D", "E", "F" },
-     *                           { "G", "H", "I" }
-     *                   };
-     * 
-     *                   </pre>
+     * @param tiposDato  Array de Strings con los tipos de datos de las columnas, en
+     *                   orden.
+     * @param datos      Los datos en un Array de Array de Strings
+     * @param hasHeaders true si datos tiene los headers en la fila 1, false de lo
+     *                   contrario. Si es falso la tabla se crea un headers
+     *                   numéricos secuenciales
      */
-    public Tabla(String[] tiposDato, String[][] datos, boolean hasHeaders) {
+    protected Tabla(String[] tiposDato, String[][] datos, boolean hasHeaders) {
         List<String> lineas = new LinkedList<>();
         StringBuffer sb;
         for (String[] c : datos) {
@@ -99,11 +90,9 @@ public class Tabla {
         } catch (InvalidDataTypeException e) {
             e.printStackTrace();
             System.err.println("Chequear los tipos de datos.");
-            System.exit(1);
         } catch (IllegalConstructorException e) {
             e.printStackTrace();
             System.err.println("Check for aproppiate constructor");
-            System.exit(1);
         }
         this.lineas = lineas;
     }
@@ -115,7 +104,7 @@ public class Tabla {
      * @param datos     List<String> Con los datos para cargar en tabla
      * 
      */
-    public Tabla(String[] tiposDato, String filename) {
+    protected Tabla(String[] tiposDato, String filename) {
         try {
             lineas = CSVUtils.leerCSV(filename);
             if (lineas.get(0).split(",").length != tiposDato.length) {
@@ -171,7 +160,7 @@ public class Tabla {
      * @param fileName   String con el path hacia el archivo
      * @param hasHeaders boolean de si el archivo tiene headers o no
      */
-    public Tabla(String[] tiposDato, String fileName, boolean hasHeaders) {
+    protected Tabla(String[] tiposDato, String fileName, boolean hasHeaders) {
         try {
             lineas = CSVUtils.leerCSV(fileName);
             if (lineas.get(0).split(",").length != tiposDato.length) {
@@ -229,10 +218,11 @@ public class Tabla {
         }
     }
 
-    // TODO: Responder esta pregunta: ¿Cuándo se usa esta tabla?
-    // TODO: Vamos a dejarla publica?
     /**
-     * Crea una tabla cuando
+     * Crea una tabla especificando keys para las columnas.
+     * @deprecated, por lo tanto no se recomienda su uso y en versiones
+     * futuras este constructor va a ser removido
+     * Se queda por valor histórico (?)
      * 
      * @param tiposDato  lista de tipos de datos
      * @param fileName   path al archivo csv
@@ -240,7 +230,9 @@ public class Tabla {
      * @param hasRowKey  si las filas del archivo tienen una clave
      * @param columnaKey la key de la columna que debe ser tratada como clave
      */
-    public Tabla(String[] tiposDato, String fileName, boolean hasHeaders, boolean hasRowKey, int columnaKey) {
+    @Deprecated
+    protected Tabla(String[] tiposDato, String fileName,
+            boolean hasHeaders, boolean hasRowKey, int columnaKey) {
 
         try {
             lineas = CSVUtils.leerCSV(fileName);

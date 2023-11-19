@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
+
 import excepciones.*;
 
 /**
@@ -1043,5 +1045,55 @@ public class Tabla {
     // public Tabla groupBy(List<Columna> columnasGroupo) {
 
     // }
+    public void head() {
+        if(this.cantFilas() > 10) {
+            int[] f = IntStream.range(0,10).toArray();
+            String[] fStrings = new String[f.length];
+            for (int i = 0; i < f.length; i++) {
+                fStrings[i] = String.valueOf(f[i]);
+            }
+            System.out.println(seleccionarFilas(fStrings).toString());
+        } else {
+            System.out.println(this.toString());
+        }
+    }   
+
+    public void head(int n) {
+        if (cantFilas() < n) {
+            throw new IllegalArgumentException("La tabla tiene " + cantFilas() + " filas, escriba un número menor");
+        } else {
+            int[] f = IntStream.range(0, n).toArray();
+            String[] fStrings = new String[f.length];
+            for (int i = 0; i < f.length; i++) {
+                fStrings[i] = String.valueOf(f[i]);
+            }
+            System.out.println(seleccionarFilas(fStrings).toString());
+        }
+    }
+
+    public void tail() {
+        if(this.cantFilas() > 10) {
+            int[] f = IntStream.range(cantFilas()-10,cantFilas()).toArray();
+            String[] fStrings = new String[f.length];
+            for (int i = 0; i < f.length; i++) {
+                fStrings[i] = String.valueOf(f[i]);
+            }
+            System.out.println(seleccionarFilas(fStrings).toString());
+        } else {
+            System.out.println(this.toString());
+        }
+    }          
+    public void tail(int n) {
+        if (cantFilas() < n) {
+            throw new IllegalArgumentException("La tabla tiene " + cantFilas() + " filas, escriba un número menor");
+        } else {
+            int[] f = IntStream.range(cantFilas()-n,cantFilas()).toArray();
+            String[] fStrings = new String[f.length];
+            for (int i = 0; i < f.length; i++) {
+                fStrings[i] = String.valueOf(f[i]);
+            }
+            System.out.println(seleccionarFilas(fStrings).toString());
+        }
+    }
 
 }

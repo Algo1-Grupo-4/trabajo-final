@@ -31,8 +31,8 @@ public class Columna implements Cloneable {
         this.tipo = tipoDato;
     }
 
-    public Columna(String tipoDato, Object[] valores){
-        //no admite datos faltantes, tiene sentido pero importante mencionarlo
+    public Columna(String tipoDato, Object[] valores) {
+        // no admite datos faltantes, tiene sentido pero importante mencionarlo
         columna = new ArrayList<>();
 
         // Agregar las celdas según el tipo de dato
@@ -115,12 +115,53 @@ public class Columna implements Cloneable {
     }
 
     /**
-     * LLena los valores faltantes de una columna con NA.
+     * LLena los valores faltantes de una columna con la string NA.
      */
     public void fillNA() {
         for (Celda celda : columna) {
             if (celda.isNA()) {
                 celda.setContenido("NA");
+            }
+        }
+    }
+
+    /**
+     * Llena los valores faltantes de una columna con el valor definido
+     * 
+     * @param value valor a reemplazar los NA
+     */
+    public void fillNA(String value) {
+        for (Celda celda : columna) {
+            if (!celda.isNA()) {
+                continue;
+            }
+            try {
+                switch (celda.getClass().getSimpleName()) {
+                    case "CeldaBoolean":
+                        celda.setContenido(Boolean.valueOf(value));
+                        break;
+                    case "CeldaNumber":
+                        if (value.contains(".")) {
+                            celda.setContenido(Double.valueOf(value));
+                            break;
+                        }
+                        celda.setContenido(Integer.valueOf(value));
+                        break;
+                    case "CeldaString":
+                        celda.setContenido(value);
+                        break;
+                }
+            } catch (NumberFormatException e) {
+                System.err.println(
+                        value + "no es del tipo de dato de la celda. No se pudo setear valor");
+                System.err.println(e.getStackTrace());
+                break;
+            } catch (NullPointerException e) {
+                System.err.println(
+                        "Estas llenando de nulls algo que ya es null. " +
+                                "Se estaría creando una paradoja temporal y eso no se vió en clase. " +
+                                "No se hace nada");
+                break;
             }
         }
     }

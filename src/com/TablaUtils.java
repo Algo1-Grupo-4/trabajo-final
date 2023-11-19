@@ -3,11 +3,16 @@ package com;
 import excepciones.*;
 import java.util.ArrayList;
 
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 public class TablaUtils {
 
-  public static void doBasic(Tabla t) {
+  protected static void doBasic(Tabla t) {
     List<String> tipoDato = new ArrayList<>();
     for (String encabezado : t._dameHeaders()) {
       tipoDato.add(t.getColumna(encabezado).getCelda(0).getContenido().getClass().getSimpleName());
@@ -49,32 +54,101 @@ public class TablaUtils {
     System.out.println(infoTabla.toString());
   }
 
-  public static void doSort(Tabla t, String[] columnas) {
-            for (String etiquetaColumna : columnas) {
-            if (!t._dameColLabels().containsKey(etiquetaColumna)) {
-                throw new IllegalLabelException("La columna '" 
-                + etiquetaColumna + "' no existe en la tabla original.");
-            }
+  protected static void doSort(Tabla t, String[] columnas) {
+    for (String etiquetaColumna : columnas) {
+      if (!t._dameColLabels().containsKey(etiquetaColumna)) {
+        throw new IllegalLabelException("La columna '"
+            + etiquetaColumna + "' no existe en la tabla original.");
+      }
+    }
+    t._dameOrder().sort((fila1, fila2) -> {
+      for (String header : columnas) {
+        Celda celda1 = t.getFila(fila1).getCelda(t._dameColLabels().get(header));
+        Celda celda2 = t.getFila(fila2).getCelda(t._dameColLabels().get(header));
+
+        if (celda1.getContenido() == null && celda2.getContenido() == null) {
+          continue; // Ambos valores son nulos entonces sigue
+        } else if (celda1.getContenido() == null) {
+          return 1; // El valor de fila1 es nulo entonces lo pone despues de fila1
+        } else if (celda2.getContenido() == null) {
+          return -1; // El valor de fila2 es nulo entonces lo pone despues de fila1
         }
-        t._dameOrder().sort((fila1, fila2) -> {
-            for (String header : columnas) {
-                Celda celda1 = t.getFila(fila1).getCelda(t._dameColLabels().get(header));
-                Celda celda2 = t.getFila(fila2).getCelda(t._dameColLabels().get(header));
 
-                if (celda1.getContenido() == null && celda2.getContenido() == null) {
-                    continue; // Ambos valores son nulos entonces sigue
-                } else if (celda1.getContenido() == null) {
-                    return 1; // El valor de fila1 es nulo entonces lo pone despues de fila1
-                } else if (celda2.getContenido() == null) {
-                    return -1; // El valor de fila2 es nulo entonces lo pone despues de fila1
-                }
-
-                int comparacion = celda1.compareTo(celda2);
-                if (comparacion != 0) {
-                    return comparacion;
-                }
-            }
-            return 0; // Las filas son iguales en todas las columnas especificadas
-        });
+        int comparacion = celda1.compareTo(celda2);
+        if (comparacion != 0) {
+          return comparacion;
+        }
+      }
+      return 0; // Las filas son iguales en todas las columnas especificadas
+    });
   }
+
+  /**
+   * Genera rowlabels para el filtrado
+   * 
+   * @param filas
+   */
+  private static void generarRowLabelsFiltrado(Tabla t, List<String> filas) {
+    Map<String, Integer> nuevasRowLabels = new LinkedHashMap<>();
+    List<String> nuevoOrder = new ArrayList<>();
+
+    for (String fila : filas) {
+      nuevasRowLabels.put(fila, t._dameRowLabels().get(fila));
+      nuevoOrder.add(fila);
+    }
+    // Ordenar las etiquetas de fila
+    nuevoOrder.sort(Comparator.comparingInt(t._dameRowLabels()::get));
+    t._dameRowLabels().clear();
+    t.setRowLabels(nuevasRowLabels);
+    t._dameOrder().clear();
+    t.setOrder(nuevoOrder);
+  }
+
+  /**
+   * Filtra dado un preodicado
+   * 
+   * @param condicion
+   * @return Tabla filtrada
+   */
+  protected static Tabla filtrar(Tabla t, Predicate<Fila> condicion) {
+    Tabla nuevaTabla = t.deepCopy();
+    List<String> salida = new ArrayList<>();
+    for (String etiquetaFila : t._dameRowLabels().keySet()) {
+      Fila filaAComparar = t.getFila(etiquetaFila);
+
+      if (condicion.test(filaAComparar)) {
+        salida.add(etiquetaFila);
+      }
+    }
+    generarRowLabelsFiltrado(nuevaTabla, salida);
+    return nuevaTabla;
+  }
+
+  protected static void head(Tabla t) {
+    if (t.cantFilas() > 10) {
+      int[] f = IntStream.range(0, 10).toArray();
+      String[] fStrings = new String[f.length];
+      for (int i = 0; i < f.length; i++) {
+        fStrings[i] = String.valueOf(f[i]);
+      }
+      System.out.println(t.seleccionarFilas(fStrings).toString());
+    } else {
+      System.out.println(t.toString());
+    }
+  }
+
+  protected static void head(Tabla t, int n) {
+    if (t.cantFilas() < n) {
+      throw new IllegalArgumentException("La tabla tiene "
+          + t.cantFilas() + " filas, escriba un número menor");
+    } else {
+      int[] f = IntStream.range(0, n).toArray();
+      String[] fStrings = new String[f.length];
+      for (int i = 0; i < f.length; i++) {
+        fStrings[i] = String.valueOf(f[i]);
+      }
+      System.out.println(t.seleccionarFilas(fStrings).toString());
+    }
+  }
+
 }

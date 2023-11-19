@@ -2,7 +2,6 @@ package com;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -775,6 +774,20 @@ public class Tabla {
         return t;
     }
 
+    /** Muestra las primeras 10 líneas de la tabla */
+    public void head() {
+        TablaUtils.head(this);
+    }
+
+    /**
+     * Muestra las primeras n líneas de la tabla
+     * 
+     * @param n filas de la tabla a mostrar
+     */
+    public void head(int n) {
+        TablaUtils.head(this, n);
+    }
+
     /**
      * Ordena la tabla dada una cantidad de columnas
      * 
@@ -786,42 +799,13 @@ public class Tabla {
     }
 
     /**
-     * Genera rowlabels para el filtrado
-     * 
-     * @param filas
-     */
-    private void generarRowLabelsFiltrado(List<String> filas) {
-        Map<String, Integer> nuevasRowLabels = new LinkedHashMap<>();
-        List<String> nuevoOrder = new ArrayList<>();
-
-        for (String fila : filas) {
-            nuevasRowLabels.put(fila, rowLabels.get(fila));
-            nuevoOrder.add(fila);
-        }
-        // Ordenar las etiquetas de fila
-        nuevoOrder.sort(Comparator.comparingInt(rowLabels::get));
-        rowLabels.clear();
-        rowLabels = nuevasRowLabels;
-        order.clear();
-        order = nuevoOrder;
-    }
-
-    /**
      * Filtra dado un preodicado
      * 
      * @param condicion
      * @return Tabla filtrada
      */
-    public void filtrar(Predicate<Fila> condicion) {
-        List<String> salida = new ArrayList<>();
-        for (String etiquetaFila : rowLabels.keySet()) {
-            Fila filaAComparar = getFila(etiquetaFila);
-
-            if (condicion.test(filaAComparar)) {
-                salida.add(etiquetaFila);
-            }
-        }
-        this.generarRowLabelsFiltrado(salida);
+    public Tabla filtrar(Predicate<Fila> condicion) {
+        return TablaUtils.filtrar(this, condicion);
     }
 
     /**
@@ -934,8 +918,6 @@ public class Tabla {
         seleccionarFilas(muestras);
     }
 
-    //// ----NO--REFACTORIZADO----------------------------------------------------------------------------------------------------
-
     protected List<Columna> _dameTabla() {
         return this.tabla;
     }
@@ -1038,6 +1020,30 @@ public class Tabla {
             }
         }
         return false;
+    }
+
+    public void setTabla(List<Columna> tabla) {
+        this.tabla = tabla;
+    }
+
+    public void setHeaders(List<String> headers) {
+        this.headers = headers;
+    }
+
+    public void setOrder(List<String> order) {
+        this.order = order;
+    }
+
+    public void setColLabels(Map<String, Integer> colLabels) {
+        this.colLabels = colLabels;
+    }
+
+    public void setRowLabels(Map<String, Integer> rowLabels) {
+        this.rowLabels = rowLabels;
+    }
+
+    public void setLineas(List<String> lineas) {
+        this.lineas = lineas;
     }
 
     // public Tabla groupBy(List<Columna> columnasGroupo) {

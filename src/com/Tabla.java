@@ -710,8 +710,6 @@ public class Tabla {
             }
         }
         headers.remove(index);
-        System.out.println(colLabels);
-        System.out.println(headers);
     }
 
     /**
@@ -839,17 +837,16 @@ public class Tabla {
      * @param columnas
      * @return Una tabla ordenada
      */
-    public Tabla sort(String[] columnas) {
+    public void sort(String[] columnas) {
         for (String etiquetaColumna : columnas) {
             if (!colLabels.containsKey(etiquetaColumna)) {
                 throw new IllegalLabelException("La columna '" + etiquetaColumna + "' no existe en la tabla original.");
             }
         }
-        Tabla sortedTabla = this.shallowCopy();
-        sortedTabla.order.sort((fila1, fila2) -> {
+        this.order.sort((fila1, fila2) -> {
             for (String header : columnas) {
-                Celda celda1 = sortedTabla.getFila(fila1).getCelda(colLabels.get(header));
-                Celda celda2 = sortedTabla.getFila(fila2).getCelda(colLabels.get(header));
+                Celda celda1 = getFila(fila1).getCelda(colLabels.get(header));
+                Celda celda2 = getFila(fila2).getCelda(colLabels.get(header));
     
                 if (celda1.getContenido() == null && celda2.getContenido() == null) {
                     continue; // Ambos valores son nulos entonces sigue
@@ -866,7 +863,6 @@ public class Tabla {
             }
             return 0; // Las filas son iguales en todas las columnas especificadas
         });
-        return sortedTabla;
     }
 
     /**
@@ -1003,16 +999,16 @@ public class Tabla {
         return newTabla;
     }
 
-    public Tabla sample(int cantidad_datos) {
-
-        if (cantidad_datos > cantFilas()) {
-            throw new LengthMismatchException("El sample debe ser menor a la cantidad de filas");
+    public void sample(int porcentaje) {
+        if (porcentaje <= 0 || porcentaje > 100) {
+            throw new IllegalArgumentException("El porcentaje debe estar entre 1 y 100.");
         }
+        Collections.shuffle(order);
+        int cantidadMuestras = (int) Math.ceil(cantFilas() * (porcentaje / 100.0));
+        String[] muestras = order.subList(0, cantidadMuestras).toArray(new String[0]);
 
-        Tabla sample = new Tabla(this);
-        Collections.shuffle(sample._dameOrder());
-        // sample.head(cantidad_datos);
-        return sample;
+        // Filtrar la tabla original para incluir solo las muestras
+        seleccionarFilas(muestras);
     }
 
 

@@ -459,7 +459,7 @@ public class Tabla {
      * @param delimiter the delimiter of the csv. "defaults" to ,
      * @return a String representation
      */
-    public String toString(boolean headers, String delimiter) {
+    protected String toString(boolean headers, String delimiter) {
         if (delimiter == null) {
             delimiter = ",";
         }
@@ -496,7 +496,7 @@ public class Tabla {
      * @return int value del tamaño de la tabla
      */
     public int size() {
-        return tabla.size();
+        return this._dameTabla().size();
     }
 
     /**
@@ -505,10 +505,11 @@ public class Tabla {
      * @param key String -> la clave de la Columna
      */
     public Columna getColumna(String key) {
-        if (!colLabels.containsKey(key)) {
-            throw new IllegalArgumentException("No existe la columna '" + key + "' en la tabla.");
+        if (!this._dameColLabels().containsKey(key)) {
+            throw new IllegalArgumentException("No existe la columna '"
+                    + key + "' en la tabla.");
         }
-        return tabla.get(colLabels.get(key));
+        return this._dameTabla().get(colLabels.get(key));
     }
 
     /**
@@ -517,8 +518,9 @@ public class Tabla {
      * @param key String -> la clave de la Fila
      */
     public Fila getFila(String key) {
-        if (!rowLabels.containsKey(key)) {
-            throw new IllegalArgumentException("No existe la fila '" + key + "' en la tabla.");
+        if (!this._dameRowLabels().containsKey(key)) {
+            throw new IllegalArgumentException("No existe la fila '"
+                    + key + "' en la tabla.");
         }
         Fila fila = new Fila();
         for (Columna col : tabla) {
@@ -536,24 +538,16 @@ public class Tabla {
      */
     public Celda getCelda(String keyFila, String keyColumna) {
         if (!colLabels.containsKey(keyColumna)) {
-            throw new IllegalArgumentException("No existe la columna '" + keyColumna + "' en la tabla.");
+            throw new IllegalArgumentException("No existe la columna '"
+                    + keyColumna + "' en la tabla.");
         }
         if (!rowLabels.containsKey(keyFila)) {
-            throw new IllegalArgumentException("No existe la fila '" + keyFila + "' en la tabla.");
+            throw new IllegalArgumentException("No existe la fila '"
+                    + keyFila + "' en la tabla.");
         }
         return tabla.get(colLabels.get(keyColumna)).getCelda(rowLabels.get(keyFila));
-
     }
 
-    public Map<String, Integer> getColLabels() {
-        return colLabels;
-    }
-
-    public Map<String, Integer> getRowLabels() {
-        return rowLabels;
-    }
-
-    // --SETTERS--------------------------------------------------------------------------------------------------
     /**
      * Setea una columna nueva, manteniendo la etiqueta.
      * 
@@ -567,7 +561,6 @@ public class Tabla {
         if (!colLabels.containsKey(key)) {
             throw new IllegalLabelException("La columna '" + key + "' no existe en la tabla.");
         }
-
         int indiceActual = colLabels.get(key);
         for (int i = 0; i < cantFilas(); i++) {
             tabla.get(indiceActual).getCeldas().set(i, newColumna.getCelda(i));
@@ -658,12 +651,13 @@ public class Tabla {
     /**
      * Agrego una columna al final de la tabla sin header
      * 
+     * @deprecated porque deberia estar siempre un header
+     *             En futuras versiones deberia ser removido. no es recomendable su
+     *             uso
      * @param nuevaCol
      */
+    @Deprecated
     public void addColumna(Columna nuevaCol) {
-        // TODO: deprecar?
-        // sirve solo para cosas sin headers, habria que poner alguna verificacion, ni
-        // se si es necesario este constructor
         tabla.add(nuevaCol);
         colLabels.put(String.valueOf(ultimoIndice()), ultimoIndice());
         headers.add(String.valueOf(tabla.size()));
@@ -751,49 +745,7 @@ public class Tabla {
      * Adicionalmente Muestra la cantidad de columnas y cantidad de filas
      */
     public void infoBasica() {
-        List<String> tipoDato = new ArrayList<>();
-        for (String encabezado : _dameHeaders()) {
-            tipoDato.add(getColumna(encabezado).getCelda(0).getContenido().getClass().getSimpleName());
-
-        }
-
-        String[] tipoDatoDetectado = tipoDato.toArray(new String[0]);
-
-        List<String> cantidadNonNull = new ArrayList<>();
-        for (String encabezado : _dameHeaders()) {
-            Columna col = getColumna(encabezado);
-            int celdasNoNulas = 0;
-
-            for (Celda celda : col.getCeldas()) {
-                if (!celda.isNA()) {
-                    celdasNoNulas++;
-                }
-            }
-            cantidadNonNull.add(String.valueOf(celdasNoNulas));
-        }
-        String[] encabezados = { "Nombre", "NonNull", "TipoDato" };
-        String[] tipoDeDatoHeaders = { "String", "String", "String" };
-        String[] nomCol = _dameHeaders().toArray(new String[0]);
-        String[] noNulo = cantidadNonNull.toArray(new String[0]);
-
-        List<String[]> data_fila = new ArrayList<>();
-        data_fila.add(encabezados);
-
-        for (int i = 0; i < encabezados.length; i++) {
-            String[] row = { nomCol[i], noNulo[i], tipoDatoDetectado[i] };
-            data_fila.add(row);
-        }
-
-        String[][] datos = new String[data_fila.size()][data_fila.get(0).length];
-        for (int i = 0; i < data_fila.size(); i++) {
-            String[] row = data_fila.get(i);
-            System.arraycopy(row, 0, datos[i], 0, data_fila.get(0).length);
-        }
-        Tabla infoTabla = new Tabla(tipoDeDatoHeaders, datos, true);
-        System.out.println("Cantidad de columnas: " + _dameHeaders().size());
-        System.out.println("Cantidad de filas: " + cantFilas());
-        System.out.println();
-        System.out.println(infoTabla.toString());
+        TablaUtils.doBasic(this);
     }
 
     /**
@@ -804,7 +756,7 @@ public class Tabla {
      * 
      * @return Tabla nueva
      */
-    public Tabla copy() {
+    public Tabla deepCopy() {
         return new Tabla(this);
     }
 
@@ -831,40 +783,15 @@ public class Tabla {
      * @return Una tabla ordenada
      */
     public void sort(String[] columnas) {
-        for (String etiquetaColumna : columnas) {
-            if (!colLabels.containsKey(etiquetaColumna)) {
-                throw new IllegalLabelException("La columna '" + etiquetaColumna + "' no existe en la tabla original.");
-            }
-        }
-        this.order.sort((fila1, fila2) -> {
-            for (String header : columnas) {
-                Celda celda1 = getFila(fila1).getCelda(colLabels.get(header));
-                Celda celda2 = getFila(fila2).getCelda(colLabels.get(header));
-
-                if (celda1.getContenido() == null && celda2.getContenido() == null) {
-                    continue; // Ambos valores son nulos entonces sigue
-                } else if (celda1.getContenido() == null) {
-                    return 1; // El valor de fila1 es nulo entonces lo pone despues de fila1
-                } else if (celda2.getContenido() == null) {
-                    return -1; // El valor de fila2 es nulo entonces lo pone despues de fila1
-                }
-
-                int comparacion = celda1.compareTo(celda2);
-                if (comparacion != 0) {
-                    return comparacion;
-                }
-            }
-            return 0; // Las filas son iguales en todas las columnas especificadas
-        });
+        TablaUtils.doSort(this, columnas);
     }
 
     /**
-     * Genera rowlabels dado un filto
+     * Genera rowlabels para el filtrado
      * 
      * @param filas
      */
-    // TODO: mejorar javadoc
-    public void generarRowLabelsFiltrado(List<String> filas) {
+    private void generarRowLabelsFiltrado(List<String> filas) {
         Map<String, Integer> nuevasRowLabels = new LinkedHashMap<>();
         List<String> nuevoOrder = new ArrayList<>();
 
@@ -874,7 +801,6 @@ public class Tabla {
         }
         // Ordenar las etiquetas de fila
         nuevoOrder.sort(Comparator.comparingInt(rowLabels::get));
-
         rowLabels.clear();
         rowLabels = nuevasRowLabels;
         order.clear();
@@ -882,7 +808,7 @@ public class Tabla {
     }
 
     /**
-     * Filtra
+     * Filtra dado un preodicado
      * 
      * @param condicion
      * @return Tabla filtrada
@@ -903,9 +829,9 @@ public class Tabla {
      * Seleccionar columnas y filas
      * 
      * @param etiquetaFilas ------------------
-     * @return Tabla reducida
+     * 
      */
-    public void seleccionar(String[] etiquetaColumnas, String[] etiquetaFilas) {
+    public void seleccionarTodo(String[] etiquetaColumnas, String[] etiquetaFilas) {
         this.seleccionarColumnas(etiquetaColumnas);
         this.seleccionarFilas(etiquetaFilas);
     }
@@ -1089,7 +1015,7 @@ public class Tabla {
 
     // --METODOS
     // UTILES--------------------------------------------------------------------------------------------------
-    private int cantFilas() {
+    protected int cantFilas() {
         /**
          * Devuelve la cantidad de filas en la tabla.
          */

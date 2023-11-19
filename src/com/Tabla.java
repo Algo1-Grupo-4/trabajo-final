@@ -2,8 +2,6 @@ package com;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -386,8 +384,8 @@ public class Tabla {
             out.append(String.format("%-" + (anchoColumna[i] + 8) + "s", "").replace(' ', '-'));
         }
         out.append("\n");
-        if (cantFilas() > 20) {
-
+        // if (cantFilas() > 20) {
+        if (orderFilas.size() > 50) {
             // Iterar y agregar filas en el orden especificado
             for (int rowIndex = 0; rowIndex < 5; rowIndex++) {
                 String filaKey = orderFilas.get(rowIndex);
@@ -407,9 +405,9 @@ public class Tabla {
             }
             // Si hay más de 20 filas, agregar tres puntos suspensivos y mostrar las últimas
             // 5 filas
-            out.append("... (y otras " + (cantFilas() - 10) + " filas)\n");
+            out.append("... (y otras " + (orderFilas.size() - 10) + " filas)\n");
 
-            for (int rowIndex = cantFilas() - 5; rowIndex < cantFilas(); rowIndex++) {
+            for (int rowIndex = orderFilas.size() - 5; rowIndex < orderFilas.size(); rowIndex++) {
                 String filaKey = orderFilas.get(rowIndex);
 
                 if (!rowLabels.containsKey(filaKey)) {
@@ -492,11 +490,13 @@ public class Tabla {
     }
 
     /**
-     * Devuelve el size de tabla
+     * Devuelve cantidad de columas en la tabla
      * 
-     * @return int value del tamaño de la tabla
+     * @deprecated To be removed
+     * @return cantidad de columnas
      */
-    public int size() {
+    @Deprecated
+    public int countColumns() {
         return this._dameTabla().size();
     }
 
@@ -777,6 +777,37 @@ public class Tabla {
         return t;
     }
 
+    /** Muestra las primeras 10 líneas de la tabla */
+    public void head() {
+        TablaUtils.head(this);
+    }
+
+    /**
+     * Muestra las primeras n líneas de la tabla
+     * 
+     * @param n filas de la tabla a mostrar
+     */
+    public void head(int n) {
+        // TODO: Heads grandes a veces hacen una "race condition" con cortar la tabla
+        TablaUtils.head(this, n);
+    }
+
+    /**
+     * Muestra las últimas 10 filas de la tabla
+     */
+    public void tail() {
+        TablaUtils.tail(this);
+    }
+
+    /**
+     * Muestra las últimas n filas de la tabla
+     * 
+     * @param n
+     */
+    public void tail(int n) {
+        TablaUtils.tail(this, n);
+    }
+
     /**
      * Ordena la tabla dada una cantidad de columnas
      * 
@@ -788,42 +819,13 @@ public class Tabla {
     }
 
     /**
-     * Genera rowlabels para el filtrado
-     * 
-     * @param filas
-     */
-    private void generarRowLabelsFiltrado(List<String> filas) {
-        Map<String, Integer> nuevasRowLabels = new LinkedHashMap<>();
-        List<String> nuevoOrder = new ArrayList<>();
-
-        for (String fila : filas) {
-            nuevasRowLabels.put(fila, rowLabels.get(fila));
-            nuevoOrder.add(fila);
-        }
-        // Ordenar las etiquetas de fila
-        nuevoOrder.sort(Comparator.comparingInt(rowLabels::get));
-        rowLabels.clear();
-        rowLabels = nuevasRowLabels;
-        order.clear();
-        order = nuevoOrder;
-    }
-
-    /**
      * Filtra dado un preodicado
      * 
      * @param condicion
      * @return Tabla filtrada
      */
-    public void filtrar(Predicate<Fila> condicion) {
-        List<String> salida = new ArrayList<>();
-        for (String etiquetaFila : rowLabels.keySet()) {
-            Fila filaAComparar = getFila(etiquetaFila);
-
-            if (condicion.test(filaAComparar)) {
-                salida.add(etiquetaFila);
-            }
-        }
-        this.generarRowLabelsFiltrado(salida);
+    public Tabla filtrar(Predicate<Fila> condicion) {
+        return TablaUtils.filtrar(this, condicion);
     }
 
     /**
@@ -833,9 +835,7 @@ public class Tabla {
      * 
      */
     public Tabla seleccionar(String[] etiquetaColumnas, String[] etiquetaFilas) {
-        Tabla seleccionColumnas = seleccionarColumnas(etiquetaColumnas);
-        Tabla seleccionFinal = seleccionColumnas.seleccionarFilas(etiquetaFilas);
-        return seleccionFinal;
+        return TablaUtils.seleccionar(this, etiquetaColumnas, etiquetaFilas);
     }
 
     /**
@@ -845,23 +845,7 @@ public class Tabla {
      * @return Tabla reducida
      */
     public Tabla seleccionarColumnas(String[] etiquetaColumnas) {
-        Tabla nuevaTabla = this.deepCopy();
-        Map<String, Integer> newColLabels = new LinkedHashMap<>();
-        List<String> newHeaders = new ArrayList<>();
-
-        for (String etiqueta : etiquetaColumnas) {
-            if (nuevaTabla._dameColLabels().containsKey(etiqueta)) {
-                int valor = nuevaTabla._dameColLabels().get(etiqueta);
-                newColLabels.put(etiqueta, valor);
-                newHeaders.add(etiqueta);
-            } else {
-                throw new IllegalArgumentException("La columna '"
-                        + etiqueta + "' no existe en la tabla original.");
-            }
-        }
-        nuevaTabla.colLabels = newColLabels;
-        nuevaTabla.headers = newHeaders;
-        return nuevaTabla;
+        return TablaUtils.seleccionarColumnas(this, etiquetaColumnas);
     }
 
     /**
@@ -871,24 +855,7 @@ public class Tabla {
      * @return Tabla reducida
      */
     public Tabla seleccionarFilas(String[] etiquetaFilas) {
-        Tabla nuevaTabla = this.deepCopy();
-        Map<String, Integer> newRowLabels = new LinkedHashMap<>();
-        List<String> newOrder = new ArrayList<>();
-
-        for (String etiqueta : etiquetaFilas) {
-            if (nuevaTabla._dameRowLabels().containsKey(etiqueta)) {
-                int valor = nuevaTabla._dameRowLabels().get(etiqueta);
-                newRowLabels.put(etiqueta, valor);
-                newOrder.add(etiqueta);
-            } else {
-                throw new IllegalArgumentException("La fila '"
-                        + etiqueta + "' no existe en la tabla original.");
-            }
-        }
-        // Actualizar las etiquetas y el orden después de verificar todas las filas
-        nuevaTabla.rowLabels = newRowLabels;
-        nuevaTabla.order = newOrder;
-        return nuevaTabla;
+        return TablaUtils.seleccionarFilas(this, etiquetaFilas);
     }
 
     /**
@@ -898,45 +865,18 @@ public class Tabla {
      * @return
      */
     public Tabla concatenarTabla(Tabla other) {
-        // Verifico que coincidan las columnas
-        List<String> tablaHeaders = _dameHeaders();
-        List<String> otherHeaders = other._dameHeaders();
-        if (!tablaHeaders.equals(otherHeaders)) {
-            throw new MismatchedDataException("Las columnas de ambas tablas no coinciden.");
-        }
-
-        // Verifico que coincidan los tipos de datos
-        for (String header : tablaHeaders) {
-            Celda celdaThis = getCelda("0", header);
-            Celda celdaOther = other.getCelda("0", header);
-
-            if (!celdaThis.getClass().equals(celdaOther.getClass())) {
-                throw new InvalidDataTypeException("No coinciden los tipos de datos en la columna " + header + ".");
-            }
-        }
-        Tabla newTabla = new Tabla(this);
-        // Agregar filas de la otra tabla
-        for (String etiquetaFila : other._dameOrder()) {
-            Fila filaAgregar = other.getFila(etiquetaFila);
-            newTabla.addFila(filaAgregar);
-        }
-
-        return newTabla;
+        return TablaUtils.concatenate(this, other);
     }
 
-    public void sample(int porcentaje) {
-        if (porcentaje <= 0 || porcentaje > 100) {
-            throw new IllegalArgumentException("El porcentaje debe estar entre 1 y 100.");
-        }
-        Collections.shuffle(order);
-        int cantidadMuestras = (int) Math.ceil(cantFilas() * (porcentaje / 100.0));
-        String[] muestras = order.subList(0, cantidadMuestras).toArray(new String[0]);
-
-        // Filtrar la tabla original para incluir solo las muestras
-        seleccionarFilas(muestras);
+    /**
+     * Genera un sample de la tabla
+     * 
+     * @param porcentaje
+     * @return
+     */
+    public Tabla sample(int porcentaje) {
+        return TablaUtils.doSample(this, porcentaje);
     }
-
-    //// ----NO--REFACTORIZADO----------------------------------------------------------------------------------------------------
 
     protected List<Columna> _dameTabla() {
         return this.tabla;
@@ -963,15 +903,13 @@ public class Tabla {
     }
 
     private void llenarTabla(String[][] datos, String[] tiposDato) throws InvalidDataTypeException {
-
         for (int index_columna = 0; index_columna < tiposDato.length; index_columna++) {
             Columna columna = tabla.get(index_columna);
 
-            // Verificar si los tipos de las celdas son iguales NO FUNCIONA
             if (!columna.sonMismosTipos()) {
-                throw new InvalidDataTypeException("Los tipos de datos en la columna no coinciden.");
+                throw new InvalidDataTypeException(
+                        "Los tipos de datos en la columna no coinciden.");
             }
-
             for (int index_fila = 0; index_fila < datos.length; index_fila++) {
                 Celda celda = columna.getCelda(index_fila);
                 String valor = datos[index_fila][index_columna];
@@ -1042,58 +980,29 @@ public class Tabla {
         return false;
     }
 
-    // public Tabla groupBy(List<Columna> columnasGroupo) {
-
-    // }
-    public void head() {
-        if(this.cantFilas() > 10) {
-            int[] f = IntStream.range(0,10).toArray();
-            String[] fStrings = new String[f.length];
-            for (int i = 0; i < f.length; i++) {
-                fStrings[i] = String.valueOf(f[i]);
-            }
-            System.out.println(seleccionarFilas(fStrings).toString());
-        } else {
-            System.out.println(this.toString());
-        }
-    }   
-
-    public void head(int n) {
-        if (cantFilas() < n) {
-            throw new IllegalArgumentException("La tabla tiene " + cantFilas() + " filas, escriba un número menor");
-        } else {
-            int[] f = IntStream.range(0, n).toArray();
-            String[] fStrings = new String[f.length];
-            for (int i = 0; i < f.length; i++) {
-                fStrings[i] = String.valueOf(f[i]);
-            }
-            System.out.println(seleccionarFilas(fStrings).toString());
-        }
+    public void setTabla(List<Columna> tabla) {
+        this.tabla = tabla;
     }
 
-    public void tail() {
-        if(this.cantFilas() > 10) {
-            int[] f = IntStream.range(cantFilas()-10,cantFilas()).toArray();
-            String[] fStrings = new String[f.length];
-            for (int i = 0; i < f.length; i++) {
-                fStrings[i] = String.valueOf(f[i]);
-            }
-            System.out.println(seleccionarFilas(fStrings).toString());
-        } else {
-            System.out.println(this.toString());
-        }
-    }          
-    public void tail(int n) {
-        if (cantFilas() < n) {
-            throw new IllegalArgumentException("La tabla tiene " + cantFilas() + " filas, escriba un número menor");
-        } else {
-            int[] f = IntStream.range(cantFilas()-n,cantFilas()).toArray();
-            String[] fStrings = new String[f.length];
-            for (int i = 0; i < f.length; i++) {
-                fStrings[i] = String.valueOf(f[i]);
-            }
-            System.out.println(seleccionarFilas(fStrings).toString());
-        }
+    public void setHeaders(List<String> headers) {
+        this.headers = headers;
+    }
+
+    public void setOrder(List<String> order) {
+        this.order = order;
+    }
+
+    public void setColLabels(Map<String, Integer> colLabels) {
+        this.colLabels = colLabels;
+    }
+
+    public void setRowLabels(Map<String, Integer> rowLabels) {
+        this.rowLabels = rowLabels;
+    }
+
+    public void setLineas(List<String> lineas) {
+        this.lineas = lineas;
+
     }
 
 }

@@ -151,4 +151,50 @@ public class TablaUtils {
     }
   }
 
+  protected static Tabla seleccionar(Tabla t, String[] etiquetaColumnas, String[] etiquetaFilas) {
+    Tabla seleccionColumnas = seleccionarColumnas(t, etiquetaColumnas);
+    Tabla seleccionFinal = seleccionColumnas.seleccionarFilas(etiquetaFilas);
+    return seleccionFinal;
+  }
+
+  protected static Tabla seleccionarColumnas(Tabla t, String[] etiquetaColumnas) {
+    Tabla nuevaTabla = t.deepCopy();
+    Map<String, Integer> newColLabels = new LinkedHashMap<>();
+    List<String> newHeaders = new ArrayList<>();
+
+    for (String etiqueta : etiquetaColumnas) {
+      if (nuevaTabla._dameColLabels().containsKey(etiqueta)) {
+        int valor = nuevaTabla._dameColLabels().get(etiqueta);
+        newColLabels.put(etiqueta, valor);
+        newHeaders.add(etiqueta);
+      } else {
+        throw new IllegalArgumentException("La columna '"
+            + etiqueta + "' no existe en la tabla original.");
+      }
+    }
+    nuevaTabla.setColLabels(newColLabels);
+    nuevaTabla.setHeaders(newHeaders);
+    return nuevaTabla;
+  }
+
+  protected static Tabla seleccionarFilas(Tabla t, String[] etiquetaFilas) {
+    Tabla nuevaTabla = t.deepCopy();
+    Map<String, Integer> newRowLabels = new LinkedHashMap<>();
+    List<String> newOrder = new ArrayList<>();
+
+    for (String etiqueta : etiquetaFilas) {
+      if (nuevaTabla._dameRowLabels().containsKey(etiqueta)) {
+        int valor = nuevaTabla._dameRowLabels().get(etiqueta);
+        newRowLabels.put(etiqueta, valor);
+        newOrder.add(etiqueta);
+      } else {
+        throw new IllegalArgumentException("La fila '"
+            + etiqueta + "' no existe en la tabla original.");
+      }
+    }
+    // Actualizar las etiquetas y el orden después de verificar todas las filas
+    nuevaTabla.setRowLabels(newRowLabels);
+    nuevaTabla.setOrder(newOrder);
+    return nuevaTabla;
+  }
 }

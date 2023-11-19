@@ -815,9 +815,7 @@ public class Tabla {
      * 
      */
     public Tabla seleccionar(String[] etiquetaColumnas, String[] etiquetaFilas) {
-        Tabla seleccionColumnas = seleccionarColumnas(etiquetaColumnas);
-        Tabla seleccionFinal = seleccionColumnas.seleccionarFilas(etiquetaFilas);
-        return seleccionFinal;
+        return TablaUtils.seleccionar(this, etiquetaColumnas, etiquetaFilas);
     }
 
     /**
@@ -827,23 +825,7 @@ public class Tabla {
      * @return Tabla reducida
      */
     public Tabla seleccionarColumnas(String[] etiquetaColumnas) {
-        Tabla nuevaTabla = this.deepCopy();
-        Map<String, Integer> newColLabels = new LinkedHashMap<>();
-        List<String> newHeaders = new ArrayList<>();
-
-        for (String etiqueta : etiquetaColumnas) {
-            if (nuevaTabla._dameColLabels().containsKey(etiqueta)) {
-                int valor = nuevaTabla._dameColLabels().get(etiqueta);
-                newColLabels.put(etiqueta, valor);
-                newHeaders.add(etiqueta);
-            } else {
-                throw new IllegalArgumentException("La columna '"
-                        + etiqueta + "' no existe en la tabla original.");
-            }
-        }
-        nuevaTabla.colLabels = newColLabels;
-        nuevaTabla.headers = newHeaders;
-        return nuevaTabla;
+        return TablaUtils.seleccionarColumnas(this, etiquetaColumnas);
     }
 
     /**
@@ -853,24 +835,7 @@ public class Tabla {
      * @return Tabla reducida
      */
     public Tabla seleccionarFilas(String[] etiquetaFilas) {
-        Tabla nuevaTabla = this.deepCopy();
-        Map<String, Integer> newRowLabels = new LinkedHashMap<>();
-        List<String> newOrder = new ArrayList<>();
-
-        for (String etiqueta : etiquetaFilas) {
-            if (nuevaTabla._dameRowLabels().containsKey(etiqueta)) {
-                int valor = nuevaTabla._dameRowLabels().get(etiqueta);
-                newRowLabels.put(etiqueta, valor);
-                newOrder.add(etiqueta);
-            } else {
-                throw new IllegalArgumentException("La fila '"
-                        + etiqueta + "' no existe en la tabla original.");
-            }
-        }
-        // Actualizar las etiquetas y el orden después de verificar todas las filas
-        nuevaTabla.rowLabels = newRowLabels;
-        nuevaTabla.order = newOrder;
-        return nuevaTabla;
+        return TablaUtils.seleccionarFilas(this, etiquetaFilas);
     }
 
     /**

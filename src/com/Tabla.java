@@ -415,7 +415,6 @@ public class Tabla {
                 }
                 // Agregar la etiqueta de fila
                 out.append(String.format("%-" + 8 + "s", filaKey));
-
                 for (int i = 0; i < headers.size(); i++) {
                     String header = headers.get(i);
                     int columnIndex = colLabels.get(header);
@@ -831,9 +830,10 @@ public class Tabla {
      * @param etiquetaFilas ------------------
      * 
      */
-    public void seleccionarTodo(String[] etiquetaColumnas, String[] etiquetaFilas) {
-        this.seleccionarColumnas(etiquetaColumnas);
-        this.seleccionarFilas(etiquetaFilas);
+    public Tabla seleccionar(String[] etiquetaColumnas, String[] etiquetaFilas) {
+        Tabla seleccionColumnas = seleccionarColumnas(etiquetaColumnas);
+        Tabla seleccionFinal = seleccionColumnas.seleccionarFilas(etiquetaFilas);
+        return seleccionFinal;
     }
 
     /**
@@ -842,23 +842,24 @@ public class Tabla {
      * @param etiquetaColumnas
      * @return Tabla reducida
      */
-    public void seleccionarColumnas(String[] etiquetaColumnas) {
+    public Tabla seleccionarColumnas(String[] etiquetaColumnas) {
+        Tabla nuevaTabla = this.copy();
         Map<String, Integer> newColLabels = new LinkedHashMap<>();
         List<String> newHeaders = new ArrayList<>();
 
         for (String etiqueta : etiquetaColumnas) {
-            if (_dameColLabels().containsKey(etiqueta)) {
-                int valor = _dameColLabels().get(etiqueta);
+            if (nuevaTabla._dameColLabels().containsKey(etiqueta)) {
+                int valor = nuevaTabla._dameColLabels().get(etiqueta);
                 newColLabels.put(etiqueta, valor);
                 newHeaders.add(etiqueta);
             } else {
-                throw new IllegalArgumentException("La columna '" + etiqueta + "' no existe en la tabla original.");
+                throw new IllegalArgumentException("La columna '"
+                        + etiqueta + "' no existe en la tabla original.");
             }
         }
-
-        // Actualizar las etiquetas y headers después de verificar todas las columnas
-        this.colLabels = newColLabels;
-        this.headers = newHeaders;
+        nuevaTabla.colLabels = newColLabels;
+        nuevaTabla.headers = newHeaders;
+        return nuevaTabla;
     }
 
     /**
@@ -867,22 +868,25 @@ public class Tabla {
      * @param etiquetaFilas
      * @return Tabla reducida
      */
-    public void seleccionarFilas(String[] etiquetaFilas) {
+    public Tabla seleccionarFilas(String[] etiquetaFilas) {
+        Tabla nuevaTabla = this.copy();
         Map<String, Integer> newRowLabels = new LinkedHashMap<>();
         List<String> newOrder = new ArrayList<>();
 
         for (String etiqueta : etiquetaFilas) {
-            if (_dameRowLabels().containsKey(etiqueta)) {
-                int valor = _dameRowLabels().get(etiqueta);
+            if (nuevaTabla._dameRowLabels().containsKey(etiqueta)) {
+                int valor = nuevaTabla._dameRowLabels().get(etiqueta);
                 newRowLabels.put(etiqueta, valor);
                 newOrder.add(etiqueta);
             } else {
-                throw new IllegalArgumentException("La fila '" + etiqueta + "' no existe en la tabla original.");
+                throw new IllegalArgumentException("La fila '"
+                        + etiqueta + "' no existe en la tabla original.");
             }
         }
         // Actualizar las etiquetas y el orden después de verificar todas las filas
-        this.rowLabels = newRowLabels;
-        this.order = newOrder;
+        nuevaTabla.rowLabels = newRowLabels;
+        nuevaTabla.order = newOrder;
+        return nuevaTabla;
     }
 
     /**

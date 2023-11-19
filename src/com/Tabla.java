@@ -843,7 +843,7 @@ public class Tabla {
      * @return Tabla reducida
      */
     public Tabla seleccionarColumnas(String[] etiquetaColumnas) {
-        Tabla nuevaTabla = this.copy();
+        Tabla nuevaTabla = this.deepCopy();
         Map<String, Integer> newColLabels = new LinkedHashMap<>();
         List<String> newHeaders = new ArrayList<>();
 
@@ -869,7 +869,7 @@ public class Tabla {
      * @return Tabla reducida
      */
     public Tabla seleccionarFilas(String[] etiquetaFilas) {
-        Tabla nuevaTabla = this.copy();
+        Tabla nuevaTabla = this.deepCopy();
         Map<String, Integer> newRowLabels = new LinkedHashMap<>();
         List<String> newOrder = new ArrayList<>();
 

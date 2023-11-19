@@ -23,7 +23,7 @@ import excepciones.*;
  *      it's me </a>
  */
 
-public class Tabla implements Summarize {
+public class Tabla {
     private List<Columna> tabla;
     private List<String> headers;
     private List<String> order;
@@ -516,7 +516,7 @@ public class Tabla implements Summarize {
      */
     public Columna getColumna(String key) {
         if (!colLabels.containsKey(key)) {
-            throw new IllegalArgumentException("No existe una columna con esa clave");
+            throw new IllegalArgumentException("No existe la columna '" + key + "' en la tabla.");
         }
         return tabla.get(colLabels.get(key));
     }
@@ -528,7 +528,7 @@ public class Tabla implements Summarize {
      */
     public Fila getFila(String key) {
         if (!rowLabels.containsKey(key)) {
-            throw new IllegalArgumentException("No hay fila con esa key");
+            throw new IllegalArgumentException("No existe la fila '" + key + "' en la tabla.");
         }
         Fila fila = new Fila();
         for (Columna col : tabla) {
@@ -545,15 +545,14 @@ public class Tabla implements Summarize {
      * @param keyColumna String key de la columna
      */
     public Celda getCelda(String keyFila, String keyColumna) {
-        if (colLabels.containsKey(keyColumna)) {
-            if (rowLabels.containsKey(keyFila)) {
-                return tabla.get(colLabels.get(keyColumna)).getCelda(rowLabels.get(keyFila));
-            } else {
-                throw new IllegalArgumentException("No existe esa fila");
-            }
-        } else {
-            throw new IllegalArgumentException("No existe esa columna");
+        if (!colLabels.containsKey(keyColumna)) {
+            throw new IllegalArgumentException("No existe la columna '" + keyColumna + "' en la tabla.");
         }
+        if (!rowLabels.containsKey(keyFila)) {
+            throw new IllegalArgumentException("No existe la fila '" + keyFila + "' en la tabla.");
+        }
+        return tabla.get(colLabels.get(keyColumna)).getCelda(rowLabels.get(keyFila));
+           
     }
 
     public Map<String, Integer> getColLabels() {
@@ -561,80 +560,68 @@ public class Tabla implements Summarize {
     }
 
     public Map<String, Integer> getRowLabels() {
-        return colLabels;
+        return rowLabels;
     }
 
     // --SETTERS--------------------------------------------------------------------------------------------------
     /**
-     * Setea una columna nueva, manteniendo la label
+     * Setea una columna nueva, manteniendo la etiqueta.
      * 
      * @param newColumna
      * @param key
      */
     public void setColumna(Columna newColumna, String key) {
-        if (newColumna.size() == cantFilas()) {
-            if (colLabels.containsKey(key)) {
-                tabla.add(newColumna);
-                colLabels.put(key, ultimoIndice());
-            } else {
-                throw new IllegalLabelException("La columna especificada no existe.");
-            }
-        } else {
+        if (newColumna.size() != cantFilas()) {
             throw new LengthMismatchException("El tamaño de la columna nueva no coincide con la cantidad de filas.");
+        }
+        if (!colLabels.containsKey(key)) {
+            throw new IllegalLabelException("La columna '" + key + "' no existe en la tabla.");
+        }
+
+        int indiceActual = colLabels.get(key);
+        for (int i = 0; i < cantFilas(); i++) {
+            tabla.get(indiceActual).getCeldas().set(i, newColumna.getCelda(i));
         }
     }
 
     /**
-     * Setea una columan, generando una key nueva
+     * Setea una columna, generando una nueva etiqueta.
      * 
      * @param newColumna
      * @param oldKey
      * @param newKey
      */
     public void setColumna(Columna newColumna, String oldKey, String newKey) {
-        if (newColumna.size() == cantFilas()) {
-            if (colLabels.containsKey(oldKey)) {
-                if (!colLabels.containsKey(newKey)) {
-                    int index = colLabels.get(oldKey);
-                    tabla.add(newColumna);
-                    colLabels.put(newKey, ultimoIndice());
-                    headers.set(index, newKey);
-                } else {
-                    throw new IllegalLabelException(
-                            "La nueva etiqueta ya corresponde a otra columna y no puede ser duplicada.");
-                }
-            } else {
-                throw new IllegalLabelException("La columna especificada no existe.");
-            }
-        } else {
-            throw new LengthMismatchException("El tamaño de la columna nueva no coincide con la cantidad de filas.");
+        if (colLabels.containsKey(newKey)) {
+            throw new IllegalLabelException("La nueva etiqueta ya corresponde a otra columna y no puede ser duplicada.");
         }
+        setColumna(newColumna, oldKey);
+        int indiceViejo = colLabels.get(oldKey);   
+        colLabels.remove(oldKey);
+        colLabels.put(newKey, indiceViejo);
+        headers.set(indiceViejo, newKey);
     }
 
     /**
-     * Setea la fila manteniendo la label
+     * Setea la fila manteniendo la etiqueta.
      * 
      * @param newFila
      * @param key
      */
     public void setFila(Fila newFila, String key) {
-        if (newFila.size() == tabla.size()) {
-            if (rowLabels.containsKey(key)) {
-                for (int i = 0; i < newFila.size(); i++) {
-                    tabla.get(i).getCeldas().add(newFila.getCelda(i));
-                }
-                rowLabels.put(key, cantFilas() - 1);
-
-            } else {
-                throw new IllegalLabelException("La fila especificada no existe");
-            }
-        } else {
+        if (newFila.size() != tabla.size()) {
             throw new LengthMismatchException("El tamaño de la fila nueva no coincide con la cantidad de columnas.");
+        }
+        if (!rowLabels.containsKey(key)) {
+            throw new IllegalLabelException("La fila " + key + " no existe en la tabla.");
+        }
+        int indiceActual = rowLabels.get(key);
+        for (int i = 0; i < newFila.size(); i++) {
+            tabla.get(i).getCeldas().set(indiceActual, newFila.getCelda(i));
         }
     }
 
     /**
-     * setFila para reemplazar keys
      * Reemplaza el contenido de una fila por una nueva, cambia la label sirve solo
      * para rowkeys no numericas, sino no tiene sentido
      * 
@@ -642,28 +629,16 @@ public class Tabla implements Summarize {
      * @param oldKey
      * @param newKey
      */
-    public void setFila(Fila newFila, String oldKey, String newKey) { // Funciona pero no lo imprime bien
-        if (newFila.size() == tabla.size()) {
-            if (rowLabels.containsKey(oldKey)) {
-                if (!rowLabels.containsKey(newKey)) {
-                    for (int i = 0; i < newFila.size(); i++) {
-                        tabla.get(i).getCeldas().set(rowLabels.get(oldKey), newFila.getCelda(i));
-                    }
-                    rowLabels.put(newKey, rowLabels.get(oldKey));
-                    rowLabels.remove(oldKey);
-                } else {
-                    throw new IllegalLabelException(
-                            "La nueva etiqueta ya corresponde a otra fila y no puede ser duplicada.");
-                }
-            } else {
-                throw new IllegalLabelException(
-                        "La fila especificada no existe.");
-            }
-        } else {
-            throw new LengthMismatchException(
-                    "El tamaño de la fila nueva no coincide con la cantidad de columnas.");
+    public void setFila(Fila newFila, String oldKey, String newKey) { 
+        if (rowLabels.containsKey(newKey)) {
+            throw new IllegalLabelException("La nueva etiqueta ya corresponde a otra fila y no puede ser duplicada.");
         }
-    }
+        setFila(newFila, oldKey);
+        int indiceViejo = rowLabels.get(oldKey);   
+        rowLabels.remove(oldKey);
+        rowLabels.put(newKey, indiceViejo);
+        order.set(indiceViejo, newKey);    
+    }   
 
     /**
      * Reemplaza el contenido de una celda
@@ -675,31 +650,18 @@ public class Tabla implements Summarize {
      *                                  Si el tipo de dato de value no corresponde
      *                                  con el de la columna, tirra este error
      */
-    public void setCelda(String keyFila, String keyColumna, Object value) throws InvalidDataTypeException {
+    public void setCelda(String keyFila, String keyColumna, Celda newCelda) {
         Celda celda = getCelda(keyFila, keyColumna);
-        if (celda.getContenido() instanceof Boolean) {
-            if (value.equals(true) || value.equals(false)) {
-                celda.setContenido(value);
-            } else {
-                throw new InvalidDataTypeException("el valor no es booleano");
-            }
-
-        }
-        if (celda.getContenido() instanceof Number) {
-            if (value instanceof Number) {
-                celda.setContenido(value);
-            } else {
-                throw new InvalidDataTypeException("El valor no es de tipo Number.");
+        System.out.println(celda);
+        // Verifica si la celda tiene un contenido actual y si no son compatibles tira una excepción
+        if (celda.getContenido() != null) {
+            if (!celda.getClass().equals(newCelda.getClass())) {
+                throw new InvalidDataTypeException("El contenido de la celda es del tipo " + celda.getClass() + " y la nueva celda es " + newCelda.getClass() + ".");
             }
         }
-        if (celda.getContenido() instanceof String) {
-            if (value instanceof String) {
-                celda.setContenido(value);
-            } else {
-                throw new InvalidDataTypeException("El valor no es de tipo String.");
-            }
-        }
+        celda.setContenido(newCelda.getContenido());
     }
+    
 
     /**
      * Agrego una columna al final de la tabla sin header
@@ -744,6 +706,7 @@ public class Tabla implements Summarize {
         for (String header : headers) {
             if (colLabels.get(header) > index) {
                 colLabels.put(header, colLabels.get(header) - 1);
+                colLabels.remove(key);
             }
         }
         headers.remove(index);
@@ -756,18 +719,16 @@ public class Tabla implements Summarize {
      */
     public void addFila(Fila nuevaFila) {
         if (nuevaFila.size() != tabla.size()) {
-            throw new IllegalArgumentException(
-                    "La cantidad de datos de la fila no corresponde con el tamaño de la tabla.");
+            throw new IllegalArgumentException("La cantidad de datos de la fila no corresponde con el tamaño de la tabla.");
         }
-        if (!contieneFila(nuevaFila)) {
-            for (int i = 0; i < tabla.size(); i++) {
-                tabla.get(i).addCelda(nuevaFila.getCeldas().get(i));
-            }
-            rowLabels.put(String.valueOf(cantFilas() - 1), cantFilas() - 1);
-            order.add(String.valueOf(cantFilas() - 1));
-        } else {
+        if (contieneFila(nuevaFila)) {
             throw new IllegalLibraryUse("No se permite duplicar las filas.");
         }
+        for (int i = 0; i < tabla.size(); i++) {
+            tabla.get(i).addCelda(nuevaFila.getCeldas().get(i));
+        }
+        rowLabels.put(String.valueOf(cantFilas() - 1), cantFilas() - 1);
+        order.add(String.valueOf(cantFilas() - 1));
     }
 
     /**
@@ -780,16 +741,14 @@ public class Tabla implements Summarize {
             throw new IllegalArgumentException("No existe la fila " + key + ".");
         }
         int rowIndex = rowLabels.get(key);
-        // Elimino celdas de cada columna
         for (Columna col : tabla) {
             col.removeCelda(rowLabels.get(key));
-
-            for (String row : order) {
-                if (rowLabels.get(row) > rowIndex) {
-                    rowLabels.put(row, rowLabels.get(row) - 1);
-                }
-            }
             order.remove(key);
+        }
+        for (String row : order) {
+            if (rowLabels.get(row) > rowIndex) {
+                rowLabels.put(row, rowLabels.get(row) - 1);
+            }
         }
     }
 
@@ -878,38 +837,32 @@ public class Tabla implements Summarize {
      * @param columnas
      * @return Una tabla ordenada
      */
-    public Tabla Sort(String[] columnas) {
-        // habria que agregar check de que esten y bla bla
-        Tabla sortedTabla = this.shallowCopy();
-        Tabla reducida = sortedTabla.select(columnas);
-        int n = reducida.cantFilas();
-        boolean huboCambio;
-        do {
-            huboCambio = false;
-            for (int i = 1; i < n; i++) {
-
-                Fila filaPrevia = reducida.getFila(order.get(i - 1));
-                Fila filaActual = reducida.getFila(order.get(i));
-                int comparacion = 0;
-
-                for (String header : columnas) {
-                    Celda celdaPrevia = filaPrevia.getCelda(colLabels.get(header));
-                    Celda celdaActual = filaActual.getCelda(colLabels.get(header));
-                    comparacion = celdaPrevia.compareTo(celdaActual);
-                    if (comparacion != 0) {
-                        break;
-                    }
+    public void sort(String[] columnas) {
+        for (String etiquetaColumna : columnas) {
+            if (!colLabels.containsKey(etiquetaColumna)) {
+                throw new IllegalLabelException("La columna '" + etiquetaColumna + "' no existe en la tabla original.");
+            }
+        }
+        this.order.sort((fila1, fila2) -> {
+            for (String header : columnas) {
+                Celda celda1 = getFila(fila1).getCelda(colLabels.get(header));
+                Celda celda2 = getFila(fila2).getCelda(colLabels.get(header));
+    
+                if (celda1.getContenido() == null && celda2.getContenido() == null) {
+                    continue; // Ambos valores son nulos entonces sigue
+                } else if (celda1.getContenido() == null) {
+                    return 1; // El valor de fila1 es nulo entonces lo pone despues de fila1
+                } else if (celda2.getContenido() == null) {
+                    return -1; // El valor de fila2 es nulo entonces lo pone despues de fila1
                 }
-                if (comparacion > 0) {
-                    String etiqueta = sortedTabla.order.get(i - 1);
-                    sortedTabla.order.set(i - 1, order.get(i));
-                    sortedTabla.order.set(i, etiqueta);
-                    huboCambio = true;
+    
+                int comparacion = celda1.compareTo(celda2);
+                if (comparacion != 0) {
+                    return comparacion;
                 }
             }
-            n--;
-        } while (huboCambio);
-        return sortedTabla;
+            return 0; // Las filas son iguales en todas las columnas especificadas
+        });
     }
 
     /**
@@ -941,232 +894,125 @@ public class Tabla implements Summarize {
      * @param condicion
      * @return Tabla filtrada
      */
-    public Tabla filtrar(Predicate<Fila> condicion) {
+    public void filtrar(Predicate<Fila> condicion) {
         List<String> salida = new ArrayList<>();
-
-        if (condicion == null) {
-            throw new IllegalArgumentException(
-                    "Se debe proporcionar una condición válida.");
-        }
         for (String etiquetaFila : rowLabels.keySet()) {
             Fila filaAComparar = getFila(etiquetaFila);
+            
             if (condicion.test(filaAComparar)) {
                 salida.add(etiquetaFila);
             }
         }
-        Tabla tablaFiltrada = new Tabla(this);
-        tablaFiltrada.generarRowLabelsFiltrado(salida);
-        return tablaFiltrada;
+        this.generarRowLabelsFiltrado(salida);
     }
 
     /**
-     * Select
+     * Seleccionar columnas y filas
      * 
-     * @param columnas
-     * @return
+     * @param etiquetaFilas ------------------
+     * @return Tabla reducida
      */
-    public Tabla select(String[] columnas) {
-        Tabla reducida = new Tabla(this);
-        for (int i = 0; i < columnas.length; i++) {
-            reducida.addColumna(tabla.get(1), columnas[i]);
-            reducida.colLabels.put(columnas[i], i);
-            reducida.order.add(columnas[i]);
-        }
+    public void seleccionar(String[] etiquetaColumnas, String[] etiquetaFilas) {
+        this.seleccionarColumnas(etiquetaColumnas);
+        this.seleccionarFilas(etiquetaFilas);
+    }
 
-        return reducida;
+    /**
+     * Seleccionar columnas
+     * 
+     * @param etiquetaColumnas
+     * @return Tabla reducida
+     */
+    public void seleccionarColumnas(String[] etiquetaColumnas) {
+        Map<String, Integer> newColLabels = new LinkedHashMap<>();
+        List<String> newHeaders = new ArrayList<>();
+    
+        for (String etiqueta : etiquetaColumnas) {
+            if (_dameColLabels().containsKey(etiqueta)) {
+                int valor = _dameColLabels().get(etiqueta);
+                newColLabels.put(etiqueta, valor);
+                newHeaders.add(etiqueta);
+            } else {
+                throw new IllegalArgumentException("La columna '" + etiqueta + "' no existe en la tabla original.");
+            }
+        }
+    
+        // Actualizar las etiquetas y headers después de verificar todas las columnas
+        this.colLabels = newColLabels;
+        this.headers = newHeaders;
+    }    
+
+    /**
+     * Seleccionar filas
+     * 
+     * @param etiquetaFilas
+     * @return Tabla reducida
+     */
+    public void seleccionarFilas(String[] etiquetaFilas) {
+        Map<String, Integer> newRowLabels = new LinkedHashMap<>();
+        List<String> newOrder = new ArrayList<>();
+    
+        for (String etiqueta : etiquetaFilas) {
+            if (_dameRowLabels().containsKey(etiqueta)) {
+                int valor = _dameRowLabels().get(etiqueta);
+                newRowLabels.put(etiqueta, valor);
+                newOrder.add(etiqueta);
+            } else {
+                throw new IllegalArgumentException("La fila '" + etiqueta + "' no existe en la tabla original.");
+            }
+        }
+        // Actualizar las etiquetas y el orden después de verificar todas las filas
+        this.rowLabels = newRowLabels;
+        this.order = newOrder;
     }
 
     /**
      * Concatena
      * 
-     * @param other
+     * @param other Otra Tabla
      * @return
      */
-    public Tabla concat(Tabla other) {
-        // si es una tabla con rowkeys no numericas habria que chequear que no se
-        // repitan
+    public Tabla concatenarTabla(Tabla other) {
+        // Verifico que coincidan las columnas
+        List<String> tablaHeaders = _dameHeaders();
+        List<String> otherHeaders = other._dameHeaders();
+        if (!tablaHeaders.equals(otherHeaders)) {
+            throw new MismatchedDataException("Las columnas de ambas tablas no coinciden.");
+        }
 
+        // Verifico que coincidan los tipos de datos
+        for (String header : tablaHeaders) {
+            Celda celdaThis = getCelda("0", header);
+            Celda celdaOther = other.getCelda("0", header);
+
+            if (!celdaThis.getClass().equals(celdaOther.getClass())) {
+                throw new InvalidDataTypeException("No coinciden los tipos de datos en la columna " + header + ".");
+            }
+        }
         Tabla newTabla = new Tabla(this);
-
-        for (String header : newTabla._dameHeaders()) {
-            if (!other._dameHeaders().contains(header)) {
-                throw new MismatchedDataException("Un encabezado de la tabla a agregar no existe en la tabla actual");
-            }
-        }
-
-        for (String header : other._dameHeaders()) {
-            if (!newTabla._dameHeaders().contains(header)) {
-                throw new MismatchedDataException("Un encabezado de la tabla actual no existe en la tabla a agregar");
-            }
-        }
-
-        Tabla other_ordenada = other.select((String[]) newTabla._dameHeaders().toArray());
-
-        for (String header : newTabla._dameHeaders()) {
-            Celda cNT = newTabla.getCelda("0", header);
-            Celda cO = other_ordenada.getCelda("0", header);
-
-            if (!(cNT.getClass() == cO.getClass() || (cNT.getContenido() != null && cO.getContenido() != null
-                    && !cNT.getContenido().getClass().equals(cO.getContenido().getClass())))) {
-                throw new InvalidDataTypeException("No coinciden los tipos de datos en las columnas " + header);
-            }
-
-        }
-
-        for (String rowKey : other_ordenada._dameOrder()) {
-
-            Fila filaAgregar = other_ordenada.getFila(rowKey);
+        // Agregar filas de la otra tabla
+        for (String etiquetaFila : other._dameOrder()) {
+            Fila filaAgregar = other.getFila(etiquetaFila);
             newTabla.addFila(filaAgregar);
-
         }
+
         return newTabla;
     }
 
-    public Tabla sample(int cantidad_datos) {
-
-        if (cantidad_datos > cantFilas()) {
-            throw new LengthMismatchException("El sample debe ser menor a la cantidad de filas");
+    public void sample(int porcentaje) {
+        if (porcentaje <= 0 || porcentaje > 100) {
+            throw new IllegalArgumentException("El porcentaje debe estar entre 1 y 100.");
         }
+        Collections.shuffle(order);
+        int cantidadMuestras = (int) Math.ceil(cantFilas() * (porcentaje / 100.0));
+        String[] muestras = order.subList(0, cantidadMuestras).toArray(new String[0]);
 
-        Tabla sample = new Tabla(this);
-        Collections.shuffle(sample._dameOrder());
-        // sample.head(cantidad_datos);
-        return sample;
+        // Filtrar la tabla original para incluir solo las muestras
+        seleccionarFilas(muestras);
     }
 
-    @Override
-    public double sum(Columna columna) {
-        if (columna.getCelda(0) instanceof CeldaNumber) {
-            double acumulado = 0.0;
-            for (Celda celda : columna.getCeldas()) {
-                if (celda.getContenido() != null) {
-                    Number contenido = (Number) celda.getContenido();
-                    acumulado += contenido.doubleValue();
-                }
-
-            }
-            return acumulado;
-        } else {
-            throw new InvalidDataTypeException("No se pueden sumar columnas no numericas");
-        }
-
-    }
-
-    @Override
-    public double max(Columna columna) {
-        if (columna.getCelda(0) instanceof CeldaNumber) {
-            double maximo = Double.NaN;
-            boolean encontrado = false;
-
-            for (Celda celda : columna.getCeldas()) {
-                Number contenido = (Number) celda.getContenido();
-
-                if (contenido != null) {
-                    if (!encontrado) {
-                        maximo = contenido.doubleValue();
-                        encontrado = true;
-                    } else if (contenido.doubleValue() > maximo) {
-                        maximo = contenido.doubleValue();
-                    }
-                }
-            }
-            if (encontrado) {
-                return maximo;
-            } else {
-                throw new IllegalStateException("No se encontraron valores no nulos en la columna");
-            }
-        } else {
-            throw new InvalidDataTypeException("No se puede obtener el máximo en columnas no numéricas");
-        }
-    }
 
     //// ----NO--REFACTORIZADO----------------------------------------------------------------------------------------------------
-
-    @Override
-    public double min(Columna columna) {
-        if (columna.getCelda(0) instanceof CeldaNumber) {
-            double minimo = Double.NaN;
-            boolean encontrado = false;
-
-            for (Celda celda : columna.getCeldas()) {
-                Number contenido = (Number) celda.getContenido();
-
-                if (contenido != null) {
-                    if (!encontrado) {
-                        minimo = contenido.doubleValue();
-                        encontrado = true;
-                    } else if (contenido.doubleValue() < minimo) {
-                        minimo = contenido.doubleValue();
-                    }
-                }
-            }
-            if (encontrado) {
-                return minimo;
-            } else {
-                throw new IllegalStateException("No se encontraron valores no nulos en la columna");
-            }
-        } else {
-            throw new InvalidDataTypeException("No se puede obtener el minimo en columnas no numéricas");
-        }
-    }
-
-    @Override
-    public int count(Columna columna) {
-        // debe tirar/ imprimir warning si hay valores nulos (NA)
-        return columna.size();
-    }
-
-    @Override
-    public double mean(Columna columna) {
-        return sum(columna) / count(columna);
-    }
-
-    @Override
-    public double variance(Columna columna) {
-        if (columna.getCelda(0) instanceof CeldaNumber) {
-            double mean = mean(columna);
-            double acumulado = 0;
-
-            for (Celda celda : columna.getCeldas()) {
-                if (celda.getContenido() != null) {
-                    Number contenido = (Number) celda.getContenido();
-                    acumulado += Math.pow(contenido.doubleValue() - mean, 2);
-                }
-            }
-            return acumulado / count(columna);
-
-        } else {
-            throw new InvalidDataTypeException("No se puede calcular la varianza en columnas no numericas");
-        }
-    }
-
-    @Override
-    public double standardDeviation(Columna columna) {
-        return Math.sqrt(variance(columna));
-    }
-
-    public Tabla groupBy(String[] columnas) {
-        Tabla tabla_agrupada = new Tabla(this);
-        return tabla_agrupada;
-    }
-
-    public Tabla seleccionar(String[] etiquetaFilas) {
-        Tabla nueva = this.copy(); // reemplazar esto por shallow copy cuando esté listo
-        nueva.rowLabels = new HashMap<>();
-        nueva.order = new ArrayList<>();
-        // nueva.lineas = new LinkedList<>();
-        // nueva.tabla = new ArrayList<>();
-
-        for (String e : etiquetaFilas) {
-            // String s = _dameLineas().get(Integer.valueOf(e));
-            // nueva.lineas.add(s);
-            int v = _dameRowLabels().get(e);
-            nueva.rowLabels.put(e, v);
-            nueva.order.add(e);
-        }
-
-        return nueva;
-    }
 
     protected List<Columna> _dameTabla() {
         return this.tabla;
@@ -1271,5 +1117,10 @@ public class Tabla implements Summarize {
         }
         return false;
     }
+
+
+    // public Tabla groupBy(List<Columna> columnasGroupo) {
+        
+    // }
 
 }

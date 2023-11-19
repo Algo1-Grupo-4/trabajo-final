@@ -5,7 +5,7 @@ public interface Summarize {
     double max(Columna columna);
     double min(Columna columna);
     int count(Columna columna);
-    double mean(Columna columna);
-    double variance(Columna columna);
-    double standardDeviation(Columna columna);
+    double media(Columna columna);
+    double varianza(Columna columna);
+    double desvioEstandar(Columna columna);
 }

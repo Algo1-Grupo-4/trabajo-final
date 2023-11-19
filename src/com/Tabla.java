@@ -789,6 +789,22 @@ public class Tabla {
     }
 
     /**
+     * Muestra las últimas 10 filas de la tabla
+     */
+    public void tail() {
+        TablaUtils.tail(this);
+    }
+
+    /**
+     * Muestra las últimas n filas de la tabla
+     * 
+     * @param n
+     */
+    public void tail(int n) {
+        TablaUtils.tail(this, n);
+    }
+
+    /**
      * Ordena la tabla dada una cantidad de columnas
      * 
      * @param columnas

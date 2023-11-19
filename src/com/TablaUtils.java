@@ -125,16 +125,7 @@ public class TablaUtils {
   }
 
   protected static void head(Tabla t) {
-    if (t.cantFilas() > 10) {
-      int[] f = IntStream.range(0, 10).toArray();
-      String[] fStrings = new String[f.length];
-      for (int i = 0; i < f.length; i++) {
-        fStrings[i] = String.valueOf(f[i]);
-      }
-      System.out.println(t.seleccionarFilas(fStrings).toString());
-    } else {
-      System.out.println(t.toString());
-    }
+    head(t, 10);
   }
 
   protected static void head(Tabla t, int n) {
@@ -143,6 +134,24 @@ public class TablaUtils {
           + t.cantFilas() + " filas, escriba un número menor");
     } else {
       int[] f = IntStream.range(0, n).toArray();
+      String[] fStrings = new String[f.length];
+      for (int i = 0; i < f.length; i++) {
+        fStrings[i] = String.valueOf(f[i]);
+      }
+      System.out.println(t.seleccionarFilas(fStrings).toString());
+    }
+  }
+
+  protected static void tail(Tabla t) {
+    tail(t, 10);
+  }
+
+  protected static void tail(Tabla t, int n) {
+    if (t.cantFilas() < n) {
+      throw new IllegalArgumentException("La tabla tiene "
+          + t.cantFilas() + " filas, escriba un número menor");
+    } else {
+      int[] f = IntStream.range(t.cantFilas() - n, t.cantFilas()).toArray();
       String[] fStrings = new String[f.length];
       for (int i = 0; i < f.length; i++) {
         fStrings[i] = String.valueOf(f[i]);

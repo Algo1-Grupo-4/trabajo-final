@@ -11,6 +11,12 @@ public class Columna implements Cloneable {
     private List<Celda> columna;
     private String tipo;
 
+    /**
+     * Genera una Columna
+     * 
+     * @param tipoDato      tipo de dato de la columna
+     * @param lengthColumna largo de la columna (cantidad de filas)
+     */
     public Columna(String tipoDato, int lengthColumna) {
         columna = new ArrayList<>();
 

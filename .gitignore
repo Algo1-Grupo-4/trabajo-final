@@ -25,3 +25,5 @@ replay_pid*
 
 .vscode
 src/com/TestTabla.java
+.DS_Store
+output.csv

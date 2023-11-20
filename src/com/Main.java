@@ -1,33 +1,81 @@
 package com;
 
 import java.util.function.Predicate;
+import java.util.Scanner;
 
 public class Main {
+        private static void showSlide(String slide, Scanner s) {
+                System.out.println(slide);
+                System.out.println("\nMandale enter.");
+                s.nextLine();
+        }
+
         public static void main(String[] args) {
-                // LO QUE APARECE EN ESTE MAIN FUNCIONA PERFECTAMENTE
+                Scanner user = new Scanner(System.in);
 
-                Tabla booleana = new Tabla(new String[] { "Number", "Number", "Number" },
+                showSlide("Hola. Este es el demo del TP de grupo 4."
+                                + "\nLa idea es ir mostrando funcionalidades mientras vendemos."
+                                + "\nDespués de mostrar cada cosa esperamos un enter para seguir"
+                                + "\n¡Hablame de interactividad!", user);
+
+                showSlide("Bueno ahora cargamos los datos desde un CSV" +
+                                "\nPresenter notes: mostrar el fromCSV()", user);
+
+                Tabla booleana = Tablas.fromCSV(new String[] { "Number", "Number", "Number" },
                                 "/Users/ngiorgetti/repos/personal/trabajo-final/res/df_largo.csv", true);
-                // System.out.println(booleana);
+                System.out.println(booleana);
 
-                // Columna col3 = booleana.getColumna("columna3");
-                // System.out.println(col3.toString());
+                showSlide("El comportamiento del toString de la clase Tabla detecta que"
+                                + "\nDe ser muchas filas, va a 'cortar' el medio para mejorar la visibilidad", user);
 
-                // Celda celda = booleana.getCelda("2", "columna3");
-                // System.out.println(celda.toString());
+                showSlide("Ahora brevemente mostramos la importacion desde un Array de Arrays", user);
 
-                // Columna newCol = new Columna("String", new
-                // String[]{"hola","false","Todo","ah","h","3","!!!!","si","no","blanco","negro","ya
-                // no se","que paja","odio testear","se la banca"});
-                // System.out.println(newCol);
+                String[][] example = { { "Nombre", "Edad" }, { "Nico", "35" }, { "Iva", "35" } };
+                Tabla e = Tablas.fromMatriz(new String[] { "String", "Number" }, example, true);
+                System.out.println(e);
 
-                // booleana.setColumna(newCol, "columna1");
-                // System.out.println(booleana.toString());
+                showSlide("Ahora volvamos con la tabla importada desde un CSV", user);
+                showSlide("Como vimos, si hacemos un sysout de la Tabla, usa el metodo to String" +
+                                "\nPero si quisieramos ver info básica" +
+                                " de la tabla podemos usar infobásica", user);
+                booleana.infoBasica();
+                showSlide("Bueno, y si ahora queremos exportar esto a un csv?" +
+                                "\nPresenter notes: bueno ahora mostrar el toCSV()", user);
 
-                // booleana.infoBasica();
+                System.out.println("Dame un delimitador!");
+                String deli = user.nextLine();
 
-                // booleana.setColumna(newCol, "columna1", "columnaNueva");
-                // System.out.println(booleana.toString());
+                Tablas.toCSV(booleana, "./output.csv", true, deli);
+                showSlide("\nBueno muy lindo todo, ahora probemos Getters", user);
+
+                Columna col3 = booleana.getColumna("col3");
+                System.out.println(col3.toString());
+                showSlide("Aca probamos un getColumna con 'dame columna 3'" +
+                                "\nEsto nos devuelve un objeto Columna, que podemos mostrar en pantalla usando" +
+                                " toString" +
+                                "\nVamos a tener el Tipo de Columna y los valores", user);
+
+                Fila fila5 = booleana.getFila("4");
+                System.out.println(fila5.toString());
+                showSlide("Acá probamos el getFila" +
+                                "\n El ToString nos muestra sus valores" +
+                                "\n Si quisieramos podemos hacer getCeldas()" +
+                                "\nY obtener las Celdas en una lista", user);
+
+                Celda celda = booleana.getCelda("2", "col1");
+                System.out.println(celda.toString());
+                showSlide("Acá probamos un getCelda, donde le pasamos una fila y una columna" +
+                                "Y nos da el contenido" +
+                                "Bueno muy lindo todo.\nAhora vemos los setters", user);
+
+                Columna newCol = new Columna("String",
+                                new String[] { "Luchi", "Nai" });
+                e.setColumna(newCol, "Nombre");
+                System.out.println(e.toString());
+                showSlide("Acá cambiamos los valores de la columna 1 con el" +
+                                "setColumna\nEl set también permite cambiar la key de la columna", user);
+                e.setColumna(newCol, "Nombre", "Swifties");
+                System.out.println(e.toString());
 
                 // Fila newFila = new Fila(new Object[]{true,true,2});
                 // System.out.println(newFila);
@@ -52,12 +100,12 @@ public class Main {
                 // booleana.removeFila("15");
                 // System.out.println(booleana);
 
-                Fila nuevaFila = new Fila(new Object[] { true, false, 300 });
-                booleana.addFila(nuevaFila);
+                // Fila nuevaFila = new Fila(new Object[] { true, false, 300 });
+                // booleana.addFila(nuevaFila);
                 // System.out.println("Tabla Booleana sin nada");
                 // System.out.println(booleana);
                 // booleana.head(30);
-                booleana.tail(30);
+                // booleana.tail(30);
 
                 // -------TEST GETTERS Y SETTERS
                 // booleana.setFila(nuevaFila, "12", "aca");
@@ -131,7 +179,7 @@ public class Main {
 
                 // --------- SAMPLE
                 // booleana.removeColumna("columna1");
-                Tabla t = booleana.sample(40);
-                System.out.println(t);
+                // Tabla t = booleana.sample(40);
+                // System.out.println(t);
         }
 }

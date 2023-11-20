@@ -21,8 +21,9 @@ public class Main {
                 showSlide("Bueno ahora cargamos los datos desde un CSV" +
                                 "\nPresenter notes: mostrar el fromCSV()", user);
 
-                Tabla booleana = Tablas.fromCSV(new String[] { "Number", "Number", "Number" },
-                                "/Users/ngiorgetti/repos/personal/trabajo-final/res/df_largo.csv", true);
+                Tabla booleana = Tablas.fromCSV(
+                                new String[] { "Number", "String", "Number", "Number", "Boolean", "String", "Number" },
+                                "/Users/ngiorgetti/repos/personal/trabajo-final/res/seguros.csv", true);
                 System.out.println(booleana);
 
                 showSlide("El comportamiento del toString de la clase Tabla detecta que"
@@ -48,9 +49,9 @@ public class Main {
                 Tablas.toCSV(booleana, "./output.csv", true, deli);
                 showSlide("\nBueno muy lindo todo, ahora probemos Getters", user);
 
-                Columna col3 = booleana.getColumna("col3");
+                Columna col3 = booleana.getColumna("smoker");
                 System.out.println(col3.toString());
-                showSlide("Aca probamos un getColumna con 'dame columna 3'" +
+                showSlide("Aca probamos un getColumna con 'dame columna smoker'" +
                                 "\nEsto nos devuelve un objeto Columna, que podemos mostrar en pantalla usando" +
                                 " toString" +
                                 "\nVamos a tener el Tipo de Columna y los valores", user);
@@ -62,10 +63,10 @@ public class Main {
                                 "\n Si quisieramos podemos hacer getCeldas()" +
                                 "\nY obtener las Celdas en una lista", user);
 
-                Celda celda = booleana.getCelda("2", "col1");
+                Celda celda = booleana.getCelda("2", "children");
                 System.out.println(celda.toString());
                 showSlide("Acá probamos un getCelda, donde le pasamos una fila y una columna" +
-                                "Y nos da el contenido" +
+                                "\nY nos da el contenido\n" +
                                 "Bueno muy lindo todo.\nAhora vemos los setters", user);
 
                 Columna newCol = new Columna("String",
@@ -73,39 +74,46 @@ public class Main {
                 e.setColumna(newCol, "Nombre");
                 System.out.println(e.toString());
                 showSlide("Acá cambiamos los valores de la columna 1 con el" +
-                                "setColumna\nEl set también permite cambiar la key de la columna", user);
+                                " setColumna\nEl set también permite cambiar la key de la columna", user);
                 e.setColumna(newCol, "Nombre", "Swifties");
                 System.out.println(e.toString());
 
-                // Fila newFila = new Fila(new Object[]{true,true,2});
-                // System.out.println(newFila);
+                Fila newFila = new Fila(new Object[] { "Cami", "21" });
+                e.setFila(newFila, String.valueOf(e.cantFilas() - 1));
+                System.out.println(e.toString());
+                showSlide("\nAca cambiamos una fila", user);
 
-                // booleana.setFila(newFila, "8");
-                // System.out.println(booleana.toString());
+                Celda c = new CeldaString();
+                c.setContenido("Nico");
+                e.setCelda("0", "Swifties", c);
+                System.out.println(e.toString());
+                showSlide("\nAca cambiamos una celda", user);
 
-                // booleana.setCelda("0", "columnaNueva", "test");
-                // System.out.println(booleana.toString());
+                showSlide("\nBueno hasta ahora esperemos que ande bien" +
+                                "\nCualquier problema fue porque el Scrum Lead no hizo un buen laburo" +
+                                "\nVeamos de agregar una columna", user);
 
-                // Columna newCol2 = new Columna("String", new
-                // String[]{"hola","false","Todo","ah","h","3","!!!!","si","no","blanco","negro","ya
-                // no se","que paja","odio testear","se la banca"});
-                // booleana.addColumna(newCol2, "columna4");
-                // System.out.println(booleana);
-
-                // booleana.removeColumna("columna");
-                // Fila fila = new Fila(new Object[]{"buenasss", true, 22, "wow"});
-                // booleana.addFila(fila);
-                // System.out.println(booleana);
-
-                // booleana.removeFila("15");
-                // System.out.println(booleana);
-
-                // Fila nuevaFila = new Fila(new Object[] { true, false, 300 });
-                // booleana.addFila(nuevaFila);
-                // System.out.println("Tabla Booleana sin nada");
-                // System.out.println(booleana);
-                // booleana.head(30);
-                // booleana.tail(30);
+                Columna newCol2 = new Columna("Boolean", new Boolean[] { false, false });
+                e.addColumna(newCol2, "Fue al recital? ");
+                System.out.println(e);
+                showSlide("\nVeamos ahora de sacar la columna edad", user);
+                e.removeColumna("Edad");
+                System.out.println(e);
+                showSlide("Aver como es la info de tabla...", user);
+                e.infoBasica();
+                showSlide("Agregamos una fila?", user);
+                Fila fila = new Fila(new Object[] { "Luchi", true });
+                e.addFila(fila);
+                System.out.println(e);
+                showSlide("Nico no es swiftie (no le digan a nadie)" +
+                                "\nVamos a sacarlo del grupo :(", user);
+                e.removeFila("0");
+                System.out.println(e);
+                showSlide("Volviendo a la tabla importada del CSV, podemos hacer heads y tails", user);
+                booleana.head(30);
+                showSlide("^^^ esto fue un head de 30. Si no ponemos un valor nos da las primeras 10", user);
+                booleana.tail(5);
+                showSlide("^^^^ Esto fue un tail de 5", user);
 
                 // -------TEST GETTERS Y SETTERS
                 // booleana.setFila(nuevaFila, "12", "aca");

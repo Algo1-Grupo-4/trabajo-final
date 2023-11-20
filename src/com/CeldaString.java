@@ -32,7 +32,8 @@ public class CeldaString extends Celda {
 
   @Override
   public boolean isNA() {
-    if (this.contenido == null) {
+    // TODO: hacer este Hack mejor
+    if (this.contenido == null || this.contenido == "NA") {
       return true;
     } else {
       return false;

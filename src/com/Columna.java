@@ -251,4 +251,8 @@ public class Columna implements Cloneable {
         return c;
     }
 
+    public String getTipo() {
+        return tipo;
+    }
+
 }

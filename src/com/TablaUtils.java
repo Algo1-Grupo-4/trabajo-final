@@ -15,7 +15,12 @@ public class TablaUtils {
   protected static void doBasic(Tabla t) {
     List<String> tipoDato = new ArrayList<>();
     for (String encabezado : t._dameHeaders()) {
-      tipoDato.add(t.getColumna(encabezado).getCelda(0).getContenido().getClass().getSimpleName());
+      for (Celda c : t.getColumna(encabezado).getCeldas()) {
+        if (!c.isNA()) {
+          tipoDato.add(c.getContenido().getClass().getSimpleName());
+          break;
+        }
+      }
     }
     String[] tipoDatoDetectado = tipoDato.toArray(new String[0]);
     List<String> cantidadNonNull = new ArrayList<>();
@@ -37,7 +42,7 @@ public class TablaUtils {
     List<String[]> data_fila = new ArrayList<>();
     data_fila.add(encabezados);
 
-    for (int i = 0; i < encabezados.length; i++) {
+    for (int i = 0; i < t._dameTabla().size(); i++) {
       String[] row = { nomCol[i], noNulo[i], tipoDatoDetectado[i] };
       data_fila.add(row);
     }
@@ -57,7 +62,8 @@ public class TablaUtils {
   protected static Tabla doSort(Tabla t, String[] columnas) {
     Tabla nuevaTabla = t.deepCopy();
     for (String etiquetaColumna : columnas) {
-      if (!nuevaTabla._dameColLabels().containsKey(etiquetaColumna)) { throw new IllegalLabelException("La columna '" + etiquetaColumna + "' no existe en la tabla original.");
+      if (!nuevaTabla._dameColLabels().containsKey(etiquetaColumna)) {
+        throw new IllegalLabelException("La columna '" + etiquetaColumna + "' no existe en la tabla original.");
       }
     }
     nuevaTabla._dameOrder().sort((fila1, fila2) -> {

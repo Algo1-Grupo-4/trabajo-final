@@ -115,48 +115,25 @@ public class Main {
                 booleana.tail(5);
                 showSlide("^^^^ Esto fue un tail de 5", user);
 
-                // -------TEST GETTERS Y SETTERS
-                // booleana.setFila(nuevaFila, "12", "aca");
-                // booleana.setFila(nuevaFila, "10", "here");
-                // booleana.setFila(nuevaFila, "0");
-                // booleana.setFila(nuevaFila, "0", "j");
+                showSlide("\nProbamos el SELECT\nPrimero, el select de FILA", user);
+                Tabla t = booleana.seleccionarFilas(new String[] { "4", "0", "2", "29", "1337" });
+                System.out.println(t);
+                showSlide("Aca mostramos las filas 4,0,2,29 y 1337 (leet!)\n" +
+                                "Ahora veamos el de Columnas", user);
 
-                // Columna newCol = new Columna("String", new
-                // String[]{"hola","false","Todo","ah","h","3","!!!!","si","no","blanco","negro","ya
-                // no se","que paja","odio testear","se la banca", "fin"});
-                // booleana.setColumna(newCol, "columna1");
-                // Columna newCol2 = new Columna("String", new
-                // String[]{"pene","false","Todo","ah","h","3","!!!!","si","no","blanco","negro","ya
-                // no se","que paja","odio testear","se la banca", "fin"});
-                // booleana.setColumna(newCol2, "columna2");
-                // Columna newCol3 = new Columna("String", new
-                // String[]{"modic","false","Todo","ah","h","3","!!!!","si","no","blanco","negro","ya
-                // no se","que paja","odio testear","se la banca", "fin"});
-                // booleana.setColumna(newCol3, "columna1", "cacataa");
-                // System.out.println(booleana);
-                // Celda celda = new CeldaString();
-                // celda.setContenido("exito");
-                // booleana.setCelda("j", "cacataa", celda);
-                // Celda celda2 = new CeldaNumber();
-                // celda2.setContenido(1000);
-                // booleana.setCelda("j", "columna3", celda2);
-                // System.out.println(booleana);
+                t = booleana.seleccionarColumnas(new String[] { "sex", "region", "charges" });
+                t.head();
+                showSlide("Aca vemos un head de las columnas seleccionadas, sex, region y charges" +
+                                "\nPor último, un select de las dos (filas y columnas)", user);
 
-                // // -----SELECCIONAR
-                // Tabla t = booleana.seleccionarFilas(new String[] { "0", "1", "2", "9", "14"
-                // });
-                // System.out.println(t);
-
-                // t = booleana.seleccionarColumnas(new String[] { "columna2", "columna3" });
-                // System.out.println(t);
-
-                // t = booleana.seleccionar(new String[] { "columna2", "columna3" },
-                // new String[] { "0", "1", "2", "9", "14" });
-                // System.out.println(t);
-
-                // --------SORT
-                // booleana.sort(new String[] {"columna3"});
-                // System.out.println(booleana);
+                t = booleana.seleccionar(new String[] { "smoker", "charges" },
+                                new String[] { "0", "1", "666", "667", "777" });
+                System.out.println(t);
+                showSlide("\n Aca arriba vemos un select de dos columnas y un par de filas" +
+                                "\nPiola.\nAhora, supongamos que quisieramos ordenar por sex la tabla", user);
+                t = booleana.sort(new String[] { "age", "charges" });
+                System.out.println(t);
+                showSlide("Un sort por sex y luego por children", user);
 
                 // -------CONCATENAR
                 // Tabla tablaConcatenada = booleana.concatenarTabla(booleana);

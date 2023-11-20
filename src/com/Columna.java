@@ -7,10 +7,16 @@ import java.util.List;
 
 import excepciones.InvalidDataTypeException;
 
-public class Columna implements Cloneable {
+public class Columna implements Cloneable, Summarize {
     private List<Celda> columna;
     private String tipo;
 
+    /**
+     * Genera una Columna
+     * 
+     * @param tipoDato      tipo de dato de la columna
+     * @param lengthColumna largo de la columna (cantidad de filas)
+     */
     public Columna(String tipoDato, int lengthColumna) {
         columna = new ArrayList<>();
 
@@ -245,4 +251,115 @@ public class Columna implements Cloneable {
         return c;
     }
 
+    public String getTipo() {
+        return tipo;
+    }
+
+    @Override
+    public double sum(Columna columna) {
+        if (columna.getCelda(0) instanceof CeldaNumber) {
+            double acumulado = 0.0;
+            for (Celda celda : columna.getCeldas()) {
+                if (celda.getContenido() != null) {
+                    Number contenido = (Number) celda.getContenido();
+                    acumulado += contenido.doubleValue();
+                }
+
+            }
+            return acumulado;
+        } else {
+            throw new InvalidDataTypeException("No se pueden sumar columnas no numericas");
+        }
+    }
+
+    @Override
+    public double max(Columna columna) {
+        if (columna.getCelda(0) instanceof CeldaNumber) {
+            double maximo = Double.NaN;
+            boolean encontrado = false;
+
+            for (Celda celda : columna.getCeldas()) {
+                Number contenido = (Number) celda.getContenido();
+
+                if (contenido != null) {
+                    if (!encontrado) {
+                        maximo = contenido.doubleValue();
+                        encontrado = true;
+                    } else if (contenido.doubleValue() > maximo) {
+                        maximo = contenido.doubleValue();
+                    }
+                }
+            }
+            if (encontrado) {
+                return maximo;
+            } else {
+                throw new IllegalStateException("No se encontraron valores no nulos en la columna");
+            }
+        } else {
+            throw new InvalidDataTypeException("No se puede obtener el máximo en columnas no numéricas");
+        }
+    }
+
+    @Override
+    public double min(Columna columna) {
+        if (columna.getCelda(0) instanceof CeldaNumber) {
+            double minimo = Double.NaN;
+            boolean encontrado = false;
+
+            for (Celda celda : columna.getCeldas()) {
+                Number contenido = (Number) celda.getContenido();
+
+                if (contenido != null) {
+                    if (!encontrado) {
+                        minimo = contenido.doubleValue();
+                        encontrado = true;
+                    } else if (contenido.doubleValue() < minimo) {
+                        minimo = contenido.doubleValue();
+                    }
+                }
+            }
+            if (encontrado) {
+                return minimo;
+            } else {
+                throw new IllegalStateException("No se encontraron valores no nulos en la columna");
+            }
+        } else {
+            throw new InvalidDataTypeException("No se puede obtener el minimo en columnas no numéricas");
+        }
+    }
+
+    @Override
+    public int count(Columna columna) {
+        // debe tirar/ imprimir warning si hay valores nulos (NA)
+        return columna.size();
+    }
+
+    @Override
+    public double media(Columna columna) {
+        return sum(columna) / count(columna);
+    }
+
+    @Override
+    public double varianza(Columna columna) {
+        if (columna.getCelda(0) instanceof CeldaNumber) {
+            double mean = media(columna);
+            double acumulado = 0;
+
+            for (Celda celda : columna.getCeldas()) {
+                if (celda.getContenido() != null) {
+                    Number contenido = (Number) celda.getContenido();
+                    acumulado += Math.pow(contenido.doubleValue() - mean, 2);
+                }
+            }
+            return acumulado / count(columna);
+
+        } else {
+            throw new InvalidDataTypeException("No se puede calcular la varianza en columnas no numericas");
+        }
+    }
+
+    @Override
+    public double desvioEstandar(Columna columna) {
+        return Math.sqrt(varianza(columna));
+    }
 }

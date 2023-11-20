@@ -317,7 +317,7 @@ public class Tabla {
     }
 
     /**
-     * Crea una tabla usando una tabla 
+     * Crea una tabla usando una tabla
      * Esto es utilizado par aun un deep copy
      * 
      * @param t tabla a copiar
@@ -374,7 +374,7 @@ public class Tabla {
         // Agregar labels de columna si hay
         for (int i = 0; i < headers.size(); i++) {
             String header = headers.get(i);
-            out.append(String.format("%" + (anchoColumna[i] + 6) + "s", centrarTexto(header))); 
+            out.append(String.format("%" + (anchoColumna[i] + 6) + "s", centrarTexto(header)));
         }
         out.append("\n");
 
@@ -396,7 +396,7 @@ public class Tabla {
                 for (int i = 0; i < headers.size(); i++) {
                     String header = headers.get(i);
                     int columnIndex = colLabels.get(header);
-                    Celda celda = tabla.get(columnIndex).getCelda(rowIndex);
+                    Celda celda = tabla.get(columnIndex).getCelda(Integer.valueOf(filaKey));
                     String contenido = (celda.getContenido() == null) ? "NA" : String.valueOf(celda.getContenido());
                     out.append(String.format("%-" + (anchoColumna[i] + 6) + "s", contenido));
                 }
@@ -417,7 +417,7 @@ public class Tabla {
                 for (int i = 0; i < headers.size(); i++) {
                     String header = headers.get(i);
                     int columnIndex = colLabels.get(header);
-                    Celda celda = tabla.get(columnIndex).getCelda(rowIndex);
+                    Celda celda = tabla.get(columnIndex).getCelda(Integer.valueOf(filaKey));
                     String contenido = (celda.getContenido() == null) ? "NA" : String.valueOf(celda.getContenido());
                     contenido = contenido.length() > 40 ? contenido.substring(0, 37) + "..." : contenido;
                     out.append(String.format("%-" + (anchoColumna[i] + 6) + "s", contenido));
@@ -572,7 +572,8 @@ public class Tabla {
      */
     public void setColumna(Columna newColumna, String oldKey, String newKey) {
         if (colLabels.containsKey(newKey)) {
-            throw new IllegalLabelException("La nueva etiqueta ya corresponde a otra columna y no puede ser duplicada.");
+            throw new IllegalLabelException(
+                    "La nueva etiqueta ya corresponde a otra columna y no puede ser duplicada.");
         }
         setColumna(newColumna, oldKey);
         int indiceViejo = colLabels.get(oldKey);
@@ -631,7 +632,7 @@ public class Tabla {
      */
     public void setCelda(String keyFila, String keyColumna, Celda newCelda) {
         Celda celda = getCelda(keyFila, keyColumna);
-        System.out.println(celda);
+        // System.out.println(celda);
         // Verifica si la celda tiene un contenido actual y si no son compatibles tira
         // una excepción
         if (celda.getContenido() != null) {
@@ -666,7 +667,8 @@ public class Tabla {
      */
     public void addColumna(Columna nuevaCol, String label) {
         if (nuevaCol.size() != cantFilas()) {
-            throw new IllegalArgumentException("La cantidad de datos de la columna no corresponde con el tamaño de la tabla.");
+            throw new IllegalArgumentException(
+                    "La cantidad de datos de la columna no corresponde con el tamaño de la tabla.");
         }
         if (colLabels.containsKey(label)) {
             throw new IllegalLabelException("Ya existe una columna con ese nombre");
@@ -694,8 +696,6 @@ public class Tabla {
             }
         }
         headers.remove(index);
-        System.out.println(colLabels);
-        System.out.println(headers);
     }
 
     /**
@@ -715,8 +715,10 @@ public class Tabla {
             Celda celdaActual = tabla.get(i).getCeldas().get(i);
             Celda celdaNueva = nuevaFila.getCelda(i);
 
-            if (celdaActual.getContenido() != null && !celdaActual.getContenido().getClass().equals(celdaNueva.getContenido().getClass())) {
-                throw new InvalidDataTypeException("El tipo de dato de la nueva fila en la columna " + (i+1) + " no coincide con el tipo de dato de la tabla.");
+            if (celdaActual.getContenido() != null
+                    && !celdaActual.getContenido().getClass().equals(celdaNueva.getContenido().getClass())) {
+                throw new InvalidDataTypeException("El tipo de dato de la nueva fila en la columna " + (i + 1)
+                        + " no coincide con el tipo de dato de la tabla.");
             }
 
             tabla.get(i).addCelda(nuevaFila.getCeldas().get(i));
@@ -756,7 +758,8 @@ public class Tabla {
     }
 
     /**
-     * Copia la tabla en otra tabla. La nueva tabla es independiente de la original entonces
+     * Copia la tabla en otra tabla. La nueva tabla es independiente de la original
+     * entonces
      * copia != original == true
      * 
      * @return Tabla nueva
@@ -961,7 +964,8 @@ public class Tabla {
         return String.format("%" + (padding + texto.length()) + "s", texto);
     }
 
-    // --METODOS UTILES--------------------------------------------------------------------------------------------------
+    // --METODOS
+    // UTILES--------------------------------------------------------------------------------------------------
     protected int cantFilas() {
         /**
          * Devuelve la cantidad de filas en la tabla.

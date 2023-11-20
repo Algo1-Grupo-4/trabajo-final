@@ -15,7 +15,12 @@ public class TablaUtils {
   protected static void doBasic(Tabla t) {
     List<String> tipoDato = new ArrayList<>();
     for (String encabezado : t._dameHeaders()) {
-      tipoDato.add(t.getColumna(encabezado).getCelda(0).getContenido().getClass().getSimpleName());
+      for (Celda c : t.getColumna(encabezado).getCeldas()) {
+        if (!c.isNA()) {
+          tipoDato.add(c.getContenido().getClass().getSimpleName());
+          break;
+        }
+      }
     }
     String[] tipoDatoDetectado = tipoDato.toArray(new String[0]);
     List<String> cantidadNonNull = new ArrayList<>();
@@ -37,7 +42,7 @@ public class TablaUtils {
     List<String[]> data_fila = new ArrayList<>();
     data_fila.add(encabezados);
 
-    for (int i = 0; i < encabezados.length; i++) {
+    for (int i = 0; i < t._dameTabla().size(); i++) {
       String[] row = { nomCol[i], noNulo[i], tipoDatoDetectado[i] };
       data_fila.add(row);
     }
@@ -57,7 +62,8 @@ public class TablaUtils {
   protected static Tabla doSort(Tabla t, String[] columnas) {
     Tabla nuevaTabla = t.deepCopy();
     for (String etiquetaColumna : columnas) {
-      if (!nuevaTabla._dameColLabels().containsKey(etiquetaColumna)) { throw new IllegalLabelException("La columna '" + etiquetaColumna + "' no existe en la tabla original.");
+      if (!nuevaTabla._dameColLabels().containsKey(etiquetaColumna)) {
+        throw new IllegalLabelException("La columna '" + etiquetaColumna + "' no existe en la tabla original.");
       }
     }
     nuevaTabla._dameOrder().sort((fila1, fila2) -> {
@@ -246,5 +252,30 @@ public class TablaUtils {
     // Filtrar la tabla para incluir solo las muestras
     Tabla nuevaTabla = copia.seleccionarFilas(muestras);
     return nuevaTabla;
+  }
+
+  public static Predicate<Fila> moreThan(Tabla t, String columnaKey, Number valor) {
+    Predicate<Fila> condicion = fila1 -> {
+      Celda celda = fila1.getCelda(columnaKey, t);
+      return celda != null & celda.getContenido() instanceof Number
+          && ((Number) celda.getContenido()).doubleValue() > valor.doubleValue();
+    };
+    return condicion;
+  }
+
+  public static void summarize(Tabla t, String columnaKey) {
+    Columna c = t.getColumna(columnaKey);
+    String output = "Columna: " + columnaKey + "\n" +
+        "Tipo de Columna: " + c.getTipo() + "\n" +
+        "sum: " + String.valueOf(c.sum(c)) + "\n" +
+        "max: " + String.valueOf(c.max(c)) + "\n" +
+        "min: " + String.valueOf(c.min(c)) + "\n" +
+        "count: " + String.valueOf(c.count(c)) + "\n" +
+        "media: " + String.valueOf(c.media(c)) + "\n" +
+        "varianza: " + String.valueOf(c.varianza(c)) + "\n" +
+        "desvío estándar " + String.valueOf(c.desvioEstandar(c)); // TODO: podrian ser estaticos
+
+    System.out.println(output);
+
   }
 }

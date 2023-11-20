@@ -159,7 +159,9 @@ public class Main {
                 t = booleana.sample(40);
                 System.out.println(t);
 
-                showSlide("\nY ahora un summarize de una columna", user);
+                showSlide("\nY ahora un summarize de la columna BMI", user);
                 TablaUtils.summarize(booleana, "bmi");
+
+                showSlide("Bueno hasta acá llegó la demo. Gracias por la atención", user);
         }
 }

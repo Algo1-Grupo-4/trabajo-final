@@ -396,7 +396,7 @@ public class Tabla {
                 for (int i = 0; i < headers.size(); i++) {
                     String header = headers.get(i);
                     int columnIndex = colLabels.get(header);
-                    Celda celda = tabla.get(columnIndex).getCelda(rowIndex);
+                    Celda celda = tabla.get(columnIndex).getCelda(Integer.valueOf(filaKey));
                     String contenido = (celda.getContenido() == null) ? "NA" : String.valueOf(celda.getContenido());
                     out.append(String.format("%-" + (anchoColumna[i] + 6) + "s", contenido));
                 }
@@ -417,7 +417,7 @@ public class Tabla {
                 for (int i = 0; i < headers.size(); i++) {
                     String header = headers.get(i);
                     int columnIndex = colLabels.get(header);
-                    Celda celda = tabla.get(columnIndex).getCelda(rowIndex);
+                    Celda celda = tabla.get(columnIndex).getCelda(Integer.valueOf(filaKey));
                     String contenido = (celda.getContenido() == null) ? "NA" : String.valueOf(celda.getContenido());
                     contenido = contenido.length() > 40 ? contenido.substring(0, 37) + "..." : contenido;
                     out.append(String.format("%-" + (anchoColumna[i] + 6) + "s", contenido));

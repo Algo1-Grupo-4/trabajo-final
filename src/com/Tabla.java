@@ -957,7 +957,7 @@ public class Tabla {
     }
 
     // Método para centrar el texto en una columna
-    private String centrarTexto(String texto) {
+    protected String centrarTexto(String texto) {
         int anchoTotal = 15; // Puedes ajustar el ancho deseado
         int padding = (anchoTotal - texto.length()) / 2;
         return String.format("%" + (padding + texto.length()) + "s", texto);

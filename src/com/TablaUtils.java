@@ -253,4 +253,29 @@ public class TablaUtils {
     Tabla nuevaTabla = copia.seleccionarFilas(muestras);
     return nuevaTabla;
   }
+
+  public static Predicate<Fila> moreThan(Tabla t, String columnaKey, Number valor) {
+    Predicate<Fila> condicion = fila1 -> {
+      Celda celda = fila1.getCelda(columnaKey, t);
+      return celda != null & celda.getContenido() instanceof Number
+          && ((Number) celda.getContenido()).doubleValue() > valor.doubleValue();
+    };
+    return condicion;
+  }
+
+  public static void summarize(Tabla t, String columnaKey) {
+    Columna c = t.getColumna(columnaKey);
+    String output = "Columna: " + columnaKey + "\n" +
+        "Tipo de Columna: " + c.getTipo() + "\n" +
+        "sum: " + String.valueOf(c.sum(c)) + "\n" +
+        "max: " + String.valueOf(c.max(c)) + "\n" +
+        "min: " + String.valueOf(c.min(c)) + "\n" +
+        "count: " + String.valueOf(c.count(c)) + "\n" +
+        "media: " + String.valueOf(c.media(c)) + "\n" +
+        "varianza: " + String.valueOf(c.varianza(c)) + "\n" +
+        "desvío estándar " + String.valueOf(c.desvioEstandar(c)); // TODO: podrian ser estaticos
+
+    System.out.println(output);
+
+  }
 }

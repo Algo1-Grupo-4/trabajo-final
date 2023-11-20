@@ -130,41 +130,36 @@ public class Main {
                                 new String[] { "0", "1", "666", "667", "777" });
                 System.out.println(t);
                 showSlide("\n Aca arriba vemos un select de dos columnas y un par de filas" +
-                                "\nPiola.\nAhora, supongamos que quisieramos ordenar por sex la tabla", user);
+                                "\nPiola.\nAhora, supongamos que quisieramos ordenar por age y charges la tabla", user);
                 t = booleana.sort(new String[] { "age", "charges" });
                 System.out.println(t);
-                showSlide("Un sort por sex y luego por children", user);
+                showSlide("Un sort por age y luego por charges" +
+                                "Bueno, ahora a concatenar", user);
+                Tabla toAdd = Tablas.fromCSV(
+                                new String[] { "Number", "String", "Number", "Number", "Boolean", "String", "Number" },
+                                "/Users/ngiorgetti/repos/personal/trabajo-final/res/concatenate.csv", true);
+                Tabla tablaConcatenada = booleana.concatenarTabla(toAdd);
+                System.out.println(tablaConcatenada);
+                tablaConcatenada.infoBasica();
+                showSlide("Una tabla concatenada se ve así ahora\n" +
+                                "Vamos a ver Filtrado", user);
 
-                // -------CONCATENAR
-                // Tabla tablaConcatenada = booleana.concatenarTabla(booleana);
-                // System.out.println(tablaConcatenada);
-
-                // // ------- FILTRADO PRUEBA
-                // Predicate<Fila> condicion1 = fila -> {
-                // Celda celda = fila.getCelda("columna1", booleana);
-                // return celda != null & Boolean.TRUE.equals(celda.getContenido()); // La celda
-                // es true
+                // Predicate<Fila> condicion3 = fila1 -> {
+                // Celda celda1 = fila1.getCelda("bmi", booleana);
+                // return celda1 != null & celda.getContenido() instanceof Number
+                // && ((Number) celda1.getContenido()).doubleValue() > 0;
                 // };
-
-                // Predicate<Fila> condicion2 = fila -> {
-                // Celda celda = fila.getCelda("columna2", booleana);
-                // return celda != null & Boolean.FALSE.equals(celda.getContenido()); // La
-                // celda es false
-                // };
-
-                // Predicate<Fila> condicion3 = fila -> {
-                // Celda celda = fila.getCelda("columna3", booleana);
-                // return celda != null & celda.getContenido() instanceof Number
-                // && ((Number) celda.getContenido()).doubleValue() > 0;
-                // };
-
+                t = booleana.filtrar(TablaUtils.moreThan(booleana, "bmi", 30));
+                System.out.println(t);
+                showSlide("Aca filtramos BMI > 30", user);
                 // Tabla t = booleana.filtrar(condicion3.and(condicion2));
                 // t = booleana.filtrar(condicion1.and(condicion2));
                 // System.out.println(t);
+                showSlide("\nPara buscar un sample de la tabla", user);
+                t = booleana.sample(40);
+                System.out.println(t);
 
-                // --------- SAMPLE
-                // booleana.removeColumna("columna1");
-                // Tabla t = booleana.sample(40);
-                // System.out.println(t);
+                showSlide("\nY ahora un summarize de una columna", user);
+                TablaUtils.summarize(booleana, "bmi");
         }
 }

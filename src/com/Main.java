@@ -109,6 +109,15 @@ public class Main {
                                 "\nVamos a sacarlo del grupo :(", user);
                 e.removeFila("0");
                 System.out.println(e);
+                showSlide("Bueno, provemos llenar Nulos. Primero hagamos una columna con NAs" +
+                                "\nEn este ejemplo, una columna de booleanos.", user);
+                Columna colna = new Columna("Boolean", new Boolean[2]);
+                e.addColumna(colna, "nulos");
+                System.out.println(e);
+                showSlide("Ahora fillNA\n", user);
+                e.getColumna("nulos").fillNA("false");
+                System.out.println(e);
+                showSlide("\nfillNA reemplaza los valores nulos por el valor asignado (en este caso, false)\n", user);
                 showSlide("Volviendo a la tabla importada del CSV, podemos hacer heads y tails", user);
                 seguros.head(30);
                 showSlide("^^^ esto fue un head de 30. Si no ponemos un valor nos da las primeras 10", user);

@@ -54,17 +54,16 @@ public class TablaUtils {
     System.out.println(infoTabla.toString());
   }
 
-  protected static void doSort(Tabla t, String[] columnas) {
+  protected static Tabla doSort(Tabla t, String[] columnas) {
+    Tabla nuevaTabla = t.deepCopy();
     for (String etiquetaColumna : columnas) {
-      if (!t._dameColLabels().containsKey(etiquetaColumna)) {
-        throw new IllegalLabelException("La columna '"
-            + etiquetaColumna + "' no existe en la tabla original.");
+      if (!nuevaTabla._dameColLabels().containsKey(etiquetaColumna)) { throw new IllegalLabelException("La columna '" + etiquetaColumna + "' no existe en la tabla original.");
       }
     }
-    t._dameOrder().sort((fila1, fila2) -> {
+    nuevaTabla._dameOrder().sort((fila1, fila2) -> {
       for (String header : columnas) {
-        Celda celda1 = t.getFila(fila1).getCelda(t._dameColLabels().get(header));
-        Celda celda2 = t.getFila(fila2).getCelda(t._dameColLabels().get(header));
+        Celda celda1 = nuevaTabla.getFila(fila1).getCelda(t._dameColLabels().get(header));
+        Celda celda2 = nuevaTabla.getFila(fila2).getCelda(t._dameColLabels().get(header));
 
         if (celda1.getContenido() == null && celda2.getContenido() == null) {
           continue; // Ambos valores son nulos entonces sigue
@@ -81,6 +80,7 @@ public class TablaUtils {
       }
       return 0; // Las filas son iguales en todas las columnas especificadas
     });
+    return nuevaTabla;
   }
 
   /**

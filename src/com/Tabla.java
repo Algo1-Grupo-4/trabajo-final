@@ -72,8 +72,7 @@ public class Tabla {
             }
             String[][] data = CSVUtils.parserCSV(lineas, tiposDato.length, ",");
             if (data.length <= 0) {
-                throw new IllegalArgumentException(
-                        "No se encontraron datos en el archivo CSV.");
+                throw new IllegalArgumentException("No se encontraron datos en el archivo CSV.");
             }
             tabla = new ArrayList<>();
             for (String tipoDato : tiposDato) {
@@ -318,7 +317,8 @@ public class Tabla {
     }
 
     /**
-     * Crea una tabla usando una tabla (un deep copy)
+     * Crea una tabla usando una tabla 
+     * Esto es utilizado par aun un deep copy
      * 
      * @param t tabla a copiar
      */
@@ -359,7 +359,7 @@ public class Tabla {
     public String toString() {
         StringBuilder out = new StringBuilder();
 
-        // detecti del ancho de columna
+        // detecto del ancho de columna
         int[] anchoColumna = new int[headers.size()];
 
         // Obtener el orden de las filas
@@ -374,8 +374,7 @@ public class Tabla {
         // Agregar labels de columna si hay
         for (int i = 0; i < headers.size(); i++) {
             String header = headers.get(i);
-            out.append(String.format("%" + (anchoColumna[i] + 6) + "s", centrarTexto(header))); // +4 para espacio
-                                                                                                // adicional
+            out.append(String.format("%" + (anchoColumna[i] + 6) + "s", centrarTexto(header))); 
         }
         out.append("\n");
 
@@ -507,8 +506,7 @@ public class Tabla {
      */
     public Columna getColumna(String key) {
         if (!this._dameColLabels().containsKey(key)) {
-            throw new IllegalArgumentException("No existe la columna '"
-                    + key + "' en la tabla.");
+            throw new IllegalArgumentException("No existe la columna '" + key + "' en la tabla.");
         }
         return this._dameTabla().get(colLabels.get(key));
     }
@@ -520,8 +518,7 @@ public class Tabla {
      */
     public Fila getFila(String key) {
         if (!this._dameRowLabels().containsKey(key)) {
-            throw new IllegalArgumentException("No existe la fila '"
-                    + key + "' en la tabla.");
+            throw new IllegalArgumentException("No existe la fila '" + key + "' en la tabla.");
         }
         Fila fila = new Fila();
         for (Columna col : tabla) {
@@ -539,12 +536,10 @@ public class Tabla {
      */
     public Celda getCelda(String keyFila, String keyColumna) {
         if (!colLabels.containsKey(keyColumna)) {
-            throw new IllegalArgumentException("No existe la columna '"
-                    + keyColumna + "' en la tabla.");
+            throw new IllegalArgumentException("No existe la columna '" + keyColumna + "' en la tabla.");
         }
         if (!rowLabels.containsKey(keyFila)) {
-            throw new IllegalArgumentException("No existe la fila '"
-                    + keyFila + "' en la tabla.");
+            throw new IllegalArgumentException("No existe la fila '" + keyFila + "' en la tabla.");
         }
         return tabla.get(colLabels.get(keyColumna)).getCelda(rowLabels.get(keyFila));
     }
@@ -577,8 +572,7 @@ public class Tabla {
      */
     public void setColumna(Columna newColumna, String oldKey, String newKey) {
         if (colLabels.containsKey(newKey)) {
-            throw new IllegalLabelException(
-                    "La nueva etiqueta ya corresponde a otra columna y no puede ser duplicada.");
+            throw new IllegalLabelException("La nueva etiqueta ya corresponde a otra columna y no puede ser duplicada.");
         }
         setColumna(newColumna, oldKey);
         int indiceViejo = colLabels.get(oldKey);
@@ -671,6 +665,9 @@ public class Tabla {
      * @param label    label de la columna
      */
     public void addColumna(Columna nuevaCol, String label) {
+        if (nuevaCol.size() != cantFilas()) {
+            throw new IllegalArgumentException("La cantidad de datos de la columna no corresponde con el tamaño de la tabla.");
+        }
         if (colLabels.containsKey(label)) {
             throw new IllegalLabelException("Ya existe una columna con ese nombre");
         }
@@ -697,6 +694,8 @@ public class Tabla {
             }
         }
         headers.remove(index);
+        System.out.println(colLabels);
+        System.out.println(headers);
     }
 
     /**
@@ -713,6 +712,13 @@ public class Tabla {
             throw new IllegalLibraryUse("No se permite duplicar las filas.");
         }
         for (int i = 0; i < tabla.size(); i++) {
+            Celda celdaActual = tabla.get(i).getCeldas().get(i);
+            Celda celdaNueva = nuevaFila.getCelda(i);
+
+            if (celdaActual.getContenido() != null && !celdaActual.getContenido().getClass().equals(celdaNueva.getContenido().getClass())) {
+                throw new InvalidDataTypeException("El tipo de dato de la nueva fila en la columna " + (i+1) + " no coincide con el tipo de dato de la tabla.");
+            }
+
             tabla.get(i).addCelda(nuevaFila.getCeldas().get(i));
         }
         rowLabels.put(String.valueOf(cantFilas() - 1), cantFilas() - 1);
@@ -750,9 +756,7 @@ public class Tabla {
     }
 
     /**
-     * Copia la tabla en otra tabla. La nueva tabla es independiente de
-     * la original
-     * entonces
+     * Copia la tabla en otra tabla. La nueva tabla es independiente de la original entonces
      * copia != original == true
      * 
      * @return Tabla nueva
@@ -814,8 +818,8 @@ public class Tabla {
      * @param columnas
      * @return Una tabla ordenada
      */
-    public void sort(String[] columnas) {
-        TablaUtils.doSort(this, columnas);
+    public Tabla sort(String[] columnas) {
+        return TablaUtils.doSort(this, columnas);
     }
 
     /**
@@ -957,8 +961,7 @@ public class Tabla {
         return String.format("%" + (padding + texto.length()) + "s", texto);
     }
 
-    // --METODOS
-    // UTILES--------------------------------------------------------------------------------------------------
+    // --METODOS UTILES--------------------------------------------------------------------------------------------------
     protected int cantFilas() {
         /**
          * Devuelve la cantidad de filas en la tabla.

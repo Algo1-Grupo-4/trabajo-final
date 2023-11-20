@@ -276,6 +276,58 @@ public class TablaUtils {
         "desvío estándar " + String.valueOf(c.desvioEstandar(c)); // TODO: podrian ser estaticos
 
     System.out.println(output);
-
   }
+
+  public static void mostrarTodo(Tabla t) {
+    StringBuilder out = new StringBuilder();
+
+    // detecto del ancho de columna
+    int[] anchoColumna = new int[t._dameHeaders().size()];
+
+    // Obtener el orden de las filas
+    List<String> orderFilas = t._dameOrder();
+
+    // Calcular la longitud máxima de cada columna
+    for (int i = 0; i < t._dameHeaders().size(); i++) {
+        String header = t._dameHeaders().get(i);
+        anchoColumna[i] = Math.max(anchoColumna[i], header.length());
+    }
+
+    // Agregar labels de columna si hay
+    for (int i = 0; i < t._dameHeaders().size(); i++) {
+        String header = t._dameHeaders().get(i);
+        out.append(String.format("%" + (anchoColumna[i] + 6) + "s", t.centrarTexto(header)));
+    }
+    out.append("\n");
+
+    // Agregar divisiones entre las columnas
+    for (int i = 0; i < t._dameHeaders().size(); i++) {
+        out.append(String.format("%-" + (anchoColumna[i] + 8) + "s", "").replace(' ', '-'));
+    }
+    out.append("\n");    
+    for (String filaKey : orderFilas) {
+      if (!t._dameRowLabels().containsKey(filaKey)) {
+          throw new IllegalArgumentException("La fila con la clave " + filaKey + " no existe en la tabla.");
+      }
+
+      int rowIndex = t._dameRowLabels().get(filaKey);
+
+      // Agregar la etiqueta de fila
+      out.append(String.format("%-" + 8 + "s", filaKey));
+
+      for (int i = 0; i < t._dameHeaders().size(); i++) {
+          String header = t._dameHeaders().get(i);
+          int columnIndex = t._dameColLabels().get(header); // Obtener el índice de la columna a partir del header
+          Celda celda = t._dameTabla().get(columnIndex).getCelda(rowIndex);
+          String contenido = (celda.getContenido() == null) ? "NA" : String.valueOf(celda.getContenido());
+          contenido = contenido.length() > 40 ? contenido.substring(0, 37) + "..." : contenido;
+          out.append(String.format("%-" + (anchoColumna[i] + 6) + "s", contenido));
+      }
+      out.append("\n");
+  }
+  System.out.println(out);
+  }
+  
+
+
 }

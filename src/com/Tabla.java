@@ -38,13 +38,13 @@ public class Tabla {
      *                   contrario. Si es falso la tabla se crea un headers
      *                   numéricos secuenciales
      */
-    protected Tabla(String[] tiposDato, String[][] datos, boolean hasHeaders) {
+    protected Tabla(String[] tiposDato, String[][] datos, boolean hasHeaders, String delimiter) {
         List<String> lineas = new LinkedList<>();
         StringBuffer sb;
         for (String[] c : datos) {
             sb = new StringBuffer();
             for (int i = 0; i < c.length; i++) {
-                sb.append(c[i] + ","); // no me juzguen
+                sb.append(c[i] + delimiter); // no me juzguen
             }
             String str = sb.toString();
             lineas.add(str);
@@ -52,7 +52,7 @@ public class Tabla {
         try {
             if (hasHeaders) {
                 if (!lineas.isEmpty()) {
-                    String[] encabezados = lineas.get(0).split(",");
+                    String[] encabezados = lineas.get(0).split(delimiter);
                     List<String> headers = new ArrayList<>();
                     for (int j = 0; j < encabezados.length; j++) {
                         headers.add(encabezados[j]);
@@ -63,13 +63,13 @@ public class Tabla {
                 }
             } else {
                 List<String> headers = new ArrayList<>();
-                for (int j = 0; j < lineas.get(0).split(",").length; j++) {
+                for (int j = 0; j < lineas.get(0).split(delimiter).length; j++) {
                     colLabels.put(String.valueOf(j), j);
                     headers.add(String.valueOf(j));
                 }
                 this.headers = headers;
             }
-            String[][] data = CSVUtils.parserCSV(lineas, tiposDato.length, ",");
+            String[][] data = CSVUtils.parserCSV(lineas, tiposDato.length, delimiter);
             if (data.length <= 0) {
                 throw new IllegalArgumentException("No se encontraron datos en el archivo CSV.");
             }
@@ -102,25 +102,25 @@ public class Tabla {
      * @param datos     List<String> Con los datos para cargar en tabla
      * 
      */
-    protected Tabla(String[] tiposDato, String filename) {
+    protected Tabla(String[] tiposDato, String filename, String delimiter) {
         try {
             lineas = CSVUtils.leerCSV(filename);
-            if (lineas.get(0).split(",").length != tiposDato.length) {
+            if (lineas.get(0).split(delimiter).length != tiposDato.length) {
                 throw new IncorrectHeaderCountException(
                         "La cantidad de columnas y tipos de datos no coinciden.");
             }
             List<String> headers = new ArrayList<>();
-            for (int j = 0; j < lineas.get(0).split(",").length; j++) {
+            for (int j = 0; j < lineas.get(0).split(delimiter).length; j++) {
                 colLabels.put(String.valueOf(j), j);
                 headers.add(String.valueOf(j));
             }
             this.headers = headers;
-            for (int j = 0; j < lineas.get(0).split(",").length; j++) {
+            for (int j = 0; j < lineas.get(0).split(delimiter).length; j++) {
                 colLabels.put(String.valueOf(j), j);
                 headers.add(String.valueOf(j));
             }
             this.headers = headers;
-            String[][] datos = CSVUtils.parserCSV(lineas, tiposDato.length, ",");
+            String[][] datos = CSVUtils.parserCSV(lineas, tiposDato.length, delimiter);
             if (datos.length <= 0) {
                 throw new IllegalArgumentException(
                         "No se encontraron datos en el archivo CSV.");
@@ -158,16 +158,16 @@ public class Tabla {
      * @param fileName   String con el path hacia el archivo
      * @param hasHeaders boolean de si el archivo tiene headers o no
      */
-    protected Tabla(String[] tiposDato, String fileName, boolean hasHeaders) {
+    protected Tabla(String[] tiposDato, String fileName, boolean hasHeaders, String delimiter) {
         try {
             lineas = CSVUtils.leerCSV(fileName);
-            if (lineas.get(0).split(",").length != tiposDato.length) {
+            if (lineas.get(0).split(delimiter).length != tiposDato.length) {
                 throw new IncorrectHeaderCountException(
                         "La cantidad de columnas y tipos de datos no coinciden.");
             }
             if (hasHeaders) {
                 if (!lineas.isEmpty()) {
-                    String[] encabezados = lineas.get(0).split(",");
+                    String[] encabezados = lineas.get(0).split(delimiter);
                     List<String> headers = new ArrayList<>();
 
                     for (int j = 0; j < encabezados.length; j++) {
@@ -181,7 +181,7 @@ public class Tabla {
                 throw new IllegalConstructorException(
                         "Si no tiene headers, use el constructor apropiado");
             }
-            String[][] datos = CSVUtils.parserCSV(lineas, tiposDato.length, ",");
+            String[][] datos = CSVUtils.parserCSV(lineas, tiposDato.length, delimiter);
             if (datos.length <= 0) {
                 throw new IllegalArgumentException(
                         "No se encontraron datos en el archivo CSV.");

@@ -23,7 +23,7 @@ public class Main {
 
                 Tabla seguros = Tablas.fromCSV(
                                 new String[] { "Number", "String", "Number", "Number", "Boolean", "String", "Number" },
-                                "/Users/ngiorgetti/repos/personal/trabajo-final/res/seguros.csv", true);
+                                "/Users/ngiorgetti/repos/personal/trabajo-final/res/seguros.csv", true, ",");
                 System.out.println(seguros);
 
                 showSlide("El comportamiento del toString de la clase Tabla detecta que"
@@ -32,7 +32,7 @@ public class Main {
                 showSlide("Ahora brevemente mostramos la importacion desde un Array de Arrays", user);
 
                 String[][] example = { { "Nombre", "Edad" }, { "Nico", "35" }, { "Iva", "35" } };
-                Tabla e = Tablas.fromMatriz(new String[] { "String", "Number" }, example, true);
+                Tabla e = Tablas.fromMatriz(new String[] { "String", "Number" }, example, true, ",");
                 System.out.println(e);
 
                 showSlide("Ahora volvamos con la tabla importada desde un CSV", user);
@@ -137,7 +137,7 @@ public class Main {
                                 "\nBueno, ahora a concatenar", user);
                 Tabla toAdd = Tablas.fromCSV(
                                 new String[] { "Number", "String", "Number", "Number", "Boolean", "String", "Number" },
-                                "/Users/ngiorgetti/repos/personal/trabajo-final/res/concatenate.csv", true);
+                                "/Users/ngiorgetti/repos/personal/trabajo-final/res/concatenate.csv", true, ",");
                 Tabla tablaConcatenada = seguros.concatenarTabla(toAdd);
                 System.out.println(tablaConcatenada);
                 tablaConcatenada.infoBasica();

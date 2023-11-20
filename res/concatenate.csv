@@ -5,4 +5,4 @@ age,sex,bmi,children,smoker,region,charges
 25,male,26.22,0,false,northeast,2721.32
 62,female,26.29,0,true,southeast,27808.73
 23,male,34.4,0,false,southwest,1826.84
-,male,,,,,
+,male,,,,southwest,1826.84

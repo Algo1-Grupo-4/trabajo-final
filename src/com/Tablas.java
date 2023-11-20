@@ -15,6 +15,13 @@ public class Tablas {
     CSVUtils.exportar(table, pathArchivo, incluirHeaders, delimitador);
   }
 
+  public static Tabla fromCSV(String[] tiposDato, String fileName, boolean hasHeaders, String separador) {
+    if (hasHeaders) {
+      return new Tabla(tiposDato, fileName, hasHeaders, separador);
+    }
+    return new Tabla(tiposDato, fileName, separador);
+  }
+
   /**
    * Genera una tabla dado un CSV
    * 
@@ -26,9 +33,9 @@ public class Tablas {
    */
   public static Tabla fromCSV(String[] tiposDato, String fileName, boolean hasHeaders) {
     if (hasHeaders) {
-      return new Tabla(tiposDato, fileName, hasHeaders);
+      return fromCSV(tiposDato, fileName, hasHeaders, ",");
     }
-    return new Tabla(tiposDato, fileName);
+    return fromCSV(tiposDato, fileName, false, ",");
   }
 
   /**
@@ -40,8 +47,8 @@ public class Tablas {
    *                   tabla
    * @param hasHeaders boolean de si datos tiene headers o no.
    */
-  public static Tabla fromMatriz(String[] tiposDato, String[][] datos, boolean hasHeaders) {
-    return new Tabla(tiposDato, datos, hasHeaders);
+  public static Tabla fromMatriz(String[] tiposDato, String[][] datos, boolean hasHeaders, String delimiter) {
+    return new Tabla(tiposDato, datos, hasHeaders, delimiter);
   }
 
 }

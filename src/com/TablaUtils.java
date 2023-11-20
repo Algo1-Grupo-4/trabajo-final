@@ -52,7 +52,7 @@ public class TablaUtils {
       String[] row = data_fila.get(i);
       System.arraycopy(row, 0, datos[i], 0, data_fila.get(0).length);
     }
-    Tabla infoTabla = new Tabla(tipoDeDatoHeaders, datos, true);
+    Tabla infoTabla = new Tabla(tipoDeDatoHeaders, datos, true, ",");
     System.out.println("Cantidad de columnas: " + t._dameHeaders().size());
     System.out.println("Cantidad de filas: " + t.cantFilas());
     System.out.println();

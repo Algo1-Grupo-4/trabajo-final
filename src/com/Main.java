@@ -21,10 +21,10 @@ public class Main {
                 showSlide("Bueno ahora cargamos los datos desde un CSV" +
                                 "\nPresenter notes: mostrar el fromCSV()", user);
 
-                Tabla booleana = Tablas.fromCSV(
+                Tabla seguros = Tablas.fromCSV(
                                 new String[] { "Number", "String", "Number", "Number", "Boolean", "String", "Number" },
                                 "/Users/ngiorgetti/repos/personal/trabajo-final/res/seguros.csv", true);
-                System.out.println(booleana);
+                System.out.println(seguros);
 
                 showSlide("El comportamiento del toString de la clase Tabla detecta que"
                                 + "\nDe ser muchas filas, va a 'cortar' el medio para mejorar la visibilidad", user);
@@ -39,31 +39,31 @@ public class Main {
                 showSlide("Como vimos, si hacemos un sysout de la Tabla, usa el metodo to String" +
                                 "\nPero si quisieramos ver info básica" +
                                 " de la tabla podemos usar infobásica", user);
-                booleana.infoBasica();
+                seguros.infoBasica();
                 showSlide("Bueno, y si ahora queremos exportar esto a un csv?" +
                                 "\nPresenter notes: bueno ahora mostrar el toCSV()", user);
 
                 System.out.println("Dame un delimitador!");
                 String deli = user.nextLine();
 
-                Tablas.toCSV(booleana, "./output.csv", true, deli);
+                Tablas.toCSV(seguros, "./output.csv", true, deli);
                 showSlide("\nBueno muy lindo todo, ahora probemos Getters", user);
 
-                Columna col3 = booleana.getColumna("smoker");
+                Columna col3 = seguros.getColumna("smoker");
                 System.out.println(col3.toString());
                 showSlide("Aca probamos un getColumna con 'dame columna smoker'" +
                                 "\nEsto nos devuelve un objeto Columna, que podemos mostrar en pantalla usando" +
                                 " toString" +
                                 "\nVamos a tener el Tipo de Columna y los valores", user);
 
-                Fila fila5 = booleana.getFila("4");
+                Fila fila5 = seguros.getFila("4");
                 System.out.println(fila5.toString());
                 showSlide("Acá probamos el getFila" +
                                 "\n El ToString nos muestra sus valores" +
                                 "\n Si quisieramos podemos hacer getCeldas()" +
                                 "\nY obtener las Celdas en una lista", user);
 
-                Celda celda = booleana.getCelda("2", "children");
+                Celda celda = seguros.getCelda("2", "children");
                 System.out.println(celda.toString());
                 showSlide("Acá probamos un getCelda, donde le pasamos una fila y una columna" +
                                 "\nY nos da el contenido\n" +
@@ -110,57 +110,57 @@ public class Main {
                 e.removeFila("0");
                 System.out.println(e);
                 showSlide("Volviendo a la tabla importada del CSV, podemos hacer heads y tails", user);
-                booleana.head(30);
+                seguros.head(30);
                 showSlide("^^^ esto fue un head de 30. Si no ponemos un valor nos da las primeras 10", user);
-                booleana.tail(5);
+                seguros.tail(5);
                 showSlide("^^^^ Esto fue un tail de 5", user);
 
                 showSlide("\nProbamos el SELECT\nPrimero, el select de FILA", user);
-                Tabla t = booleana.seleccionarFilas(new String[] { "4", "0", "2", "29", "1337" });
+                Tabla t = seguros.seleccionarFilas(new String[] { "4", "0", "2", "29", "1337" });
                 System.out.println(t);
                 showSlide("Aca mostramos las filas 4,0,2,29 y 1337 (leet!)\n" +
                                 "Ahora veamos el de Columnas", user);
 
-                t = booleana.seleccionarColumnas(new String[] { "sex", "region", "charges" });
+                t = seguros.seleccionarColumnas(new String[] { "sex", "region", "charges" });
                 t.head();
                 showSlide("Aca vemos un head de las columnas seleccionadas, sex, region y charges" +
                                 "\nPor último, un select de las dos (filas y columnas)", user);
 
-                t = booleana.seleccionar(new String[] { "smoker", "charges" },
+                t = seguros.seleccionar(new String[] { "smoker", "charges" },
                                 new String[] { "0", "1", "666", "667", "777" });
                 System.out.println(t);
                 showSlide("\n Aca arriba vemos un select de dos columnas y un par de filas" +
                                 "\nPiola.\nAhora, supongamos que quisieramos ordenar por age y charges la tabla", user);
-                t = booleana.sort(new String[] { "age", "charges" });
+                t = seguros.sort(new String[] { "age", "charges" });
                 System.out.println(t);
                 showSlide("Un sort por age y luego por charges" +
-                                "Bueno, ahora a concatenar", user);
+                                "\nBueno, ahora a concatenar", user);
                 Tabla toAdd = Tablas.fromCSV(
                                 new String[] { "Number", "String", "Number", "Number", "Boolean", "String", "Number" },
                                 "/Users/ngiorgetti/repos/personal/trabajo-final/res/concatenate.csv", true);
-                Tabla tablaConcatenada = booleana.concatenarTabla(toAdd);
+                Tabla tablaConcatenada = seguros.concatenarTabla(toAdd);
                 System.out.println(tablaConcatenada);
                 tablaConcatenada.infoBasica();
                 showSlide("Una tabla concatenada se ve así ahora\n" +
                                 "Vamos a ver Filtrado", user);
 
                 // Predicate<Fila> condicion3 = fila1 -> {
-                // Celda celda1 = fila1.getCelda("bmi", booleana);
+                // Celda celda1 = fila1.getCelda("bmi", seguros);
                 // return celda1 != null & celda.getContenido() instanceof Number
                 // && ((Number) celda1.getContenido()).doubleValue() > 0;
                 // };
-                t = booleana.filtrar(TablaUtils.moreThan(booleana, "bmi", 30));
+                t = seguros.filtrar(TablaUtils.moreThan(seguros, "bmi", 30));
                 System.out.println(t);
                 showSlide("Aca filtramos BMI > 30", user);
-                // Tabla t = booleana.filtrar(condicion3.and(condicion2));
-                // t = booleana.filtrar(condicion1.and(condicion2));
+                // Tabla t = seguros.filtrar(condicion3.and(condicion2));
+                // t = seguros.filtrar(condicion1.and(condicion2));
                 // System.out.println(t);
                 showSlide("\nPara buscar un sample de la tabla", user);
-                t = booleana.sample(40);
+                t = seguros.sample(40);
                 System.out.println(t);
 
                 showSlide("\nY ahora un summarize de la columna BMI", user);
-                TablaUtils.summarize(booleana, "bmi");
+                TablaUtils.summarize(seguros, "bmi");
 
                 showSlide("Bueno hasta acá llegó la demo. Gracias por la atención", user);
         }

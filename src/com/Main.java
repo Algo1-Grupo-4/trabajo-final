@@ -22,7 +22,7 @@ public class Main {
 
                 Tabla seguros = Tablas.fromCSV(
                                 new String[] { "Number", "String", "Number", "Number", "Boolean", "String", "Number" },
-                                "C:/Users/naiar/Downloads/seguros.csv", true, ",");
+                                "/Users/ngiorgetti/repos/personal/trabajo-final/res/seguros.csv", true, ",");
                 System.out.println(seguros);
 
                 showSlide("El comportamiento del toString de la clase Tabla detecta que"
@@ -145,18 +145,18 @@ public class Main {
                                 "\nBueno, ahora a concatenar", user);
                 Tabla toAdd = Tablas.fromCSV(
                                 new String[] { "Number", "String", "Number", "Number", "Boolean", "String", "Number" },
-                                "C:/Users/naiar/Downloads/concatenate.csv", true, ",");
+                                "/Users/ngiorgetti/repos/personal/trabajo-final/res/concatenate.csv", true, ",");
                 Tabla tablaConcatenada = seguros.concatenarTabla(toAdd);
                 System.out.println(tablaConcatenada);
                 tablaConcatenada.infoBasica();
                 showSlide("Una tabla concatenada se ve así ahora\n" +
                                 "Vamos a ver Filtrado", user);
 
-
-                t = seguros.filtrar(TablaUtils.moreThan(seguros, "bmi", 30).and(TablaUtils.is(seguros, "region", "southeast")));
+                t = seguros.filtrar(TablaUtils.moreThan(seguros, "bmi", 30)
+                                .and(TablaUtils.is(seguros, "region", "southeast")));
                 System.out.println(t);
                 showSlide("Aca filtramos BMI > 30 y que la región sea 'southeast'", user);
-   
+
                 showSlide("\nPara buscar un sample del 40% de la tabla", user);
                 t = seguros.sample(40);
                 System.out.println(t);

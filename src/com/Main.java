@@ -1,6 +1,5 @@
 package com;
 
-// import java.util.function.Predicate; TODO: si hay que mostrar mas predicates
 import java.util.Scanner;
 
 public class Main {

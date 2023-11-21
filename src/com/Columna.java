@@ -243,7 +243,6 @@ public class Columna implements Cloneable, Summarize {
                 nc.add((Celda) cell.clone());
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
-                // TODO: fix error message
                 System.out.println("Error al clonar celda");
             }
         }

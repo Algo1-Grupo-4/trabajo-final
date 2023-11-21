@@ -17,9 +17,9 @@ public class Tablas {
 
   public static Tabla fromCSV(String[] tiposDato, String fileName, boolean hasHeaders, String separador) {
     if (hasHeaders) {
-      return new Tabla(tiposDato, fileName, hasHeaders, separador);
+      return new Tabla(tiposDato, fileName, true, separador);
     }
-    return new Tabla(tiposDato, fileName, separador);
+    return new Tabla(tiposDato, fileName, false, separador);
   }
 
   /**

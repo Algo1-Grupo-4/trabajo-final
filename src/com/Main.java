@@ -23,7 +23,7 @@ public class Main {
 
                 Tabla seguros = Tablas.fromCSV(
                                 new String[] { "Number", "String", "Number", "Number", "Boolean", "String", "Number" },
-                                "C://Users//Usuario//Downloads//seguros.csv", true, ",");
+                                "/Users/ngiorgetti/repos/personal/trabajo-final/res/seguros.csv", true, ",");
                 System.out.println(seguros);
 
                 showSlide("El comportamiento del toString de la clase Tabla detecta que"
@@ -146,7 +146,7 @@ public class Main {
                                 "\nBueno, ahora a concatenar", user);
                 Tabla toAdd = Tablas.fromCSV(
                                 new String[] { "Number", "String", "Number", "Number", "Boolean", "String", "Number" },
-                                "C://Users//Usuario//Downloads//concatenate.csv", true, ",");
+                                "/Users/ngiorgetti/repos/personal/trabajo-final/res/concatenate.csv", true, ",");
                 Tabla tablaConcatenada = seguros.concatenarTabla(toAdd);
                 System.out.println(tablaConcatenada);
                 tablaConcatenada.infoBasica();

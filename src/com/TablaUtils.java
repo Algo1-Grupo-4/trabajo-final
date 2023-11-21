@@ -89,7 +89,6 @@ public class TablaUtils {
     return nuevaTabla;
   }
 
-
   /**
    * Genera rowlabels para el filtrado
    * 
@@ -290,25 +289,25 @@ public class TablaUtils {
 
     // Calcular la longitud máxima de cada columna
     for (int i = 0; i < t._dameHeaders().size(); i++) {
-        String header = t._dameHeaders().get(i);
-        anchoColumna[i] = Math.max(anchoColumna[i], header.length());
+      String header = t._dameHeaders().get(i);
+      anchoColumna[i] = Math.max(anchoColumna[i], header.length());
     }
 
     // Agregar labels de columna si hay
     for (int i = 0; i < t._dameHeaders().size(); i++) {
-        String header = t._dameHeaders().get(i);
-        out.append(String.format("%" + (anchoColumna[i] + 6) + "s", t.centrarTexto(header)));
+      String header = t._dameHeaders().get(i);
+      out.append(String.format("%" + (anchoColumna[i] + 6) + "s", t.centrarTexto(header)));
     }
     out.append("\n");
 
     // Agregar divisiones entre las columnas
     for (int i = 0; i < t._dameHeaders().size(); i++) {
-        out.append(String.format("%-" + (anchoColumna[i] + 8) + "s", "").replace(' ', '-'));
+      out.append(String.format("%-" + (anchoColumna[i] + 8) + "s", "").replace(' ', '-'));
     }
-    out.append("\n");    
+    out.append("\n");
     for (String filaKey : orderFilas) {
       if (!t._dameRowLabels().containsKey(filaKey)) {
-          throw new IllegalArgumentException("La fila con la clave " + filaKey + " no existe en la tabla.");
+        throw new IllegalArgumentException("La fila con la clave " + filaKey + " no existe en la tabla.");
       }
 
       int rowIndex = t._dameRowLabels().get(filaKey);
@@ -317,18 +316,16 @@ public class TablaUtils {
       out.append(String.format("%-" + 8 + "s", filaKey));
 
       for (int i = 0; i < t._dameHeaders().size(); i++) {
-          String header = t._dameHeaders().get(i);
-          int columnIndex = t._dameColLabels().get(header); // Obtener el índice de la columna a partir del header
-          Celda celda = t._dameTabla().get(columnIndex).getCelda(rowIndex);
-          String contenido = (celda.getContenido() == null) ? "NA" : String.valueOf(celda.getContenido());
-          contenido = contenido.length() > 40 ? contenido.substring(0, 37) + "..." : contenido;
-          out.append(String.format("%-" + (anchoColumna[i] + 6) + "s", contenido));
+        String header = t._dameHeaders().get(i);
+        int columnIndex = t._dameColLabels().get(header); // Obtener el índice de la columna a partir del header
+        Celda celda = t._dameTabla().get(columnIndex).getCelda(rowIndex);
+        String contenido = (celda.getContenido() == null) ? "NA" : String.valueOf(celda.getContenido());
+        contenido = contenido.length() > 40 ? contenido.substring(0, 37) + "..." : contenido;
+        out.append(String.format("%-" + (anchoColumna[i] + 6) + "s", contenido));
       }
       out.append("\n");
+    }
+    System.out.println(out);
   }
-  System.out.println(out);
-  }
-  
-
 
 }

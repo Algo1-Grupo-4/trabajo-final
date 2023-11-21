@@ -263,6 +263,34 @@ public class TablaUtils {
     return condicion;
   }
 
+  public static Predicate<Fila> lessThan(Tabla t, String columnaKey, Number valor) {
+    Predicate<Fila> condicion = fila1 -> {
+      Celda celda = fila1.getCelda(columnaKey, t);
+      return celda != null & celda.getContenido() instanceof Number
+          && ((Number) celda.getContenido()).doubleValue() < valor.doubleValue();
+    };
+    return condicion;
+  }
+
+  public static Predicate<Fila> is(Tabla t, String columnaKey, String valor) {
+    Predicate<Fila> condicion = fila -> { 
+      Celda celda = fila.getCelda(columnaKey, t);
+      return celda != null & valor.equals(celda.getContenido()); // La celda dice "hola"
+    };
+    return condicion;
+  }
+
+  public static Predicate<Fila> booleanIs(Tabla t, String columnaKey, Boolean valor) {
+    Predicate<Fila> condicion = fila -> { 
+      Celda celda = fila.getCelda(columnaKey, t);
+      if (valor.equals(true))
+        return celda != null & Boolean.TRUE.equals(celda.getContenido()); 
+      else
+        return celda != null & Boolean.FALSE.equals(celda.getContenido()); 
+    };
+    return condicion;
+  }
+
   public static void summarize(Tabla t, String columnaKey) {
     Columna c = t.getColumna(columnaKey);
     String output = "Columna: " + columnaKey + "\n" +

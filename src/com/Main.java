@@ -1,6 +1,5 @@
 package com;
 
-// import java.util.function.Predicate; TODO: si hay que mostrar mas predicates
 import java.util.Scanner;
 
 public class Main {
@@ -23,7 +22,7 @@ public class Main {
 
                 Tabla seguros = Tablas.fromCSV(
                                 new String[] { "Number", "String", "Number", "Number", "Boolean", "String", "Number" },
-                                "/Users/ngiorgetti/repos/personal/trabajo-final/res/seguros.csv", true, ",");
+                                "C:/Users/naiar/Downloads/seguros.csv", true, ",");
                 System.out.println(seguros);
 
                 showSlide("El comportamiento del toString de la clase Tabla detecta que"
@@ -146,25 +145,19 @@ public class Main {
                                 "\nBueno, ahora a concatenar", user);
                 Tabla toAdd = Tablas.fromCSV(
                                 new String[] { "Number", "String", "Number", "Number", "Boolean", "String", "Number" },
-                                "/Users/ngiorgetti/repos/personal/trabajo-final/res/concatenate.csv", true, ",");
+                                "C:/Users/naiar/Downloads/concatenate.csv", true, ",");
                 Tabla tablaConcatenada = seguros.concatenarTabla(toAdd);
                 System.out.println(tablaConcatenada);
                 tablaConcatenada.infoBasica();
                 showSlide("Una tabla concatenada se ve así ahora\n" +
                                 "Vamos a ver Filtrado", user);
 
-                // Predicate<Fila> condicion3 = fila1 -> {
-                // Celda celda1 = fila1.getCelda("bmi", seguros);
-                // return celda1 != null & celda.getContenido() instanceof Number
-                // && ((Number) celda1.getContenido()).doubleValue() > 0;
-                // };
-                t = seguros.filtrar(TablaUtils.moreThan(seguros, "bmi", 30));
+
+                t = seguros.filtrar(TablaUtils.moreThan(seguros, "bmi", 30).and(TablaUtils.is(seguros, "region", "southeast")));
                 System.out.println(t);
-                showSlide("Aca filtramos BMI > 30", user);
-                // Tabla t = seguros.filtrar(condicion3.and(condicion2));
-                // t = seguros.filtrar(condicion1.and(condicion2));
-                // System.out.println(t);
-                showSlide("\nPara buscar un sample de la tabla", user);
+                showSlide("Aca filtramos BMI > 30 y que la región sea 'southeast'", user);
+   
+                showSlide("\nPara buscar un sample del 40% de la tabla", user);
                 t = seguros.sample(40);
                 System.out.println(t);
 
